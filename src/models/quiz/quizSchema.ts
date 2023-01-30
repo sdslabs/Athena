@@ -1,22 +1,22 @@
 import { Schema } from 'mongoose'
-import { IQuiz } from '@types'
+import { IQuiz, ModelNames } from '@types'
 
 const quizSchema = new Schema<IQuiz>({
   admin: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: ModelNames.User,
     required: true,
   },
-  participants: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
-  ],
   managers: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: ModelNames.User,
+    },
+  ],
+  participants: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: ModelNames.User,
     },
   ],
   isPublished: {
@@ -57,13 +57,42 @@ const quizSchema = new Schema<IQuiz>({
     },
     accessCode: {
       type: String,
-      required: false,
     },
     bannerImage: {
       type: String,
       required: false,
     },
   },
+  registrationMetadata: {
+    customFields: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        label: {
+          type: String,
+          required: true,
+        },
+        isRequired: {
+          type: Boolean,
+          required: true,
+        },
+      },
+    ],
+  },
+  sections: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      description: {
+        type: String,
+      },
+      questions: [{ type: Schema.Types.ObjectId, ref: ModelNames.Question }],
+    },
+  ],
 })
 
 export default quizSchema

@@ -1,7 +1,7 @@
-import { IQuiz } from '@types'
+import { IQuiz, ModelNames } from '@types'
 import mongoose from 'mongoose'
 import quizSchema from './quizSchema'
 
-const QuizModel = mongoose.model<IQuiz>('Quiz', quizSchema)
+const QuizModel = mongoose.model<IQuiz>(ModelNames.Quiz, quizSchema)
 
 export default QuizModel
