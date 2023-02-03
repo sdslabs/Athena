@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose'
-import { IQuiz, ModelNames } from '@types'
+import { ModelNames, IQuiz } from 'types'
 
 const quizSchema = new Schema<IQuiz>({
   admin: {
@@ -48,11 +48,11 @@ const quizSchema = new Schema<IQuiz>({
       required: true,
     },
     startDateTimestamp: {
-      type: Number,
+      type: Date,
       required: true,
     },
     endDateTimestamp: {
-      type: Number,
+      type: Date,
       required: true,
     },
     accessCode: {
