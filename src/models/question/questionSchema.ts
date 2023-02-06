@@ -5,7 +5,7 @@ const questionSchema = new Schema<IQuestion>({
   type: {
     type: String,
     required: true,
-    enum: [QuestionTypes.MCQ, QuestionTypes.SUBJECTIVE],
+    enum: Object.values(QuestionTypes),
     default: QuestionTypes.MCQ,
   },
   description: {
