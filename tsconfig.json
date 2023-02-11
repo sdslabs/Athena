@@ -6,6 +6,18 @@
     "outDir": "./build",
     "esModuleInterop": true,
     "strict": true,
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "paths": {
+      "@db/*": ["./db/*"],
+      "@models/*": ["./models/*"],
+      "@routers/*": ["./routers/*"],
+      "@middlewares/*": ["./middlewares/*"],
+      "@controllers/*": ["./controllers/*"],
+      "@utils/*": ["./utils/*"]
+    },
+    "typeRoots": ["./src/types", "node_modules/@types"]
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }
