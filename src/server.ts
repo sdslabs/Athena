@@ -1,10 +1,21 @@
 import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
+import { connectDB } from '@db/connectDB'
+import quizRouter from '@routers/quiz'
 
+// Initialize server
 dotenv.config()
+connectDB()
 
 const app: Express = express()
 const port = process.env.PORT
+
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routers
+app.use('/quiz', quizRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')

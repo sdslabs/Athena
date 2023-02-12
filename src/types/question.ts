@@ -1,3 +1,5 @@
+import { Types } from 'mongoose'
+
 export interface IQuestion {
   type: QuestionTypes
   description: string
