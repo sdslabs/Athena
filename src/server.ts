@@ -11,7 +11,8 @@ const app: Express = express()
 const port = process.env.PORT
 
 // Middlewares
-app.use(express.json())
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routers
 app.use('/quiz', quizRouter)
