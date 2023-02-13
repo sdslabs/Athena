@@ -25,7 +25,7 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
 
   // get the data from the request body
   const { managers, isAcceptingAnswers, quizMetadata, registrationMetadata, userId } = req.body
-  const { quizId } = req.params
+  const quizId = req.params.quizId
 
   if (!quizId) {
     return sendInvalidInputResponse(res)
