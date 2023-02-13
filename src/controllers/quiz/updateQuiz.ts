@@ -54,7 +54,7 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
     
     // send the response back
     if(!quiz) {
-      return res.status(404).send({ message: 'Quiz not found' })
+      return res.status(404).send({ message: 'Error updating quiz' })
     } else {
       return res.status(200).send({ message: 'Quiz updated', quiz })
     }

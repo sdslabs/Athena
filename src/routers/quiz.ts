@@ -5,5 +5,6 @@ const router = express.Router()
 
 router.post('/create', quizController.createQuiz)
 router.post('/update/:quizId', quizController.updateQuiz)
+router.post('/publish/:quizId', quizController.publishQuiz)
 
 export default router
