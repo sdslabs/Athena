@@ -6,7 +6,7 @@ import { OAuthProviders, UserRoles, IUser, jwtPayload } from 'types';
 import { createToken } from '@utils/token';
 import { Types } from 'mongoose';
 
-const callback = async (req: Request, res: Response) => {
+const googleCallback = async (req: Request, res: Response) => {
   const code = req.query.code as string;
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -25,7 +25,7 @@ const callback = async (req: Request, res: Response) => {
           },
         },
       );
-    const user: IUser = await UserModel.findOne({ "personalDetails.emailAdd": googleUser.data.email }) as IUser;
+    const user: IUser = await UserModel.findOne({ "personalDetails.emailAdd": googleUser.data.email, oauthProvider: OAuthProviders.google }) as IUser;
     let userId: Types.ObjectId;
     if (user) {
       userId = user._id as Types.ObjectId;
@@ -66,4 +66,4 @@ const callback = async (req: Request, res: Response) => {
 
 }
 
-export default callback;
+export default googleCallback;

@@ -3,7 +3,9 @@ import * as authController from '@controllers/auth'
 
 const router = express.Router()
 
-router.get('/google', authController.getAuth)
-router.get('/google/callback', authController.callback);
+router.get('/google', authController.getGoogleAuth)
+router.get('/github', authController.getGithubAuth)
+router.get('/google/callback', authController.googleCallback);
+router.get('/github/callback', authController.githubCallback);
 
 export default router
