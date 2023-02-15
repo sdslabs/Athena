@@ -19,7 +19,7 @@ interface updateQuizRequest extends Request {
 }
 
 const updateQuiz = async (req: updateQuizRequest, res: Response) => {
-  if (!req.body) {
+  if (!req.body || !req.params.quizId || !req.body.userId ) {
     return sendInvalidInputResponse(res)
   }
 
@@ -32,22 +32,14 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
   }
 
   try {
-    // check if the quiz exists
-    const check:any = await QuizModel.findOne({ _id: quizId, admin: userId });
-    if (!check) {
-      return res.status(404).send({ message: 'Quiz not found' })
-    }
-
     // update the quiz
     const quiz = await QuizModel.findOneAndUpdate(
       { _id: quizId, admin: userId },
       {
-        $set: {
-          managers,
-          isAcceptingAnswers,
-          quizMetadata,
-          registrationMetadata,
-        },
+        managers: managers,
+        isAcceptingAnswers: isAcceptingAnswers,
+        quizMetadata: quizMetadata,
+        registrationMetadata: registrationMetadata,
       },
       { new: true }
     )
@@ -56,7 +48,7 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
     if(!quiz) {
       return res.status(404).send({ message: 'Error updating quiz' })
     } else {
-      return res.status(200).send({ message: 'Quiz updated', quiz })
+      return res.status(200).send({ message: 'Quiz updated', updatedParameters: { quizId: quiz._id, managers, isAcceptingAnswers, quizMetadata, registrationMetadata }})
     }
   } catch (error: unknown) {
     sendFailureResponse({
