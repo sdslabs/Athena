@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Response, Request } from 'express'
 import QuizModel from '@models/quiz/quizModel'
 import { Error, Types } from 'mongoose'
 import { IQuiz } from 'types'

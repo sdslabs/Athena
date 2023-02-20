@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { google } from 'googleapis';
 import axios from 'axios';
 import UserModel from '@models/user/userModel';
-import { OAuthProviders, UserRoles, IUser, jwtPayload } from 'types';
+import { OAuthProviders, UserRoles, IUser, JwtPayload } from 'types';
 import { createToken } from '@utils/token';
 import { Types } from 'mongoose';
 
@@ -51,7 +51,7 @@ const googleCallback = async (req: Request, res: Response) => {
       userId = savedUser._id;
     }
 
-    const payload: jwtPayload = {
+    const payload: JwtPayload = {
       userId: userId,
       emailAdd: googleUser.data.email,
       role: UserRoles.user,
