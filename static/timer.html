@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Hello world</title>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;900&display=swap');
+
+	* {
+		font-family: 'Poppins', sans-serif;
+	}
+
+	.time {
+		display: flex;
+		justify-content: center;
+		font-family: 'Poppins', sans-serif;
+	}
+
+	.colon {
+		padding-left: 4px;
+		padding-right: 4px;
+	}
+
+	table {
+		font-family: arial, sans-serif;
+		border-collapse: collapse;
+		width: 100%;
+	}
+
+	td,
+	th {
+		border: 1px solid #dddddd;
+		text-align: center;
+		padding: 8px;
+	}
+
+	tr:nth-child(even) {
+		background-color: #dddddd;
+	}
+</style>
+
+<body>
+	<h1>Quizio Timer Test!</h1>
+	<p>Open <a href="/timer" target="_blank">timer</a> in another tab and ensure that the times are in sync!</p>
+	<table id="timetable">
+		<tr>
+			<th>Quiz Name</th>
+			<th>Time Remaining</th>
+		</tr>
+		<!-- <tr>
+			<td>
+				<div id="name"></div>
+			</td>
+			<td>
+				<div class="time">
+					<div id="hours"></div>
+					<div class="colon">:</div>
+					<div id="minutes"></div>
+					<div class="colon">:</div>
+					<div id="seconds"></div>
+				</div>
+			</td>
+		</tr> -->
+	</table>
+
+	<div id="message">Quiz in Progress</div>
+
+	<script>
+		const socket = io();
+
+		var table = document.getElementById("timetable");
+
+
+
+
+		// const nameEl = document.getElementById('name');
+		const nameEl = document.createElement('div');
+		const hoursEl = document.getElementById('hours');
+		const minutesEl = document.getElementById('minutes');
+		const secondsEl = document.getElementById('seconds');
+		const messageEl = document.getElementById('message');
+
+		socket.on('quizTimer', (timeArray) => {
+			timeArray.forEach((element, i) => {
+				let time = timeArray[i].time;
+				const hours = Math.floor(time / 3600);
+				const minutes = Math.floor((time % 3600) / 60);
+				const seconds = (time % 60);
+
+				const quizName = timeArray[i].name;
+				const secondsRemaining = seconds >= 10 ? seconds.toString() : '0' + seconds.toString();
+				const minsRemaining = minutes >= 10 ? minutes.toString() : '0' + minutes.toString();
+				const hoursRemaining = hours >= 10 ? hours.toString() : '0' + hours.toString();
+				const timeRemaining = `${hoursRemaining} : ${minsRemaining} : ${secondsRemaining}`;
+
+				// console.log(table.rows.length);
+				// if (table.rows.length > 1) {
+				// 	table.deleteRow(1);
+				// }
+				var row = table.insertRow(1);
+				var cell1 = row.insertCell(0);
+				var cell2 = row.insertCell(1);
+				cell1.innerHTML = quizName;
+				cell2.innerHTML = timeRemaining;
+			});
+		});
+
+		socket.on('quizTimeEnd', (msg) => {
+			hoursEl.innerHTML = '00'
+			minutesEl.innerHTML = '00'
+			secondsEl.innerHTML = '00'
+			messageEl.innerHTML = msg;
+		});
+
+	</script>
+</body>
+
+</html>
