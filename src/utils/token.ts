@@ -6,6 +6,6 @@ export const createToken = (payload: JwtPayload) => {
 }
 
 export const verifyToken = (token: string) => {
-    const user = verify(token, process.env.JWT_SECRET || '');
-    return user as JwtPayload;
+    const user = verify(token, process.env.JWT_KEY || 'Athena2023');
+    return user;
 }
