@@ -2,6 +2,8 @@ import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import { connectDB } from '@db/connectDB'
 import quizRouter from '@routers/quiz'
+import authRouter from '@routers/auth'
+import cookieParser from 'cookie-parser'
 
 // Initialize server
 dotenv.config()
@@ -13,9 +15,11 @@ const port = process.env.PORT
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
 
 // Routers
 app.use('/quiz', quizRouter)
+app.use('/auth', authRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
