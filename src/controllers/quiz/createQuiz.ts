@@ -1,15 +1,15 @@
 import { Response, Request } from 'express'
 import QuizModel from '@models/quiz/quizModel'
 import { Error, Types } from 'mongoose'
-import { IQuiz } from 'types'
+import { IQuiz, JwtPayload } from 'types'
 import sendFailureResponse from '@utils/failureResponse'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 
 interface createQuizRequest extends Request {
   body: {
     quizMetadata: IQuiz['quizMetadata']
-    userId: Types.ObjectId
     managers?: Types.ObjectId[]
+    user: JwtPayload
   }
 }
 
@@ -18,7 +18,7 @@ const createQuiz = async (req: createQuizRequest, res: Response) => {
     return sendInvalidInputResponse(res)
   }
 
-  const { quizMetadata, userId, managers } = req.body
+  const { quizMetadata, user, managers } = req.body
 
   if (!quizMetadata) {
     return sendInvalidInputResponse(res)
@@ -26,7 +26,7 @@ const createQuiz = async (req: createQuizRequest, res: Response) => {
 
   try {
     const newQuiz = new QuizModel({
-      admin: userId,
+      admin: user.userId,
       managers,
       quizMetadata,
     })

@@ -1,7 +1,7 @@
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import { Request, Response } from 'express'
 import { Types } from 'mongoose'
-import { IQuiz } from 'types'
+import { IQuiz, JwtPayload } from 'types'
 
 interface updateQuizRequest extends Request {
   body: {
@@ -10,6 +10,7 @@ interface updateQuizRequest extends Request {
     quizMetadata?: IQuiz['quizMetadata']
     registrationMetadata?: IQuiz['registrationMetadata']
     userId: Types.ObjectId
+    user: JwtPayload
   }
   params: {
     quizId: string
