@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
-import { IQuiz } from 'types'
+import { JwtPayload, UserRoles } from 'types'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
+import unauthorizedResponse from '@utils/unauthorisedResponse'
+import getQuiz from '@utils/getQuiz'
 
 interface createSectionRequest extends Request {
     body: {
-      sections: IQuiz['sections']
+      section:{
+        name: string
+        description?: string
+      }
+      user: JwtPayload
     }
     params: {
         quizId: string
@@ -16,14 +22,26 @@ const createSection = async (req: createSectionRequest, res:Response) => {
         return sendInvalidInputResponse(res)
     }
 
-    const {sections} = req.body
+    const {section, user} = req.body
+    const {quizId} = req.params;
 
-    if (!sections) {
+    if (!section) {
+        return sendInvalidInputResponse(res)
+    }
+    
+    const quiz = await getQuiz(quizId);
+    if (!quiz) {
         return sendInvalidInputResponse(res)
     }
 
-    // TODO: implement create section
-    res.send("create section")
+    if(quiz.admin == user.userId || quiz?.managers?.includes(user.userId) || user.role == UserRoles.superAdmin){
+      quiz?.sections?.push(section)
+      await quiz.save()
+      return res.send({quiz})
+    }
+    else{
+        return unauthorizedResponse(res)
+    }
 }
 
 export default createSection;

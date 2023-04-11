@@ -12,6 +12,7 @@ interface updateQuizRequest extends Request {
     quizMetadata?: IQuiz['quizMetadata']
     registrationMetadata?: IQuiz['registrationMetadata']
     userId: Types.ObjectId
+    user: JwtPayload
   }
   params: {
     quizId: string

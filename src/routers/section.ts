@@ -1,12 +1,11 @@
-import express from 'express'
+  import express from 'express'
 import * as sectionController from '@controllers/section'
 
 const router = express.Router()
 
-router.post('/:quizId/section', sectionController.createSection)
-router.delete('/sections/:sectionID', sectionController.deleteSection)
-router.get('/sections/:sectionId', sectionController.getSectionById)
-router.put('/sections/:sectionId', sectionController.updateSectionByID)
-
+router.post('/:quizId', sectionController.createSection)
+router.delete('/:quizId', sectionController.deleteSection)
+router.get('/:quizId', sectionController.getSection)
+router.put('/:quizId', sectionController.updateSection)
 
 export default router
