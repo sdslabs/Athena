@@ -31,18 +31,16 @@ const deleteSection = async (req: deleteSectionRequest, res:Response) => {
     if(!section){
         return sendInvalidInputResponse(res);
     }
+
+    const updatedQuiz = await QuizModel.findByIdAndUpdate(
+        quizId,
+        { $pull: { sections: { $eq: section } } },
+        { new: true }
+    );
+
     section.questions?.forEach(async (questionId) => {
         await QuestionModel.findByIdAndDelete(questionId);
     })
-
-    const updatedQuiz = await QuizModel.findByIdAndUpdate(quizId, {
-        $unset:{
-            [`sections.${sectionIndex}`]: 1
-        },
-        $pull:{
-            [`sections`]: null
-        }
-    }, {new: true});
     
     return res.send(updatedQuiz);
 }
