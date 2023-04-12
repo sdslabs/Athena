@@ -13,7 +13,7 @@ interface getSectionRequest extends Request {
     }
 }
 
-const getSection = async (req: getSectionRequest, res:Response) => {
+const getSection = async (req: getSectionRequest, res: Response) => {
     if (!req.body) {
         return sendInvalidInputResponse(res)
     }
@@ -21,12 +21,12 @@ const getSection = async (req: getSectionRequest, res:Response) => {
     const sectionIndex = req.body.sectionIndex;
     const quiz = await getQuiz(quizId);
 
-    if(!quiz){
+    if (!quiz) {
         return sendInvalidInputResponse(res);
     }
-    
+
     const section = quiz?.sections?.[sectionIndex];
-    if(!section){
+    if (!section) {
         return sendInvalidInputResponse(res);
     }
     return res.send(section);

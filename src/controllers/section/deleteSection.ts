@@ -15,7 +15,7 @@ interface deleteSectionRequest extends Request {
     }
 }
 
-const deleteSection = async (req: deleteSectionRequest, res:Response) => {
+const deleteSection = async (req: deleteSectionRequest, res: Response) => {
     if (!req.body) {
         return sendInvalidInputResponse(res)
     }
@@ -23,26 +23,31 @@ const deleteSection = async (req: deleteSectionRequest, res:Response) => {
     const sectionIndex = req.body.sectionIndex;
     const quiz = await getQuiz(quizId);
 
-    if(!quiz){
+    if (!quiz) {
         return sendInvalidInputResponse(res);
     }
 
     const section = quiz?.sections?.[sectionIndex];
-    if(!section){
+    if (!section) {
         return sendInvalidInputResponse(res);
     }
+    try {
+        const updatedQuiz = await QuizModel.findByIdAndUpdate(
+            quizId,
+            { $pull: { sections: { $eq: section } } },
+            { new: true }
+        );
 
-    const updatedQuiz = await QuizModel.findByIdAndUpdate(
-        quizId,
-        { $pull: { sections: { $eq: section } } },
-        { new: true }
-    );
+        section.questions?.forEach(async (questionId) => {
+            await QuestionModel.findByIdAndDelete(questionId);
+        })
 
-    section.questions?.forEach(async (questionId) => {
-        await QuestionModel.findByIdAndDelete(questionId);
-    })
-    
-    return res.send(updatedQuiz);
+        return res.send(updatedQuiz);
+    }
+
+    catch (err: unknown) {
+        return res.status(500).send(err)
+    }
 }
 
 export default deleteSection;
