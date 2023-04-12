@@ -16,7 +16,7 @@ interface updateSectionRequest extends Request {
     }
 }
 
-const updateSection = async (req: updateSectionRequest, res:Response) => {
+const updateSection = async (req: updateSectionRequest, res: Response) => {
     if (!req.body) {
         return sendInvalidInputResponse(res)
     }
@@ -27,22 +27,26 @@ const updateSection = async (req: updateSectionRequest, res:Response) => {
     const sectionIndex = req.body.sectionIndex;
     const quiz = await getQuiz(quizId);
 
-    if(!quiz){
+    if (!quiz) {
         return sendInvalidInputResponse(res);
     }
-    
+
     const section = quiz?.sections?.[sectionIndex];
-    if(!section){
+    if (!section) {
         return sendInvalidInputResponse(res);
     }
+    try {
+        const updatedQuiz = await QuizModel.findByIdAndUpdate(quizId, {
+            $set: {
+                [`sections.${sectionIndex}`]: req.body.section
+            }
+        }, { new: true })
 
-    const updatedQuiz = await QuizModel.findByIdAndUpdate(quizId, {
-        $set:{
-            [`sections.${sectionIndex}`]: req.body.section
-        }
-    }, {new: true})
-
-    return res.send(updatedQuiz);
+        return res.send(updatedQuiz);
+    }
+    catch (err: unknown) {
+        return res.status(500).send(err)
+    }
 }
 
 export default updateSection;
