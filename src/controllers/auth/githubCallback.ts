@@ -19,6 +19,7 @@ const githubCallback = async (req: Request, res: Response) => {
     const accessToken = response.data.split('&')[0].split('=')[1];
 
     try {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const githubUser = await axios.get(process.env.GITHUB_USER_URL!, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -26,6 +27,7 @@ const githubCallback = async (req: Request, res: Response) => {
         })
 
         if (!githubUser.data.email) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const emails = await axios.get(process.env.GITHUB_EMAIL_URL!, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
