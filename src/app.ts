@@ -7,8 +7,6 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import mongoSanitize from 'express-mongo-sanitize';
 
-/* Misc */
-import { notFoundResponse } from './helpers/responses';
 
 /* Import Routers */
 import staticRouter from './routers/static';
@@ -34,6 +32,6 @@ app.use(morgan('dev'));
 
 /* Routes */
 app.use('/', staticRouter);
-app.use('*', (req, res) => notFoundResponse(res, 'Endpoint does not exist or has been removed!'));
+app.use('*', (req, res) => {res.send('Endpoint does not exist or has been removed')});
 
 export default app;
