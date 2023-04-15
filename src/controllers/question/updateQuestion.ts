@@ -25,6 +25,7 @@ const updateQuestion = async (req: updateQuestionRequest, res: Response) => {
     const { question, questionId } = req.body
 
     try {
+        
         // find question and update
         const updatedQuestion = await QuestionModel.findOneAndUpdate(
             { _id: questionId },
@@ -42,6 +43,7 @@ const updateQuestion = async (req: updateQuestionRequest, res: Response) => {
                 message: "Question updated",
             })
         }
+
     } catch (error: unknown) {
         sendFailureResponse({
             res,

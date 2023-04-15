@@ -26,6 +26,7 @@ const deleteQuestion = async (req: deleteQuestionRequest, res: Response) => {
     const { questionId } = req.body
 
     try {
+
         // delete questionId from quiz's section array
         const updateQuiz = await QuizModel.findOneAndUpdate(
             { "sections.questions": questionId },
@@ -44,6 +45,7 @@ const deleteQuestion = async (req: deleteQuestionRequest, res: Response) => {
                 message: "Question deleted",
             })
         }
+        
     } catch (error: unknown) {
         sendFailureResponse({
             res,

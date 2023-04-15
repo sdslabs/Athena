@@ -29,6 +29,7 @@ const createQuestion = async (req: createQuestionRequest, res: Response) => {
     const { quizId } = req.params
 
     try {
+
         // create new question
         const newQuestion = new QuestionModel(
             question
@@ -55,6 +56,7 @@ const createQuestion = async (req: createQuestionRequest, res: Response) => {
                 message: "Question created",
             })
         }
+        
     } catch (error: unknown) {
         sendFailureResponse({
             res,

@@ -3,10 +3,12 @@ import { Request, Response } from "express";
 import QuestionModel from "@models/question/questionModel";
 import { Types } from "mongoose";
 import sendFailureResponse from "@utils/failureResponse";
+import { JwtPayload } from "types";
 
 interface getQuestionRequest extends Request {
     body: {
         questionId: Types.ObjectId
+        user: JwtPayload
     },
     params: {
         quizId: string
@@ -22,6 +24,7 @@ const getQuestion = async (req: getQuestionRequest, res: Response) => {
     const { questionId } = req.body;
 
     try {
+
         // finding question
         const question = await QuestionModel.findById(questionId)
 
@@ -36,6 +39,7 @@ const getQuestion = async (req: getQuestionRequest, res: Response) => {
                 question
             })
         }
+        
     } catch (error: unknown) {
         sendFailureResponse({
             res,
