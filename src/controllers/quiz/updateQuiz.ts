@@ -2,7 +2,7 @@ import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import { Request, Response } from 'express'
 import QuizModel from '@models/quiz/quizModel'
 import { Types } from 'mongoose'
-import { IQuiz } from 'types'
+import { IQuiz, JwtPayload } from 'types'
 import sendFailureResponse from '@utils/failureResponse'
 
 interface updateQuizRequest extends Request {
