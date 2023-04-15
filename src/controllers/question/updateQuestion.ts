@@ -1,28 +1,28 @@
 import sendInvalidInputResponse from "@utils/invalidInputResponse";
 import { Request, Response } from "express";
 import QuestionModel from "@models/question/questionModel";
-import { IQuestion, IQuiz } from "types";
+import { IQuestion, JwtPayload } from "types";
 import { Types } from "mongoose";
 import sendFailureResponse from "@utils/failureResponse";
 
 interface updateQuestionRequest extends Request {
     body: {
         question: IQuestion
-        userId : Types.ObjectId
+        user: JwtPayload
+        questionId: Types.ObjectId
     },
     params: {
-        questionId: string
+        quizId: string
     }
 }
 
 const updateQuestion = async (req: updateQuestionRequest, res: Response) => {
-    if (!req.params.questionId || !req.body.question || !req.body.userId) {
+    if (!req.body) {
         return sendInvalidInputResponse(res);
     }
 
     // get data from request body
-    const { question, userId } = req.body
-    const { questionId } = req.params
+    const { question, questionId } = req.body
 
     try {
         // find question and update

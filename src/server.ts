@@ -4,6 +4,7 @@ import { connectDB } from '@db/connectDB'
 import quizRouter from '@routers/quiz'
 import authRouter from '@routers/auth'
 import sectionRouter from '@routers/section'
+import questionRouter from '@routers/question'
 import cookieParser from 'cookie-parser'
 
 // Initialize server
@@ -22,6 +23,7 @@ app.use(cookieParser())
 app.use('/quiz', quizRouter)
 app.use('/auth', authRouter)
 app.use('/section', sectionRouter)
+app.use('/question', questionRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')

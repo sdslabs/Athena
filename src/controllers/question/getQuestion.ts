@@ -1,9 +1,7 @@
 import sendInvalidInputResponse from "@utils/invalidInputResponse";
 import { Request, Response } from "express";
 import QuestionModel from "@models/question/questionModel";
-import { IQuiz } from "types";
 import { Types } from "mongoose";
-import QuizModel from "@models/quiz/quizModel";
 import sendFailureResponse from "@utils/failureResponse";
 
 interface getQuestionRequest extends Request {
@@ -16,13 +14,12 @@ interface getQuestionRequest extends Request {
 }
 
 const getQuestion = async (req: getQuestionRequest, res: Response) => {
-    if (!req.body.questionId || !req.params.quizId) {
+    if (!req.body.questionId) {
         return sendInvalidInputResponse(res);
     }
 
     // get data from request body
-    const { questionId } = req.body
-    const { quizId } = req.params
+    const { questionId } = req.body;
 
     try {
         // finding question

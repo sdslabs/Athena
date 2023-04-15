@@ -2,15 +2,14 @@ import sendInvalidInputResponse from "@utils/invalidInputResponse";
 import { Request, Response } from "express";
 import QuestionModel from "@models/question/questionModel";
 import QuizModel from "@models/quiz/quizModel";
-import { IQuestion, QuestionTypes } from "types";
-import { Types } from "mongoose";
+import { IQuestion, JwtPayload } from "types";
 import sendFailureResponse from "@utils/failureResponse";
 
 interface createQuestionRequest extends Request {
     body: {
         question: IQuestion
-        userId : Types.ObjectId
-        sectionName : string
+        sectionIndex: number
+        user: JwtPayload
     },
     params: {
         quizId: string
@@ -18,12 +17,15 @@ interface createQuestionRequest extends Request {
 }
 
 const createQuestion = async (req: createQuestionRequest, res: Response) => {
-    if (!req.body.question || !req.params.quizId || !req.body.sectionName || !req.body.userId) {
+    if (!req.body) {
+        console.log("Invalid input")
+        console.log(req.body)
+        console.log(req.params)
         return sendInvalidInputResponse(res);
     }
 
     // get data from request body
-    const { question, userId, sectionName } = req.body
+    const { question, sectionIndex } = req.body
     const { quizId } = req.params
 
     try {
@@ -33,11 +35,14 @@ const createQuestion = async (req: createQuestionRequest, res: Response) => {
         )
         const newQuestionDoc = await newQuestion.save()
 
-        // add question to quiz with particular section
-        const updateSection = await QuizModel.findOneAndUpdate(
-            { _id: quizId, "sections.name": sectionName },
-            { $push: { "sections.$.questions": newQuestionDoc._id } },
-            { new: true }
+        // add question to section
+        const updateSection = await QuizModel.findByIdAndUpdate(
+            quizId,
+            {
+                $push: {
+                    [`sections.${sectionIndex}.questions`]: newQuestionDoc._id
+                }
+            }
         )
 
         // send response
