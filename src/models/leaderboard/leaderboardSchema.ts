@@ -17,7 +17,7 @@ const leaderboardSchema = new Schema<ILeaderboard>({
     ref: ModelNames.Quiz,
     required: true,
   },
-  leaderboardParticipant: {
+  leaderboardParticipants: {
     id: {
       type: String,
       required: true,
