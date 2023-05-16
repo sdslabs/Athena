@@ -2,10 +2,11 @@ import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import { Request, Response } from 'express'
 import QuizModel from '@models/quiz/quizModel'
 import { Types } from 'mongoose'
+import sendFailureResponse from '@utils/failureResponse'
 
 interface publishQuizRequest extends Request {
     body: {
-        userId: Types.ObjectId
+        user: Types.ObjectId
     }
     params: {
         quizId: string
@@ -13,30 +14,37 @@ interface publishQuizRequest extends Request {
 }
 
 const publishQuiz = async (req: publishQuizRequest, res: Response) => {
-    if(!req.body.userId || !req.params.quizId) {
+    if (!req.body.user || !req.params.quizId) {
         return sendInvalidInputResponse(res)
     }
 
-    // get the data from the request body
-    const { userId } = req.body
     const quizId = req.params.quizId
 
     try {
         // publish the quiz
-        const publishedQuiz = await QuizModel.findOneAndUpdate(
-            { _id: quizId, admin: userId },
+        const publishedQuiz = await QuizModel.findByIdAndUpdate(
+            quizId,
             { isPublished: true },
             { new: true }
         )
-        
+
         // send the response back
-        if(!publishedQuiz) {
-            return res.status(404).send({ message: 'Error publishing quiz' })
+        if (!publishedQuiz) {
+            return sendFailureResponse({
+                res,
+                error: 'Error publishing quiz',
+                messageToSend: 'Error publishing quiz',
+                errorCode: 404
+            })
         } else {
             return res.status(200).send({ message: 'Quiz published', quizId: publishedQuiz._id })
         }
     } catch (error) {
-        return res.status(500).send({ message: 'Error publishing quiz' })
+        return sendFailureResponse({
+            res,
+            error,
+            messageToSend: 'Failed to publish quiz',
+        })
     }
 
 }

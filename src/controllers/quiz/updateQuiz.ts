@@ -1,7 +1,6 @@
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import { Request, Response } from 'express'
 import QuizModel from '@models/quiz/quizModel'
-import { Types } from 'mongoose'
 import { IQuiz, JwtPayload } from 'types'
 import sendFailureResponse from '@utils/failureResponse'
 
@@ -11,7 +10,6 @@ interface updateQuizRequest extends Request {
     isAcceptingAnswers?: IQuiz['isAcceptingAnswers']
     quizMetadata?: IQuiz['quizMetadata']
     registrationMetadata?: IQuiz['registrationMetadata']
-    userId: Types.ObjectId
     user: JwtPayload
   }
   params: {
@@ -20,12 +18,12 @@ interface updateQuizRequest extends Request {
 }
 
 const updateQuiz = async (req: updateQuizRequest, res: Response) => {
-  if (!req.body || !req.params.quizId || !req.body.userId ) {
+  if (!req.body || !req.params.quizId || !req.body.user ) {
     return sendInvalidInputResponse(res)
   }
 
   // get the data from the request body
-  const { managers, isAcceptingAnswers, quizMetadata, registrationMetadata, userId } = req.body
+  const { managers, isAcceptingAnswers, quizMetadata, registrationMetadata } = req.body
   const quizId = req.params.quizId
 
   if (!quizId) {
@@ -34,8 +32,8 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
 
   try {
     // update the quiz
-    const quiz = await QuizModel.findOneAndUpdate(
-      { _id: quizId, admin: userId },
+    const quiz = await QuizModel.findByIdAndUpdate(
+      quizId,
       {
         managers: managers,
         isAcceptingAnswers: isAcceptingAnswers,
@@ -47,7 +45,12 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
     
     // send the response back
     if(!quiz) {
-      return res.status(404).send({ message: 'Error updating quiz' })
+      return sendFailureResponse({
+        res,
+        error: 'Error updating quiz',
+        messageToSend: 'Error updating quiz',
+        errorCode: 404
+      })
     } else {
       return res.status(200).send({ message: 'Quiz updated', updatedParameters: { quizId: quiz._id, managers, isAcceptingAnswers, quizMetadata, registrationMetadata }})
     }
