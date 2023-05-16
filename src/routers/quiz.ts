@@ -9,5 +9,6 @@ const router = express.Router()
 router.post('/create', isAuth, isAdmin, quizController.createQuiz)
 router.put('/update/:quizId', isAuth, hasEditAccess, quizController.updateQuiz)
 router.patch('/publish/:quizId', isAuth, hasEditAccess, quizController.publishQuiz)
+router.delete('/delete/:quizId', isAuth, hasEditAccess, quizController.deleteQuiz)
 
 export default router
