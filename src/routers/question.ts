@@ -1,7 +1,7 @@
 import express from 'express'
 import * as questionController from '@controllers/question'
-import { hasEditAccess } from '@utils/hasEditAccess'
-import { isAuth } from '@utils/isAuth'
+import hasEditAccess from '@utils/hasEditAccess'
+import isAuth from '@utils/isAuth'
 
 const router = express.Router()
 

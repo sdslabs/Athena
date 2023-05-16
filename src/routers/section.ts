@@ -1,6 +1,6 @@
 import express from 'express'
 import * as sectionController from '@controllers/section'
-import { isAuth } from '@utils/isAuth'
+import isAuth from '@utils/isAuth'
 
 const router = express.Router()
 

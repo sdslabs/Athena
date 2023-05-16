@@ -50,13 +50,11 @@ const googleCallback = async (req: Request, res: Response) => {
       const savedUser = await newUser.save();
       userId = savedUser._id;
     }
-
     const payload: JwtPayload = {
       userId: userId,
       emailAdd: googleUser.data.email,
-      role: UserRoles.user,
+      role: user.role || UserRoles.user,
     }
-
     const jwtToken = createToken(payload);
     res.cookie('jwt', jwtToken, { httpOnly: true });
     res.redirect('/');
