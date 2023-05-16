@@ -1,7 +1,9 @@
 import QuizModel from '@models/quiz/quizModel';
 import { Request, Response, NextFunction } from 'express';
+import { UserRoles } from 'types';
+import sendUnauthorizedResponse from './unauthorisedResponse';
 
-export const hasEditAccess = async (req: Request, res: Response, next: NextFunction) => {
+const hasEditAccess = async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req.body;
     const { quizId } = req.params;
 
@@ -19,20 +21,28 @@ export const hasEditAccess = async (req: Request, res: Response, next: NextFunct
                 message: 'Quiz not found',
             });
         }
+
+        //check if user is superAdmin
+        if (user.role === UserRoles.superAdmin) {
+            return next();
+        }
+
         // check if user is admin
         if (user.userId === quiz.admin.toString()) {
             return next();
         }
+
         // check if user is manager
         if (quiz.managers?.indexOf(user.userId) !== -1) {
             return next();
         }
-        return res.status(401).json({
-            message: 'Unauthorized',
-        });
+
+        return sendUnauthorizedResponse(res);
     } catch (error: unknown) {
         return res.status(500).json({
             message: 'Internal server error',
         });
     }
 }
+
+export default hasEditAccess;

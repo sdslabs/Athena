@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import sendUnauthorizedResponse from '@utils/unauthorisedResponse';
 
 
-export const isAuth = (req: Request, res: Response, next: NextFunction) => {
+const isAuth = (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.jwt;
     if (!token) {
         return sendUnauthorizedResponse(res);
@@ -16,3 +16,5 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
         return sendUnauthorizedResponse(res);
     }
 }
+
+export default isAuth;
