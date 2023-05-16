@@ -35,9 +35,12 @@ const updateQuestion = async (req: updateQuestionRequest, res: Response) => {
 
         // send response
         if (!updatedQuestion) {
-            return res.status(400).json({
-                message: "Question not found"
-            })
+            return sendFailureResponse({
+                res,
+                error: "Question not found",
+                messageToSend: "Question not found",
+                errorCode: 400
+            });
         } else {
             return res.status(200).json({
                 message: "Question updated",

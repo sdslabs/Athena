@@ -17,10 +17,7 @@ interface createQuestionRequest extends Request {
 }
 
 const createQuestion = async (req: createQuestionRequest, res: Response) => {
-    if (!req.body) {
-        console.log("Invalid input")
-        console.log(req.body)
-        console.log(req.params)
+    if (!req.body.question || !req.body.sectionIndex) {
         return sendInvalidInputResponse(res);
     }
 
@@ -48,15 +45,17 @@ const createQuestion = async (req: createQuestionRequest, res: Response) => {
 
         // send response
         if (!updateSection) {
-            return res.status(400).json({
-                message: "Failed to add question to section"
+            return sendFailureResponse({
+                res,
+                error: "Failed to create question",
+                messageToSend: "Failed to create question",
             })
         } else {
             return res.status(201).json({
                 message: "Question created",
             })
         }
-        
+
     } catch (error: unknown) {
         sendFailureResponse({
             res,

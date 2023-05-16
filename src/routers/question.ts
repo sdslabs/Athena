@@ -6,8 +6,8 @@ import isAuth from '@utils/isAuth'
 const router = express.Router()
 
 router.post('/:quizId', isAuth, hasEditAccess, questionController.createQuestion)
-router.get('/:questionId', isAuth, hasEditAccess, questionController.getQuestions)
-router.put('/:questionId', isAuth, hasEditAccess, questionController.updateQuestion)
-router.delete('/:questionId', isAuth, hasEditAccess, questionController.deleteQuestion)
+router.get('/:questionId', isAuth, questionController.getQuestions)
+router.put('/:quizId', isAuth, hasEditAccess, questionController.updateQuestion)
+router.delete('/:quizId', isAuth, hasEditAccess, questionController.deleteQuestion)
 
 export default router
