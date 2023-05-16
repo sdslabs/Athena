@@ -4,6 +4,7 @@ import { JwtPayload } from "types";
 import getQuiz from "@utils/getQuiz";
 import QuestionModel from "@models/question/questionModel";
 import QuizModel from "@models/quiz/quizModel";
+import sendFailureResponse from "@utils/failureResponse";
 
 interface deleteSectionRequest extends Request {
     params: {
@@ -46,7 +47,11 @@ const deleteSection = async (req: deleteSectionRequest, res: Response) => {
     }
 
     catch (err: unknown) {
-        return res.status(500).send(err)
+        return sendFailureResponse({
+            res,
+            error: err,
+            messageToSend: 'Failed to delete section',
+        })
     }
 }
 

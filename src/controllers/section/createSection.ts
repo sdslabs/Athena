@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { JwtPayload, UserRoles } from 'types'
+import { JwtPayload } from 'types'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
-import unauthorizedResponse from '@utils/unauthorisedResponse'
 import getQuiz from '@utils/getQuiz'
+import sendFailureResponse from "@utils/failureResponse";
 
 interface createSectionRequest extends Request {
     body: {
@@ -22,7 +22,7 @@ const createSection = async (req: createSectionRequest, res: Response) => {
         return sendInvalidInputResponse(res)
     }
 
-    const { section, user } = req.body
+    const { section } = req.body
     const { quizId } = req.params;
 
     if (!section) {
@@ -34,18 +34,17 @@ const createSection = async (req: createSectionRequest, res: Response) => {
         return sendInvalidInputResponse(res)
     }
 
-    if (quiz.admin == user.userId || quiz?.managers?.includes(user.userId) || user.role == UserRoles.superAdmin) {
-        try {
-            quiz?.sections?.push(section)
-            await quiz.save()
-            return res.send({ quiz })
-        }
-        catch (err: unknown) {
-            return res.status(500).send(err)
-        }
+    try {
+        quiz?.sections?.push(section)
+        await quiz.save()
+        return res.send({ quiz })
     }
-    else {
-        return unauthorizedResponse(res)
+    catch (err: unknown) {
+        return sendFailureResponse({
+            res,
+            error: err,
+            messageToSend: 'Failed to create section',
+        })
     }
 }
 

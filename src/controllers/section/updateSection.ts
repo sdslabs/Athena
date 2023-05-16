@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import getQuiz from "@utils/getQuiz";
 import QuizModel from "@models/quiz/quizModel";
+import sendFailureResponse from "@utils/failureResponse";
 
 interface updateSectionRequest extends Request {
     body: {
@@ -45,7 +46,11 @@ const updateSection = async (req: updateSectionRequest, res: Response) => {
         return res.send(updatedQuiz);
     }
     catch (err: unknown) {
-        return res.status(500).send(err)
+        return sendFailureResponse({
+            res,
+            error: err,
+            messageToSend: 'Failed to update section',
+        })
     }
 }
 
