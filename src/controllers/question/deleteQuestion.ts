@@ -4,24 +4,25 @@ import QuestionModel from "@models/question/questionModel";
 import { JwtPayload } from "types";
 import sendFailureResponse from "@utils/failureResponse";
 import QuizModel from "@models/quiz/quizModel";
+import { Types } from "mongoose";
 
 interface deleteQuestionRequest extends Request {
     body: {
-        sectionIndex: number
+        questionId: Types.ObjectId
         user: JwtPayload
     },
     params: {
-        questionId: string
+        quizId: string
     },
 }
 
 const deleteQuestion = async (req: deleteQuestionRequest, res: Response) => {
-    if (!req.params.questionId) {
+    if (!req.body.questionId) {
         return sendInvalidInputResponse(res);
     }
 
     // get data from request body
-    const { questionId } = req.params;
+    const { questionId } = req.body;
 
     try {
 

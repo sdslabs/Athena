@@ -17,7 +17,7 @@ interface createQuestionRequest extends Request {
 }
 
 const createQuestion = async (req: createQuestionRequest, res: Response) => {
-    if (!req.body.question || !req.body.sectionIndex) {
+    if (!req.body.question || !(req.body.sectionIndex !== undefined)) {
         return sendInvalidInputResponse(res);
     }
 
@@ -52,6 +52,7 @@ const createQuestion = async (req: createQuestionRequest, res: Response) => {
             })
         } else {
             return res.status(201).json({
+                questionid: newQuestionDoc._id,
                 message: "Question created",
             })
         }
