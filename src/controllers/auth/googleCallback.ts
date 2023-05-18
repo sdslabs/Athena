@@ -5,6 +5,7 @@ import UserModel from '@models/user/userModel';
 import { OAuthProviders, UserRoles, IUser, JwtPayload } from 'types';
 import { createToken } from '@utils/token';
 import { Types } from 'mongoose';
+import sendFailureResponse from '@utils/failureResponse';
 
 const googleCallback = async (req: Request, res: Response) => {
   const code = req.query.code as string;
@@ -29,10 +30,8 @@ const googleCallback = async (req: Request, res: Response) => {
     let userId: Types.ObjectId;
     if (user) {
       userId = user._id as Types.ObjectId;
-      console.log("user exists");
     }
     else {
-      console.log("user does not exist");
       const newUser = new UserModel({
         oauthProvider: OAuthProviders.google,
         emailAdd: googleUser.data.email,
@@ -50,18 +49,20 @@ const googleCallback = async (req: Request, res: Response) => {
       const savedUser = await newUser.save();
       userId = savedUser._id;
     }
-
     const payload: JwtPayload = {
       userId: userId,
       emailAdd: googleUser.data.email,
-      role: UserRoles.user,
+      role: user ? user.role : UserRoles.user,
     }
-
     const jwtToken = createToken(payload);
     res.cookie('jwt', jwtToken, { httpOnly: true });
     res.redirect('/');
   } catch (error: unknown) {
-    return res.status(500).json({ message: 'Failed to get user details', error: error });
+    return sendFailureResponse({
+      res,
+      error,
+      messageToSend: 'Failed to get user details from Google',
+    })
   }
 
 }
