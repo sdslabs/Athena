@@ -30,10 +30,8 @@ const googleCallback = async (req: Request, res: Response) => {
     let userId: Types.ObjectId;
     if (user) {
       userId = user._id as Types.ObjectId;
-      console.log("user exists");
     }
     else {
-      console.log("user does not exist");
       const newUser = new UserModel({
         oauthProvider: OAuthProviders.google,
         emailAdd: googleUser.data.email,
