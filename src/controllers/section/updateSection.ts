@@ -43,7 +43,10 @@ const updateSection = async (req: updateSectionRequest, res: Response) => {
             }
         }, { new: true })
 
-        return res.send(updatedQuiz);
+        // send success response
+        return res.status(200).json({
+            message: "Section Updated",
+        })
     }
     catch (err: unknown) {
         return sendFailureResponse({

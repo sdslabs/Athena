@@ -43,7 +43,9 @@ const deleteSection = async (req: deleteSectionRequest, res: Response) => {
             await QuestionModel.findByIdAndDelete(questionId);
         })
 
-        return res.send(updatedQuiz);
+        return res.status(200).json({
+            message: "Section Deleted",
+        })
     }
 
     catch (err: unknown) {

@@ -37,7 +37,9 @@ const createSection = async (req: createSectionRequest, res: Response) => {
     try {
         quiz?.sections?.push(section)
         await quiz.save()
-        return res.send({ quiz })
+        return res.status(200).json({
+            message: "Section Created",
+        })
     }
     catch (err: unknown) {
         return sendFailureResponse({
