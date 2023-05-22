@@ -33,7 +33,7 @@ const deleteSection = async (req: deleteSectionRequest, res: Response) => {
         return sendInvalidInputResponse(res);
     }
     try {
-        await QuizModel.findByIdAndUpdate(
+        const updatedQuiz = await QuizModel.findByIdAndUpdate(
             quizId,
             { $pull: { sections: { $eq: section } } },
             { new: true }
