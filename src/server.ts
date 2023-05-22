@@ -6,6 +6,9 @@ import authRouter from '@routers/auth'
 import sectionRouter from '@routers/section'
 import questionRouter from '@routers/question'
 import cookieParser from 'cookie-parser'
+import morgan from 'morgan'
+import mongoSanitize from 'express-mongo-sanitize'
+import logger from '@utils/logger'
 
 // Initialize server
 dotenv.config()
@@ -18,6 +21,9 @@ const port = process.env.PORT
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+app.use(mongoSanitize());
+app.use(morgan('dev'));
+app.use(logger)
 
 // Routers
 app.use('/quiz', quizRouter)
