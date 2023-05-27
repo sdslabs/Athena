@@ -15,8 +15,14 @@ const quizSchema = new Schema<IQuiz>({
   ],
   participants: [
     {
-      type: Schema.Types.ObjectId,
-      ref: ModelNames.User,
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: ModelNames.User,
+      },
+      submitted: {
+        type: Boolean,
+        default: false,
+      },
     },
   ],
   isPublished: {

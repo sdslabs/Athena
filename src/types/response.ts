@@ -8,4 +8,13 @@ export interface IResponse {
   subjectiveAnswer?: string
   marksAwarded?: number
   checkedBy?: Types.ObjectId
+  status: ResponseStatus
+}
+
+export enum ResponseStatus {
+  unanswered = 'unanswered',
+  answered = 'answered',
+  checked = 'checked',
+  markedanswer = 'marked-answered',
+  marked = 'marked',
 }
