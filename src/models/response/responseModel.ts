@@ -2,6 +2,6 @@ import mongoose from 'mongoose'
 import { IResponse, ModelNames } from 'types'
 import responseSchema from './responseSchema'
 
-const responseModel = mongoose.model<IResponse>(ModelNames.Response, responseSchema)
+const ResponseModel = mongoose.model<IResponse>(ModelNames.Response, responseSchema)
 
-export default responseModel
+export default ResponseModel
