@@ -37,7 +37,7 @@ const updateSection = async (req: updateSectionRequest, res: Response) => {
         return sendInvalidInputResponse(res);
     }
     try {
-        const updatedQuiz = await QuizModel.findByIdAndUpdate(quizId, {
+        await QuizModel.findByIdAndUpdate(quizId, {
             $set: {
                 [`sections.${sectionIndex}`]: req.body.section
             }
