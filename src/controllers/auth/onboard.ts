@@ -15,10 +15,9 @@ interface onboardRequest extends Request {
 
 // Check if all required details are present
 const requiredDetailsPresent = (body: onboardRequest['body']) => {
-    const { personalDetails, educationalDetails, socialHandles } = body;
+    const { personalDetails, educationalDetails } = body;
     if(!personalDetails?.name || !personalDetails?.emailAdd || 
-        !educationalDetails?.instituteName || !educationalDetails?.city || !educationalDetails?.country || 
-        !socialHandles?.length) {
+        !educationalDetails?.instituteName) {
         return false
     }
     return true
