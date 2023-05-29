@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import ResponseModel from "@models/response/responseModel";
-import { JwtPayload, IResponse, QuestionTypes } from "types";
+import { JwtPayload, IResponse } from "types";
 import sendFailureResponse from "@utils/failureResponse";
 import sendInvalidInputResponse from "@utils/invalidInputResponse";
 import QuestionModel from "@models/question/questionModel";
@@ -29,46 +29,25 @@ const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: R
     if (!question) {
       return sendInvalidInputResponse(res);
     }
-    if (question.type === QuestionTypes.SUBJECTIVE && !subjectiveAnswer) {
-      return sendInvalidInputResponse(res);
-    }
-    if (question.type === QuestionTypes.MCQ && !selectedOptionId) {
-      return sendInvalidInputResponse(res);
-    }
+
+    // no need to check the question type etc as the data is being sent by the frontend and we will have cors enabled for the frontend only
     const response = await ResponseModel.findOne({ userId: user.userId, quizId: req.params.quizId, questionId: req.params.questionId });
     if (!response) {
-      if (question.type === QuestionTypes.SUBJECTIVE) {
-        const newResponse = new ResponseModel({
-          userId: user.userId,
-          quizId: req.params.quizId,
-          questionId: req.params.questionId,
-          subjectiveAnswer,
-          status
-        });
-        await newResponse.save();
-        res.status(201).json({ message: "Response created" });
-      }
-      else if (question.type === QuestionTypes.MCQ) {
-        const newResponse = new ResponseModel({
-          userId: user.userId,
-          quizId: req.params.quizId,
-          questionId: req.params.questionId,
-          selectedOptionId,
-          status
-        });
-        await newResponse.save();
-        res.status(201).json({ message: "Response created" });
-      }
+      const newResponse = new ResponseModel({
+        userId: user.userId,
+        quizId: req.params.quizId,
+        questionId: req.params.questionId,
+        subjectiveAnswer,
+        selectedOptionId,
+        status
+      });
+      await newResponse.save();
+      res.status(201).json({ message: "Response created" });
+
     }
     else {
-      if (question.type === QuestionTypes.SUBJECTIVE) {
-        await ResponseModel.findByIdAndUpdate(response._id, { subjectiveAnswer, status });
-        return res.status(200).json({ message: "Response updated" });
-      }
-      else if (question.type === QuestionTypes.MCQ) {
-        await ResponseModel.findByIdAndUpdate(response._id, { selectedOptionId, status });
-        return res.status(200).json({ message: "Response updated" });
-      }
+      await ResponseModel.findByIdAndUpdate(response._id, { selectedOptionId, subjectiveAnswer, status });
+      return res.status(200).json({ message: "Response updated" });
     }
   }
   catch (error: unknown) {
