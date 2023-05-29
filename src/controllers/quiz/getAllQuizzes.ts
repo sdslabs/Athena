@@ -15,21 +15,8 @@ const getAllQuizzes = async (req: getAllQuizzesRequest, res: Response) => {
     const quizzes = await QuizModel.find({});
     // send the response back with only the id, description, name startDateTimestamp, endDateTimestamp, and isPublished, isAcceptingAnswers
     const quizDetails = quizzes.map((quiz) => {
-      if (quiz?.isPublished){
-        const userStatus = quiz?.participants?.find((participant) => {
-          if(participant.user.toString() === user.userId){
-            return {
-              registered: true,
-              submitted: participant.submitted,
-            }
-          }
-          else{
-            return {
-              registered: false,
-              submitted: false,
-            }
-          }
-        })
+      if (quiz?.isPublished) {
+        const userStatus = quiz?.participants?.find((participant) => participant.user === user.userId)
         return {
           _id: quiz._id,
           name: quiz?.quizMetadata?.name,
@@ -40,7 +27,7 @@ const getAllQuizzes = async (req: getAllQuizzesRequest, res: Response) => {
           isPublished: quiz?.isPublished,
           isAcceptingAnswers: quiz?.isAcceptingAnswers,
           registrationMetadata: quiz?.registrationMetadata,
-          registered: userStatus?.registered,
+          registered: userStatus ? true : false,
           submitted: userStatus?.submitted,
         }
       }
