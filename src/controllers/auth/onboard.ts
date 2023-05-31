@@ -33,6 +33,7 @@ const onboard = async (req: onboardRequest, res:Response) => {
     // Check if user has already onboarded
     const userData = await userModel.findById(user.userId);
     if( userData?.onboardingComplete ) {
+        // TODO: Change this as per the frontend
         return res.redirect('/dashboard')
     }
 
@@ -53,6 +54,7 @@ const onboard = async (req: onboardRequest, res:Response) => {
         if(!updatedUser) {
             return res.status(500).send({ message: 'Error updating user' })
         }
+        // TODO: Change this as per the frontends
         res.redirect('/dashboard')
 
     } catch(error: unknown) {

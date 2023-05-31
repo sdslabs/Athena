@@ -17,6 +17,7 @@ const isOnboard = async (req: Request, res: Response, next: NextFunction) => {
 
         // if not onboarded, redirect to onboard page
         if( !userData?.onboardingComplete ) {
+            // TODO: Change this as per the frontend
             return res.redirect('/auth/onboard')
         }
         next();
