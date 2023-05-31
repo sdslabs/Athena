@@ -1,10 +1,15 @@
 import { Types } from 'mongoose'
 import { IQuestion } from './question'
 
+interface participant {
+  user: Types.ObjectId
+  submitted: boolean
+}
+
 export interface IQuiz {
   admin: Types.ObjectId
   managers?: Types.ObjectId[]
-  participants?: Types.ObjectId[]
+  participants?: participant[]
   isPublished: boolean
   isAcceptingAnswers: boolean
   resultsPublished: boolean

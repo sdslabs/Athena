@@ -11,5 +11,8 @@ router.post('/create', isOnboard, isAdmin, quizController.createQuiz)
 router.put('/update/:quizId', isOnboard, hasEditAccess, quizController.updateQuiz)
 router.patch('/publish/:quizId', isOnboard, hasEditAccess, quizController.publishQuiz)
 router.delete('/delete/:quizId', isOnboard, hasEditAccess, quizController.deleteQuiz)
+router.get('/:quizId', isAuth, quizController.quizGet)
+router.get('/', isAuth, quizController.getAllQuizzes)
+
 
 export default router

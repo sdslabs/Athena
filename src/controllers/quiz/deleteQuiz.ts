@@ -21,8 +21,8 @@ const deleteQuiz = async (req: deleteQuizRequest, res: Response) => {
   }
 
   try {
-    const deletedQuiz = await QuizModel.findByIdAndDelete(req.params.quizId);
-    return res.status(200).send({ message: 'Quiz deleted', deletedQuiz })
+    await QuizModel.findByIdAndDelete(req.params.quizId);
+    return res.status(200).send({ message: 'Quiz deleted' })
   }
   catch (error: unknown) {
     sendFailureResponse({

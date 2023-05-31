@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose'
-import { IResponse, ModelNames } from 'types'
+import { IResponse, ModelNames, ResponseStatus } from 'types'
 
 const responseSchema = new Schema<IResponse>({
   questionId: {
@@ -25,6 +25,10 @@ const responseSchema = new Schema<IResponse>({
   },
   marksAwarded: {
     type: Number,
+  },
+  status: {
+    type: String,
+    enum: Object.values(ResponseStatus),
   },
   checkedBy: {
     type: Schema.Types.ObjectId,
