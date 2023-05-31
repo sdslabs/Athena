@@ -3,14 +3,16 @@ import * as quizController from '@controllers/quiz'
 import isAuth from '@utils/isAuth'
 import hasEditAccess from '@utils/hasEditAccess'
 import isAdmin from '@utils/isAdmin'
+import isOnboard from '@utils/isOnboard'
 
 const router = express.Router()
 
-router.post('/create', isAuth, isAdmin, quizController.createQuiz)
-router.put('/update/:quizId', isAuth, hasEditAccess, quizController.updateQuiz)
-router.patch('/publish/:quizId', isAuth, hasEditAccess, quizController.publishQuiz)
-router.delete('/delete/:quizId', isAuth, hasEditAccess, quizController.deleteQuiz)
+router.post('/create', isOnboard, isAdmin, quizController.createQuiz)
+router.put('/update/:quizId', isOnboard, hasEditAccess, quizController.updateQuiz)
+router.patch('/publish/:quizId', isOnboard, hasEditAccess, quizController.publishQuiz)
+router.delete('/delete/:quizId', isOnboard, hasEditAccess, quizController.deleteQuiz)
 router.get('/:quizId', isAuth, quizController.quizGet)
 router.get('/', isAuth, quizController.getAllQuizzes)
+
 
 export default router

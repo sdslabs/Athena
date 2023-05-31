@@ -2,12 +2,13 @@ import express from 'express'
 import * as questionController from '@controllers/question'
 import hasEditAccess from '@utils/hasEditAccess'
 import isAuth from '@utils/isAuth'
+import isOnboard from '@utils/isOnboard'
 
 const router = express.Router()
 
-router.post('/:quizId', isAuth, hasEditAccess, questionController.createQuestion)
-router.get('/:questionId', isAuth, questionController.getQuestions)
-router.put('/:quizId', isAuth, hasEditAccess, questionController.updateQuestion)
-router.delete('/:quizId', isAuth, hasEditAccess, questionController.deleteQuestion)
+router.post('/:quizId', isOnboard, hasEditAccess, questionController.createQuestion)
+router.get('/:questionId', isOnboard, questionController.getQuestions)
+router.put('/:quizId', isOnboard, hasEditAccess, questionController.updateQuestion)
+router.delete('/:quizId', isOnboard, hasEditAccess, questionController.deleteQuestion)
 
 export default router
