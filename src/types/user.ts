@@ -8,13 +8,13 @@ export interface IUser {
     phoneNo?: string
   }
   educationalDetails?: {
-    instituteName: string
-    city: string
-    country: string
+    instituteName?: string
+    city?: string
+    country?: string
   }
   socialHandles?: {
-    type: SocialHandleTypes
-    handle: string
+    type?: SocialHandleTypes
+    handle?: string
   }[]
   onboardingComplete: boolean
   oauthProvider: OAuthProviders

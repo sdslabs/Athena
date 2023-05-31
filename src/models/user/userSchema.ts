@@ -19,27 +19,27 @@ const userSchema = new Schema<IUser>({
   educationalDetails: {
     instituteName: {
       type: String,
-      required: true,
+      required: false,
     },
     city: {
       type: String,
-      required: true,
+      required: false,
     },
     country: {
       type: String,
-      required: true,
+      required: false,
     },
   },
   socialHandles: [
     {
       type: {
         type: String,
-        required: true,
+        required: false,
         enum: Object.values(SocialHandleTypes),
       },
       handle: {
         type: String,
-        required: true,
+        required: false,
       },
     },
   ],

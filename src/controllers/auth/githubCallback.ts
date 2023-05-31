@@ -50,11 +50,6 @@ const githubCallback = async (req: Request, res: Response) => {
                     emailAdd: githubUser.data.email,
                     role: UserRoles.user,
                 },
-                educationalDetails: {
-                    instituteName: "ew",
-                    city: "er",
-                    country: "erew"
-                }
             });
             const savedUser = await newUser.save();
             userId = savedUser._id;
