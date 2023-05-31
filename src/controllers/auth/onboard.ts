@@ -50,10 +50,6 @@ const onboard = async (req: onboardRequest, res:Response) => {
             { new: true }
         )
 
-        // Check if user was updated
-        if(!updatedUser) {
-            return res.status(500).send({ message: 'Error updating user' })
-        }
         // TODO: Change this as per the frontends
         res.redirect('/dashboard')
 
