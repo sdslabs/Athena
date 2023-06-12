@@ -1,7 +1,6 @@
 import express from 'express'
 import * as questionController from '@controllers/question'
 import hasEditAccess from '@utils/hasEditAccess'
-import isAuth from '@utils/isAuth'
 import isOnboard from '@utils/isOnboard'
 
 const router = express.Router()
