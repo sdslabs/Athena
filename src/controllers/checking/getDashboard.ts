@@ -9,29 +9,31 @@ interface getDashboardRequest extends Request {
 }
 
 const getDashboard = async (req: getDashboardRequest, res: Response) => {
-    const quizId = req.params.quizId
-    const quiz = await QuizModel.findById(quizId).populate('sections.questions')
+    const quizId = req.params.quizId;
+    const quiz = await QuizModel.findById(quizId).populate({
+        path: 'sections',
+        select: 'name questions',
+        populate: {
+            path: 'questions',
+            select:'type description totalAttempts checkedAttempts assignedTo',
+            populate: {
+                path: 'assignedTo',
+                select: 'personalDetails.name personalDetails.emailAdd'
+            }
+        }
+    });
     if (!quiz) {
         return sendInvalidInputResponse(res);
     }
     let checksCompleted = 0;
-    const sections = quiz?.sections?.map(section => {
-        return {
-            name: section.name,
-            questions: section?.questions?.map(question => {
-                checksCompleted += question.checkedAttempts || 0;
-                return {
-                    type: question.type,
-                    description: question.description,
-                    totalAttempts: question.totalAttempts,
-                    checkedAttempts: question.checkedAttempts,
-                    assignedTo: question.assignedTo
-                }
-            })
-        }
-    });
+    quiz?.sections?.forEach(section => {
+        section?.questions?.forEach(question => {
+            checksCompleted += question?.checkedAttempts || 0;
+        })
+    })
+
     return res.status(200).json({
-        sections:sections,
+        sections: quiz.sections,
         participants: quiz?.participants?.length,
         checksCompleted: checksCompleted
     })
