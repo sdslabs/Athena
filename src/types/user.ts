@@ -5,7 +5,7 @@ export interface IUser {
   personalDetails?: {
     name: string
     emailAdd: string
-    phoneNo?: string
+    phoneNo: string
   }
   educationalDetails?: {
     instituteName?: string

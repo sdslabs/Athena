@@ -1,9 +1,14 @@
-import { Types } from 'mongoose'
+import { Date, Types } from 'mongoose'
 import { IQuestion } from './question'
 
 interface participant {
   user: Types.ObjectId
   submitted: boolean
+  isGivingQuiz: boolean
+  time: {
+    started: Date
+    left: Date
+  }
 }
 
 export interface IQuiz {

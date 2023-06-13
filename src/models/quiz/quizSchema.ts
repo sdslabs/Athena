@@ -23,6 +23,20 @@ const quizSchema = new Schema<IQuiz>({
         type: Boolean,
         default: false,
       },
+      isGivingQuiz: {
+        type: Boolean,
+        default: false,
+      },
+      time: {
+        started: {
+          type: Date,
+          default: null,
+        },
+        left: {
+          type: Date,
+          default: null,
+        },
+      },
     },
   ],
   isPublished: {
