@@ -1,34 +1,39 @@
-import QuizModel from '@models/quiz/quizModel';
 import { Request, Response, NextFunction } from 'express';
-import { UserRoles } from 'types';
+import { JwtPayload, UserRoles } from 'types';
+import getQuiz from './getQuiz';
+import sendInvalidInputResponse from './invalidInputResponse';
 import sendUnauthorizedResponse from './unauthorisedResponse';
 
-const hasEditAccess = async (req: Request, res: Response, next: NextFunction) => {
-    const { user } = req.body;
+interface hasEditAccessRequest extends Request {
+    body: {
+        user: JwtPayload,
+    },
+    params: {
+        quizId: string,
+    }
+}
+
+const hasEditAccess = async (req: hasEditAccessRequest, res: Response, next: NextFunction) => {
+    const user = req.body.user;
     const { quizId } = req.params;
 
-    if(!user || !quizId) {
-        return res.status(400).json({
-            message: 'Invalid input',
-        });
+    if(!quizId){
+        return sendInvalidInputResponse(res);
     }
 
     try {
         // extract adminId from Quiz
-        const quiz = await QuizModel.findById(quizId);
+        const quiz = await getQuiz(quizId);
         if (!quiz) {
-            return res.status(404).json({
-                message: 'Quiz not found',
-            });
+            return sendInvalidInputResponse(res);
         }
-
         //check if user is superAdmin
         if (user.role === UserRoles.superAdmin) {
             return next();
         }
 
         // check if user is admin
-        if (user.userId === quiz.admin.toString()) {
+        if (user.userId === quiz.admin) {
             return next();
         }
 

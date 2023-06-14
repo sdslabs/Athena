@@ -3,6 +3,7 @@ import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import getQuiz from "@utils/getQuiz";
 import QuizModel from "@models/quiz/quizModel";
 import sendFailureResponse from "@utils/failureResponse";
+import { JwtPayload } from "types";
 
 interface updateSectionRequest extends Request {
     body: {
@@ -11,6 +12,7 @@ interface updateSectionRequest extends Request {
             description?: string
         }
         sectionIndex: number
+        user: JwtPayload
     }
     params: {
         quizId: string
