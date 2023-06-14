@@ -12,6 +12,9 @@ const isOnboard = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         const user = verifyToken(token);
+        if(!user) {
+            return sendUnauthorizedResponse(res);
+        }
         req.body.user = user;
         const userData = await userModel.findById(req.body.user.userId);
 

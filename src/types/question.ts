@@ -1,6 +1,7 @@
 import { Types } from 'mongoose'
 
 export interface IQuestion {
+  _id?: Types.ObjectId
   type: QuestionTypes
   description: string
   options?: {
