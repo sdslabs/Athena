@@ -5,9 +5,15 @@ interface participant {
   user: Types.ObjectId
   submitted: boolean
   isGivingQuiz: boolean
+  registrationData: {
+    customFields: {
+      name: string
+      value: string
+    }[]
+  }
   time: {
-    started: Date
-    left: Date
+    started: number
+    left: number
   }
 }
 
@@ -24,6 +30,7 @@ export interface IQuiz {
     instructions: string
     startDateTimestamp: Date
     endDateTimestamp: Date
+    duration: number
     accessCode?: string
     bannerImage?: string
   }

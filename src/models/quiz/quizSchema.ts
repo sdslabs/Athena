@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose'
+import { Schema, SchemaTypes } from 'mongoose'
 import { ModelNames, IQuiz } from 'types'
 
 const quizSchema = new Schema<IQuiz>({
@@ -23,18 +23,32 @@ const quizSchema = new Schema<IQuiz>({
         type: Boolean,
         default: false,
       },
+      registrationData: {
+        customFields: [
+          {
+            name: {
+              type: String,
+              required: true,
+            },
+            value: {
+              type: String,
+              required: true,
+            },
+          },
+        ],
+      },
       isGivingQuiz: {
         type: Boolean,
         default: false,
       },
       time: {
         started: {
-          type: Date,
-          default: null,
+          type: Number,
+          default: 0,
         },
         left: {
-          type: Date,
-          default: null,
+          type: Number,
+          default: 0,
         },
       },
     },
@@ -73,6 +87,10 @@ const quizSchema = new Schema<IQuiz>({
     },
     endDateTimestamp: {
       type: Date,
+      required: true,
+    },
+    duration: {
+      type: Number,
       required: true,
     },
     accessCode: {
