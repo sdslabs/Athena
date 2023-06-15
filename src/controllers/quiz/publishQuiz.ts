@@ -3,6 +3,7 @@ import { Request, Response } from 'express'
 import QuizModel from '@models/quiz/quizModel'
 import { Types } from 'mongoose'
 import sendFailureResponse from '@utils/failureResponse'
+import * as schedule from 'node-schedule'
 
 interface publishQuizRequest extends Request {
     body: {
@@ -11,6 +12,41 @@ interface publishQuizRequest extends Request {
     params: {
         quizId: string
     }
+}
+
+const startQuizScheduler = async (quizId: Types.ObjectId, startDateTimestamp: Date) => {
+    const job = schedule.scheduleJob(startDateTimestamp, async () => {
+        try {
+            // set isAcceptingAnswers to true
+            const startedQuiz = await QuizModel.findByIdAndUpdate(
+                quizId,
+                { isAcceptingAnswers: true },
+                { new: true }
+            )
+            console.info("🔔 Quiz " + quizId + " scheduled at " + startDateTimestamp + " started")
+
+        } catch (err) {
+            console.error("🔴 ERROR in starting Quiz " + quizId)
+            console.error(err)
+        }
+    })
+}
+
+const endQuizScheduler = async (quizId: Types.ObjectId, endDateTimestamp: Date) => {
+    const job = schedule.scheduleJob(endDateTimestamp, async () => {
+        try {
+            // set isAcceptingAnswers to false
+            const endQuiz = await QuizModel.findByIdAndUpdate(
+                quizId,
+                { isAcceptingAnswers: false },
+                { new: true }
+            )
+            console.info("🔔 Quiz " + quizId + " scheduled to end at " + endDateTimestamp + " ended")
+        } catch (err) {
+            console.error("🔴 ERROR in ending Quiz " + quizId)
+            console.error(err)
+        }
+    })
 }
 
 const publishQuiz = async (req: publishQuizRequest, res: Response) => {
@@ -37,6 +73,18 @@ const publishQuiz = async (req: publishQuizRequest, res: Response) => {
                 errorCode: 404
             })
         } else {
+
+            // schedule the quiz
+            const startDateTimestamp = publishedQuiz.quizMetadata?.startDateTimestamp
+            const endDateTimestamp = publishedQuiz.quizMetadata?.endDateTimestamp
+
+            if (startDateTimestamp && endDateTimestamp) {
+                // @ts-ignore
+                startQuizScheduler(publishedQuiz._id, startDateTimestamp)
+                // @ts-ignore
+                endQuizScheduler(publishedQuiz._id, endDateTimestamp)
+            }
+
             return res.status(200).send({ message: 'Quiz published', quizId: publishedQuiz._id })
         }
     } catch (error) {
@@ -46,7 +94,6 @@ const publishQuiz = async (req: publishQuizRequest, res: Response) => {
             messageToSend: 'Failed to publish quiz',
         })
     }
-
 }
 
 export default publishQuiz
