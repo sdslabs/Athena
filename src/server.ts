@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
 import logger from '@utils/logger'
+import { Socket } from 'socket.io'
 
 // Initialize server
 dotenv.config()
@@ -62,3 +63,5 @@ app.listen(port, () => {
   logger.silly(`⚡️[server]: Server is running at http://localhost:${port}`)
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
 })
+
+export default app;
