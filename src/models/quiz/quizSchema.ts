@@ -1,4 +1,4 @@
-import { Schema, SchemaTypes } from 'mongoose'
+import { Schema } from 'mongoose'
 import { ModelNames, IQuiz } from 'types'
 
 const quizSchema = new Schema<IQuiz>({

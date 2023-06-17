@@ -9,7 +9,6 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
 import logger from '@utils/logger'
-import { Socket } from 'socket.io'
 
 // Initialize server
 dotenv.config()

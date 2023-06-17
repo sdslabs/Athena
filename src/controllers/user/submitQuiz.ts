@@ -1,8 +1,6 @@
 import { Response, Request } from 'express'
 import QuizModel from '@models/quiz/quizModel'
-import { Error, Types } from 'mongoose'
-import { IQuiz, JwtPayload } from 'types'
-import sendFailureResponse from '@utils/failureResponse'
+import { JwtPayload } from 'types'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 
 interface submitQuizRequest extends Request {
@@ -53,3 +51,5 @@ const submitQuiz = async (req: submitQuizRequest, res: Response) => {
         })
     }
 }
+
+export default submitQuiz

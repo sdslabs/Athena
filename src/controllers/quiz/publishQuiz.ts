@@ -23,6 +23,10 @@ const startQuizScheduler = async (quizId: Types.ObjectId, startDateTimestamp: Da
                 { isAcceptingAnswers: true },
                 { new: true }
             )
+            if(!startedQuiz) {
+                console.error("🔴 ERROR in starting Quiz " + quizId)
+                return
+            }
             console.info("🔔 Quiz " + quizId + " scheduled at " + startDateTimestamp + " started")
 
         } catch (err) {
@@ -41,6 +45,10 @@ const endQuizScheduler = async (quizId: Types.ObjectId, endDateTimestamp: Date) 
                 { isAcceptingAnswers: false },
                 { new: true }
             )
+            if(!endQuiz) {
+                console.error("🔴 ERROR in ending Quiz " + quizId)
+                return
+            }
             console.info("🔔 Quiz " + quizId + " scheduled to end at " + endDateTimestamp + " ended")
         } catch (err) {
             console.error("🔴 ERROR in ending Quiz " + quizId)

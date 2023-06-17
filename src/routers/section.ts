@@ -1,6 +1,5 @@
 import express from 'express'
 import * as sectionController from '@controllers/section'
-import isAuth from '@utils/isAuth'
 import hasEditAccess from '@utils/hasEditAccess'
 import isOnboard from '@utils/isOnboard'
 
