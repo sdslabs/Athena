@@ -6,7 +6,7 @@
   "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   "overrides": [
     {
-      "files": ["./src/controllers/quiz/publishQuiz.ts"],
+      "files": ["./src/controllers/quiz/publishQuiz.ts", "./src/services/timer.ts"],
       "rules": {
         "@typescript-eslint/ban-ts-comment": "off"
       }
