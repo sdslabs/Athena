@@ -13,5 +13,6 @@ router.put('/unassign/:quizId/:questionId', isOnboard, hasEditAccess, checkingCo
 router.get('/reponses/:quizId/:questionId', isOnboard, hasEditAccess, checkingController.getResponses)
 router.patch('/check/:quizId/:reponseId', isOnboard, hasEditAccess, checkingController.checkResponse);
 router.patch('/autocheck/:quizId', isOnboard, isQuizAdmin, checkingController.autoCheck);
+router.patch('/leaderboard/:quizId', isOnboard, isQuizAdmin, checkingController.generateLeaderBoard);
 
 export default router

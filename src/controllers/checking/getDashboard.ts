@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import QuizModel from "@models/quiz/quizModel";
 import sendInvalidInputResponse from "@utils/invalidInputResponse";
 import sendFailureResponse from "@utils/failureResponse";
+import LeaderboardModel from "@models/leaderboard/leaderboardModel";
 
 interface getDashboardRequest extends Request {
     params: {
@@ -33,11 +34,12 @@ const getDashboard = async (req: getDashboardRequest, res: Response) => {
                 checksCompleted += question?.checkedAttempts || 0;
             })
         })
-
+        const leaderboard = LeaderboardModel.find({ quizId: quizId });
         return res.status(200).json({
             sections: quiz.sections,
             participants: quiz?.participants?.length,
-            checksCompleted: checksCompleted
+            checksCompleted: checksCompleted,
+            leaderboard: leaderboard
         })
     }
     catch (error: unknown) {
