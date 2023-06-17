@@ -37,7 +37,7 @@ const questionSchema = new Schema<IQuestion>({
   autoCheck: {
     type: Boolean,
     required: true,
-    default: true,
+    default: false,
   },
   totalAttempts: {
     type: Number,

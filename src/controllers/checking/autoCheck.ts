@@ -19,10 +19,11 @@ const autoCheck = async (req: autoCheckRequest, res: Response) => {
         select: 'type correctAnswer maxMarks _id',
       }
     );
-    quiz?.sections?.forEach(section => {
-      section?.questions?.forEach(question => {
+    quiz?.sections?.forEach(async section => {
+      section?.questions?.forEach(async question => {
         if (question.type === QuestionTypes.MCQ) {
-          ResponseModel.updateMany({ quizId: quizId, questionId: question._id }, {
+          await QuestionModel.findByIdAndUpdate(question._id, { autoCheck: true });
+          await ResponseModel.updateMany({ quizId: quizId, questionId: question._id }, {
             $set: {
               marksAwarded: {
                 $cond: {

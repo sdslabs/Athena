@@ -36,6 +36,8 @@ const getDashboard = async (req: getDashboardRequest, res: Response) => {
         })
         const leaderboard = LeaderboardModel.find({ quizId: quizId });
         return res.status(200).json({
+            admin: quiz.admin,
+            scheduled: quiz.quizMetadata?.startDateTimestamp,
             sections: quiz.sections,
             participants: quiz?.participants?.length,
             checksCompleted: checksCompleted,
