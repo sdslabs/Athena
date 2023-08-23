@@ -20,11 +20,10 @@ const removeAssignee = async (req: removeAssigneeRequest, res: Response) => {
   const questionId = req.params.questionId;
   const assignee = req.body.assignee;
 
-  try {
-    const question = QuestionModel.findById(questionId);
-    if (!question) {
-      sendInvalidInputResponse(res);
-    }
+  if (!questionId && !assignee) {
+    sendInvalidInputResponse(res);
+  }
+  try { 
     QuestionModel.findByIdAndUpdate(questionId, {
       $pull: {
         assignedTo: assignee

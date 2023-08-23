@@ -22,7 +22,6 @@ const autoCheck = async (req: autoCheckRequest, res: Response) => {
     quiz?.sections?.forEach(async section => {
       section?.questions?.forEach(async question => {
         if (question.type === QuestionTypes.MCQ) {
-          await QuestionModel.findByIdAndUpdate(question._id, { autoCheck: true });
           await ResponseModel.updateMany({ quizId: quizId, questionId: question._id }, {
             $set: {
               marksAwarded: {
@@ -34,6 +33,7 @@ const autoCheck = async (req: autoCheckRequest, res: Response) => {
               }
             }
           });
+          await QuestionModel.findByIdAndUpdate(question._id, { autoCheck: true });
         }
       })
     });

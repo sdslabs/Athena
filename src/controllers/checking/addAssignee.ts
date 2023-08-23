@@ -21,6 +21,9 @@ const addAssignee = async (req: addAssigneeRequest, res: Response) => {
   const questionId = req.params.questionId;
   const assignee = req.body.assignee;
 
+  if(!questionId && !assignee) {
+    sendInvalidInputResponse(res);
+  }
   try {
     const question = await QuestionModel.findById(questionId);
     if (!question) {
