@@ -4,6 +4,7 @@ import QuizModel from '@models/quiz/quizModel'
 import { Types } from 'mongoose'
 import sendFailureResponse from '@utils/failureResponse'
 import { scheduleJob } from 'node-schedule'
+import logger from '@utils/logger'
 
 interface publishQuizRequest extends Request {
     body: {
@@ -24,14 +25,14 @@ const startQuizScheduler = async (quizId: Types.ObjectId, startDateTimestamp: Da
                 { new: true }
             )
             if(!startedQuiz) {
-                console.error("🔴 ERROR in starting Quiz " + quizId)
+                logger.error("🔴 ERROR in starting Quiz " + quizId)
                 return
             }
-            console.info("🔔 Quiz " + quizId + " scheduled at " + startDateTimestamp + " started")
+            logger.debug("🔔 Quiz " + quizId + " scheduled at " + startDateTimestamp + " started")
 
         } catch (err) {
-            console.error("🔴 ERROR in starting Quiz " + quizId)
-            console.error(err)
+            logger.error("🔴 ERROR in starting Quiz " + quizId)
+            logger.error(err)
         }
     })
 }
@@ -46,13 +47,13 @@ const endQuizScheduler = async (quizId: Types.ObjectId, endDateTimestamp: Date) 
                 { new: true }
             )
             if(!endQuiz) {
-                console.error("🔴 ERROR in ending Quiz " + quizId)
+                logger.error("🔴 ERROR in ending Quiz " + quizId)
                 return
             }
-            console.info("🔔 Quiz " + quizId + " scheduled to end at " + endDateTimestamp + " ended")
+            logger.debug("🔔 Quiz " + quizId + " scheduled to end at " + endDateTimestamp + " ended")
         } catch (err) {
-            console.error("🔴 ERROR in ending Quiz " + quizId)
-            console.error(err)
+            logger.error("🔴 ERROR in ending Quiz " + quizId)
+            logger.error(err)
         }
     })
 }
