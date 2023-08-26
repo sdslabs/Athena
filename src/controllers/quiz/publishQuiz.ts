@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import QuizModel from '@models/quiz/quizModel'
 import { Types } from 'mongoose'
 import sendFailureResponse from '@utils/failureResponse'
-import * as schedule from 'node-schedule'
+import { scheduleJob } from 'node-schedule'
 
 interface publishQuizRequest extends Request {
     body: {
@@ -15,7 +15,7 @@ interface publishQuizRequest extends Request {
 }
 
 const startQuizScheduler = async (quizId: Types.ObjectId, startDateTimestamp: Date) => {
-    const job = schedule.scheduleJob(startDateTimestamp, async () => {
+    const job = scheduleJob(startDateTimestamp, async () => {
         try {
             // set isAcceptingAnswers to true
             const startedQuiz = await QuizModel.findByIdAndUpdate(
@@ -37,7 +37,7 @@ const startQuizScheduler = async (quizId: Types.ObjectId, startDateTimestamp: Da
 }
 
 const endQuizScheduler = async (quizId: Types.ObjectId, endDateTimestamp: Date) => {
-    const job = schedule.scheduleJob(endDateTimestamp, async () => {
+    const job = scheduleJob(endDateTimestamp, async () => {
         try {
             // set isAcceptingAnswers to false
             const endQuiz = await QuizModel.findByIdAndUpdate(

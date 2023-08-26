@@ -2,6 +2,7 @@ import { Response, Request } from 'express'
 import QuizModel from '@models/quiz/quizModel'
 import { JwtPayload } from 'types'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
+import sendFailureResponse from '@utils/failureResponse'
 
 interface submitQuizRequest extends Request {
     body:{
@@ -45,10 +46,7 @@ const submitQuiz = async (req: submitQuizRequest, res: Response) => {
         })
 
     } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: 'Internal server error'
-        })
+        return sendFailureResponse({ res, error: err, messageToSend: 'Error while submitting quiz' })
     }
 }
 

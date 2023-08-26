@@ -15,11 +15,11 @@ router.patch('/publish/:quizId', isOnboard, hasEditAccess, quizController.publis
 router.delete('/delete/:quizId', isOnboard, hasEditAccess, quizController.deleteQuiz)
 
 // Quiz Get Routes
-router.get('/:quizId', isAuth, quizController.quizGet)
-router.get('/', isAuth, quizController.getAllQuizzes)
+router.get('/:quizId', isOnboard, quizController.quizGet)
+router.get('/', isOnboard, quizController.getAllQuizzes)
 
 // User Quiz Routes
-router.post('/register/:quizId', isAuth, userController.registerQuiz)
-router.get('/start/:quizId', isAuth, userController.startQuiz)
+router.post('/register/:quizId', isOnboard, userController.registerQuiz)
+router.get('/start/:quizId', isOnboard, userController.startQuiz)
 
 export default router

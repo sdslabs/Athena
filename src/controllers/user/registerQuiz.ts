@@ -44,7 +44,7 @@ const registerQuiz = async (req: registerQuizRequest, res: Response) => {
 
         // Check if user is already registered
         const isUserRegistered = quiz.participants?.find(
-            participant => participant.user.toString() === user.userId.toString()
+            participant => participant.user.equals(user.userId)
         );
         if (isUserRegistered) {
             return sendFailureResponse({
