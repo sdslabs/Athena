@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import { connectDB } from '@db/connectDB'
+import staticRouter from '@routers/static'
 import quizRouter from '@routers/quiz'
 import authRouter from '@routers/auth'
 import sectionRouter from '@routers/section'
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 
 
 // Routers
+app.use('/static', staticRouter)
 app.use('/quiz', quizRouter)
 app.use('/auth', authRouter)
 app.use('/section', sectionRouter)

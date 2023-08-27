@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+
+<body>
+    <h1>Hi from timer!</h1>
+    <div></div>
+    <script>
+                  console.log("h65ey")
+
+        const socket = io()
+          console.log("hey")
+        // Listen for the 'message' event from the server
+        socket.on('message', (message) => {
+            console.log('Server says:', message);
+        });
+    </script>
+</body>
+
+</html>
