@@ -3,4 +3,5 @@ export enum ModelNames {
   User = 'User',
   Question = 'Question',
   Response = 'Response',
+  Leaderboard = 'Leaderboard',
 }

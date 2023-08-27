@@ -39,7 +39,7 @@ const onboard = async (req: onboardRequest, res:Response) => {
 
     try {
         // Update user details
-        const updatedUser = await userModel.findByIdAndUpdate (
+        await userModel.findByIdAndUpdate (
             user.userId,
             {
                 personalDetails: personalDetails,

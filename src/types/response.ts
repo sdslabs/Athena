@@ -1,9 +1,10 @@
 import { Types } from 'mongoose'
+import { IUser } from './user'
 
 export interface IResponse {
   questionId: Types.ObjectId
   quizId: Types.ObjectId
-  userId: Types.ObjectId
+  user: IUser
   selectedOptionId?: string
   subjectiveAnswer?: string
   marksAwarded?: number
