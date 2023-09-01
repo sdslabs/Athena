@@ -1,16 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 import QuizModel from '@models/quiz/quizModel'
 import logger from '@utils/logger'
 import { IQuiz, IParticipant } from '@types/quiz'
 enum QuizCode {
-  JoinQuiz = '20Ctg1G5UymjK3SmAAAB',
-  LeftQuiz = 'JLf_vCCDmW_nFGTRAAAB',
-  ServerDisconnect = 'server namespace disconnect'
+  JoinQuiz = 'joinQuiz',
+  LeftQuiz = 'leftQuiz',
+  ServerDisconnect = 'server namespace disconnect',
 }
 
 const isQuizAcceptingAnswers = async (quizId: string) => {
   const quiz: IQuiz = await QuizModel.findById(quizId)
-  if (!quiz || !quiz.isPublished || !quiz.isAcceptingAnswers) {
+  if (!quiz) {
+    logger.silly("Quiz doesn't exist with QuizId: ", quizId)
+    return false
+  }
+  if (!quiz.isPublished || !quiz.isAcceptingAnswers) {
+    logger.silly('Quiz is not Published or is not Accepting Answers with QuizId: ', quizId)
     return false
   }
   return true
@@ -21,22 +26,21 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
   if (!quiz) {
     return false
   }
-  const userObjectId=mongoose.Types.ObjectId(userId)
   const user: IParticipant = quiz.participants.find((participant) => {
-    if (participant.user.equals(userObjectId)) {
+    if (participant.user.equals(mongoose.Types.ObjectId(userId))) {
       return participant
     }
   })
 
   let reason: string
   if (!user) {
-    console.log("User doesn't exist")
+    logger.silly("User doesn't exist with userId: ", userId)
     return false
   }
-  if (!user.isGivingQuiz || user.submitted) {
-    if (!user.isGivingQuiz) reason = 'User is not giving quiz'
+  if (user.isGivingQuiz || user.submitted) {
+    if (user.isGivingQuiz) reason = 'User is giving quiz in another portal'
     if (user.submitted) reason = 'User has submitted the quiz'
-    console.log(reason)
+    logger.silly(reason)
     return false
   }
   return true
@@ -45,8 +49,6 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
 async function checkUserQuizStatus(quizId: unknown, userId: unknown) {
   const isAcceptingAnswers: unknown = await isQuizAcceptingAnswers(quizId)
   const isGivingQuiz: unknown = await isParticipantGivingQuiz(quizId, userId)
-  console.log('isParticipantGivingQuiz: ' + isGivingQuiz)
-  console.log('isQuizAcceptingAnswers: ' + isAcceptingAnswers)
   if (!isAcceptingAnswers || !isGivingQuiz) {
     return false
   }
@@ -58,35 +60,39 @@ function getCurrentTime() {
   return currentTime
 }
 
+async function saveQuiz(quiz: IQuiz) {
+  try {
+    await quiz.save()
+    logger.silly('Quiz updated! QuizId: ', quiz._id)
+  } catch (error) {
+    logger.error(`Error updating quiz with quizId: ${quiz._id} : `, error)
+  }
+}
+
 async function timerService(io, socket) {
-  let user: IParticipant
-  let quiz: IQuiz
-
   socket.on('join_quiz', async (data) => {
-    socket.checkQuizJoin = QuizCode.JoinQuiz
-    const quizId = data.quizId
-    const userId = data.userId
+    socket.checkQuiz = QuizCode.JoinQuiz
+    socket.quizId = data.quizId
+    socket.userId = data.userId
 
-    if (!quizId || !userId) {
+    if (!socket.quizId || !socket.userId) {
       logger.silly('⚡️[server]: UserId or QuizId is empty.')
-      console.log('⚡️[server]: UserId or QuizId is empty.')
       socket.disconnect()
     }
 
-    const checkUserQuizStatusResult = await checkUserQuizStatus(quizId, userId)
-    console.log('checkUserQuizStatusResult: ' + checkUserQuizStatusResult)
+    const checkUserQuizStatusResult = await checkUserQuizStatus(socket.quizId, socket.userId)
 
     if (!checkUserQuizStatusResult) {
-      console.log('Wrong quizId or userId')
       logger.silly('Wrong quizId or userId')
       socket.disconnect()
     } else {
-      quiz = await QuizModel.findById(quizId)
-      user = quiz.participants.find((participant) => {
-        if (participant.user.toString() === userId) {
+      const quiz: IQuiz = await QuizModel.findById(socket.quizId)
+      const user: IParticipant = quiz.participants.find((participant) => {
+        if (participant.user.equals(mongoose.Types.ObjectId(socket.userId))) {
           return participant
         }
       })
+      user.isGivingQuiz = true
       user.time.enterQuiz = new Date().getTime()
       user.time.endQuiz = new Date('2023-09-02').getTime()
       user.time.left = Math.min(user.time.left, user.time.endQuiz - getCurrentTime())
@@ -94,40 +100,38 @@ async function timerService(io, socket) {
       if (user.time.left <= 0) {
         socket.disconnect()
       }
+      saveQuiz(quiz)
       socket.emit('sendTime', user.time.left)
     }
   })
 
   socket.on('disconnect', async (reason: string) => {
-    console.log(`User Disconnnected: ${reason}, Timer Paused`)
     if (reason === QuizCode.ServerDisconnect) {
-      console.log('Server-Side Disconnection')
-    } else if (socket.checkQuizJoin === QuizCode.JoinQuiz) {
-      socket.checkQuizJoin = QuizCode.LeftQuiz
+      logger.silly(`Server-Side Disconnection`)
+    } else if (socket.checkQuiz === QuizCode.JoinQuiz) {
+      const quiz: IQuiz = await QuizModel.findById(socket.quizId)
+      const user: IParticipant = quiz.participants.find((participant) => {
+        if (participant.user.equals(mongoose.Types.ObjectId(socket.userId))) {
+          return participant
+        }
+      })
+      socket.checkQuiz = QuizCode.LeftQuiz
       user.time.left = Math.min(
         user.time.left - (getCurrentTime() - user.time.enterQuiz),
         user.time.endQuiz - getCurrentTime(),
       )
-      console.log('timeLeft: ' + user.time.left)
 
       if (user.time.left <= 0) {
         if (user.time.left < -10000) {
           //handle manipulation by user
         }
         user.submitted = true
-        console.log('TimeOver! Quiz Submitted')
       }
-      user.isGivingQuiz = true
-      try {
-        await quiz.save()
-        console.log('Quiz updated!')
-      } catch (error) {
-        console.error('Error updating quiz: ', error)
-      }
-
-      console.log(`Time Left: ${user.time.left}`)
+      user.isGivingQuiz = false
+      saveQuiz(quiz)
+      logger.silly(`Time Left: ${user.time.left}`)
     } else {
-      console.log('Quiz was never Joined')
+      logger.silly(`Quiz was never Joined`)
     }
   })
 }

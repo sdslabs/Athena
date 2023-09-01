@@ -21,7 +21,7 @@ export interface IParticipant {
 export interface IQuiz {
   admin: Types.ObjectId
   managers?: Types.ObjectId[]
-  participants?: participant[]
+  participants?: Iparticipant[]
   isPublished: boolean
   isAcceptingAnswers: boolean
   resultsPublished: boolean
