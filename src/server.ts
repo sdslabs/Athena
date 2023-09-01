@@ -22,12 +22,12 @@ const app: Express = express()
 const port = process.env.PORT
 
 // Middlewares
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
-app.use(mongoSanitize())
-app.use(morgan('dev'))
-app.use(cors())
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(mongoSanitize());
+app.use(morgan('dev'));
+app.use(cors());
 
 //socket.io
 const server = http.createServer(app)
@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
 // Middleware to access response body and log accordingly
 app.use((req, res, next) => {
   // Override the res.send method to access the response
-  const originalSend = res.send
+  const originalSend = res.send;
   res.send = function (body) {
     // Access the response here
     if (res.statusCode === 401) {
@@ -61,10 +61,10 @@ app.use((req, res, next) => {
       logger.debug(`Bad Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`)
     }
     // Call the original send method to send the response to the user
-    originalSend.call(this, body)
-  }
-  next()
-})
+    originalSend.call(this, body);
+  };
+  next();
+});
 
 // Routers
 app.use('/static', staticRouter)
@@ -82,4 +82,4 @@ server.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
 })
 
-export default app
+export default app;
