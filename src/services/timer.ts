@@ -55,11 +55,6 @@ async function checkUserQuizStatus(quizId: unknown, userId: unknown) {
   return true
 }
 
-function getCurrentTime() {
-  const currentTime = new Date()
-  return currentTime
-}
-
 async function saveQuiz(quiz: IQuiz) {
   try {
     await quiz.save()
@@ -94,8 +89,8 @@ async function timerService(io, socket) {
       })
       user.isGivingQuiz = true
       user.time.enterQuiz = new Date().getTime()
-      user.time.endQuiz = new Date('2023-09-02').getTime()
-      user.time.left = Math.min(user.time.left, user.time.endQuiz - getCurrentTime())
+      user.time.endQuiz = quiz.quizMetadata.endDateTimestamp.getTime()
+      user.time.left = Math.min(user.time.left, user.time.endQuiz - new Date())
 
       if (user.time.left <= 0) {
         socket.disconnect()
@@ -117,8 +112,8 @@ async function timerService(io, socket) {
       })
       socket.checkQuiz = QuizCode.LeftQuiz
       user.time.left = Math.min(
-        user.time.left - (getCurrentTime() - user.time.enterQuiz),
-        user.time.endQuiz - getCurrentTime(),
+        user.time.left - (new Date() - user.time.enterQuiz),
+        user.time.endQuiz - new Date(),
       )
 
       if (user.time.left <= 0) {
