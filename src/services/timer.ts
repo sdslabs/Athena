@@ -1,6 +1,10 @@
 import QuizModel from '@models/quiz/quizModel'
 import logger from '@utils/logger'
-import { IQuiz, IParticipant, IParticipantTime } from '@types/quiz'
+import { IQuiz, IParticipant } from '@types/quiz'
+enum QuizCode {
+  JoinQuiz = "20Ctg1G5UymjK3SmAAAB",
+  LeftQuiz = "JLf_vCCDmW_nFGTRAAAB",
+}
 
 const isQuizAcceptingAnswers = async (quizId: string) => {
   const quiz: IQuiz = await QuizModel.findById(quizId)
@@ -22,14 +26,16 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
   })
 
   let reason: string
-  if (!user || !user.isGivingQuiz || user.submitted) {
-    if (!user) reason = "User doesn't exist"
+  if (!user) {
+    console.log("User doesn't exist")
+    return false
+  }
+  if (!user.isGivingQuiz || user.submitted) {
     if (!user.isGivingQuiz) reason = 'User is not giving quiz'
     if (user.submitted) reason = 'User has submitted the quiz'
     console.log(reason)
     return false
   }
-
   return true
 }
 
@@ -50,21 +56,11 @@ function getCurrentTime() {
 }
 
 async function timerService(io, socket) {
-  const participantTime: IParticipantTime = {
-    left: 0,
-    toEnd: 0,
-    passed: 0,
-    enterQuiz: 0,
-    exitQuiz: 0,
-    endQuiz: 0,
-  }
   let user: IParticipant
   let quiz: IQuiz
 
   socket.on('join_quiz', async (data) => {
-    socket.checkQuizJoin = 'QuizJoined'
-    console.log(socket.checkQuizJoin)
-    participantTime.enterQuiz = new Date().getTime()
+    socket.checkQuizJoin = QuizCode.JoinQuiz
     const quizId = data.quizId
     const userId = data.userId
 
@@ -83,21 +79,19 @@ async function timerService(io, socket) {
       socket.disconnect()
     } else {
       quiz = await QuizModel.findById(quizId)
-      // participantTime.endQuiz = quiz.quizMetadata.endDateTimestamp.getTime()
-      participantTime.endQuiz = new Date('2023-09-02').getTime()
       user = quiz.participants.find((participant) => {
         if (participant.user.toString() === userId) {
           return participant
         }
       })
-      participantTime.toEnd = participantTime.endQuiz - getCurrentTime()
-      participantTime.left = Math.min(user.time.left, participantTime.toEnd)
+      user.time.enterQuiz = new Date().getTime()
+      user.time.endQuiz = new Date('2023-09-02').getTime()
+      user.time.left = Math.min(user.time.left, user.time.endQuiz - getCurrentTime())
 
-      if (participantTime.left <= 0) {
-        console
+      if (user.time.left <= 0) {
         socket.disconnect()
       }
-      socket.emit('sendTime', participantTime.left)
+      socket.emit('sendTime', user.time.left)
     }
   })
 
@@ -105,26 +99,22 @@ async function timerService(io, socket) {
     console.log(`User Disconnnected: ${reason}, Timer Paused`)
     if (reason === 'server namespace disconnect') {
       console.log('Server-Side Disconnection')
-    } else if (socket.checkQuizJoin === 'QuizJoined') {
-      socket.checkQuizJoin = 'QuizLeft'
-      participantTime.exitQuiz = getCurrentTime()
-      participantTime.passed = participantTime.exitQuiz - participantTime.enterQuiz
-      participantTime.toEnd = participantTime.endQuiz - participantTime.exitQuiz
-      participantTime.left = Math.min(
-        participantTime.left - participantTime.passed,
-        participantTime.toEnd,
+    } else if (socket.checkQuizJoin === QuizCode.JoinQuiz) {
+      socket.checkQuizJoin = QuizCode.LeftQuiz
+      user.time.left = Math.min(
+        user.time.left - (getCurrentTime() - user.time.enterQuiz),
+        user.time.endQuiz - getCurrentTime(),
       )
-      console.log('timeLeft: ' + participantTime.left)
+      console.log('timeLeft: ' + user.time.left)
 
-      if (participantTime.left <= 0) {
-        if (participantTime.left < -10000) {
+      if (user.time.left <= 0) {
+        if (user.time.left < -10000) {
           //handle manipulation by user
         }
         user.submitted = true
         console.log('TimeOver! Quiz Submitted')
       }
       user.isGivingQuiz = true
-      user.time.left = participantTime.left
       try {
         await quiz.save()
         console.log('Quiz updated!')
@@ -132,7 +122,7 @@ async function timerService(io, socket) {
         console.error('Error updating quiz: ', error)
       }
 
-      console.log(`Time Left: ${participantTime.left}`)
+      console.log(`Time Left: ${user.time.left}`)
     } else {
       console.log('Quiz was never Joined')
     }

@@ -12,18 +12,10 @@ export interface IParticipant {
     }[]
   }
   time: {
-    started: number
+    enterQuiz: number
     left: number
+    endQuiz: number
   }
-}
-
-export interface IParticipantTime {
-  left: number 
-  toEnd: number
-  passed: number
-  enterQuiz: number
-  exitQuiz: number
-  endQuiz: number
 }
 
 export interface IQuiz {
