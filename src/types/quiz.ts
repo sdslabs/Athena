@@ -1,7 +1,7 @@
 import { Date, Types } from 'mongoose'
 import { IQuestion } from './question'
 
-interface participant {
+export interface IParticipant {
   user: Types.ObjectId
   submitted: boolean
   isGivingQuiz: boolean
@@ -15,6 +15,15 @@ interface participant {
     started: number
     left: number
   }
+}
+
+export interface IParticipantTime {
+  left: number 
+  toEnd: number
+  passed: number
+  enterQuiz: number
+  exitQuiz: number
+  endQuiz: number
 }
 
 export interface IQuiz {
