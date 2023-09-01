@@ -50,14 +50,12 @@ app.use((req, res, next) => {
   res.send = function (body) {
     // Access the response here
     if (res.statusCode === 401) {
-      logger.warn(
-        `Unauthorized Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`,
-      )
-    } else if (res.statusCode === 500) {
-      logger.error(
-        `Internal Server Error: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`,
-      )
-    } else if (res.statusCode === 400) {
+      logger.warn(`Unauthorized Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`,)
+    } 
+    else if (res.statusCode === 500) {
+      logger.error(`Internal Server Error: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`,)
+    } 
+    else if (res.statusCode === 400) {
       logger.debug(`Bad Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`)
     }
     // Call the original send method to send the response to the user
