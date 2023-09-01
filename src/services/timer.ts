@@ -1,9 +1,11 @@
+import mongoose from 'mongoose';
 import QuizModel from '@models/quiz/quizModel'
 import logger from '@utils/logger'
 import { IQuiz, IParticipant } from '@types/quiz'
 enum QuizCode {
-  JoinQuiz = "20Ctg1G5UymjK3SmAAAB",
-  LeftQuiz = "JLf_vCCDmW_nFGTRAAAB",
+  JoinQuiz = '20Ctg1G5UymjK3SmAAAB',
+  LeftQuiz = 'JLf_vCCDmW_nFGTRAAAB',
+  ServerDisconnect = 'server namespace disconnect'
 }
 
 const isQuizAcceptingAnswers = async (quizId: string) => {
@@ -19,8 +21,9 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
   if (!quiz) {
     return false
   }
+  const userObjectId=mongoose.Types.ObjectId(userId)
   const user: IParticipant = quiz.participants.find((participant) => {
-    if (participant.user.toString() === userId) {
+    if (participant.user.equals(userObjectId)) {
       return participant
     }
   })
@@ -97,7 +100,7 @@ async function timerService(io, socket) {
 
   socket.on('disconnect', async (reason: string) => {
     console.log(`User Disconnnected: ${reason}, Timer Paused`)
-    if (reason === 'server namespace disconnect') {
+    if (reason === QuizCode.ServerDisconnect) {
       console.log('Server-Side Disconnection')
     } else if (socket.checkQuizJoin === QuizCode.JoinQuiz) {
       socket.checkQuizJoin = QuizCode.LeftQuiz
