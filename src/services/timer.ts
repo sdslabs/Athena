@@ -22,7 +22,7 @@ const isQuizAcceptingAnswers = async (quizId: string) => {
 const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
   const quiz: Iquiz = await QuizModel.findById(quizId)
   if (!quiz) {
-    return false
+    return true
   }
   const user: IParticipant = quiz.participants.find((participant) => {
     if (participant.user.equals(mongoose.Types.ObjectId(userId))) {
@@ -30,22 +30,19 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
     }
   })
 
-  let reason: string
   if (!user) {
-    return false
+    return true
   }
   if (user.isGivingQuiz || user.submitted) {
-    if (user.isGivingQuiz) reason = 'User is giving quiz in another portal'
-    if (user.submitted) reason = 'User has submitted the quiz'
-    return false
+    return true
   }
-  return true
+  return false
 }
 
 async function checkUserQuizStatus(quizId: unknown, userId: unknown) {
   const isAcceptingAnswers: unknown = await isQuizAcceptingAnswers(quizId)
   const isGivingQuiz: unknown = await isParticipantGivingQuiz(quizId, userId)
-  if (!isAcceptingAnswers || !isGivingQuiz) {
+  if (!isAcceptingAnswers || isGivingQuiz) {
     return false
   }
   return true
@@ -61,12 +58,9 @@ async function saveQuiz(quiz: IQuiz) {
 
 async function timerService(io, socket) {
   socket.on('join_quiz', async (data) => {
-    console.log(data)
     socket.checkQuiz = QuizCode.JoinQuiz
     socket.quizId = data.quizId
     socket.userId = data.userId
-    console.log(socket.userId)
-    console.log(socket.quizId)
     if (!socket.quizId || !socket.userId) {
       socket.disconnect()
     }
@@ -109,12 +103,6 @@ async function timerService(io, socket) {
         user.time.endQuiz - new Date(),
       )
 
-      if (user.time.left <= 0) {
-        if (user.time.left < -10000) {
-          //handle manipulation by user
-        }
-        user.submitted = true
-      }
       user.isGivingQuiz = false
       saveQuiz(quiz)
     } 
