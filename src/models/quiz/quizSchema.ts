@@ -42,11 +42,15 @@ const quizSchema = new Schema<IQuiz>({
         default: false,
       },
       time: {
-        started: {
+        enterQuiz: {
           type: Number,
           default: 0,
         },
         left: {
+          type: Number,
+          default: 0,
+        },
+        endQuiz: {
           type: Number,
           default: 0,
         },
