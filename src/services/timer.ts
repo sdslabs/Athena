@@ -1,12 +1,7 @@
 import mongoose from 'mongoose'
 import QuizModel from '@models/quiz/quizModel'
 import logger from '@utils/logger'
-import { IQuiz, IParticipant } from '@types/quiz'
-enum QuizCode {
-  JoinQuiz = 'joinQuiz',
-  LeftQuiz = 'leftQuiz',
-  ServerDisconnect = 'server namespace disconnect',
-}
+import { IQuiz, IParticipant, QuizCode } from 'types/quiz'
 
 const isQuizAcceptingAnswers = async (quizId: string) => {
   const quiz: IQuiz = await QuizModel.findById(quizId)
@@ -20,12 +15,13 @@ const isQuizAcceptingAnswers = async (quizId: string) => {
 }
 
 const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
-  const quiz: Iquiz = await QuizModel.findById(quizId)
+  const quiz: IQuiz = await QuizModel.findById(quizId)
   if (!quiz) {
     return true
   }
+  const userObjectId = mongoose.Types.ObjectId(userId)
   const user: IParticipant = quiz.participants.find((participant) => {
-    if (participant.user.equals(mongoose.Types.ObjectId(userId))) {
+    if (participant.user.equals(userObjectId)) {
       return participant
     }
   })
@@ -39,9 +35,9 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
   return false
 }
 
-async function checkUserQuizStatus(quizId: unknown, userId: unknown) {
-  const isAcceptingAnswers: unknown = await isQuizAcceptingAnswers(quizId)
-  const isGivingQuiz: unknown = await isParticipantGivingQuiz(quizId, userId)
+async function checkUserQuizStatus(quizId: string, userId: string) {
+  const isAcceptingAnswers: bool = await isQuizAcceptingAnswers(quizId)
+  const isGivingQuiz: bool = await isParticipantGivingQuiz(quizId, userId)
   if (!isAcceptingAnswers || isGivingQuiz) {
     return false
   }
@@ -71,8 +67,9 @@ async function timerService(io, socket) {
       socket.disconnect()
     } else {
       const quiz: IQuiz = await QuizModel.findById(socket.quizId)
+      const userObjectId = mongoose.Types.ObjectId(socket.userId)
       const user: IParticipant = quiz.participants.find((participant) => {
-        if (participant.user.equals(mongoose.Types.ObjectId(socket.userId))) {
+        if (participant.user.equals(userObjectId)) {
           return participant
         }
       })
@@ -90,10 +87,11 @@ async function timerService(io, socket) {
   })
 
   socket.on('disconnect', async (reason: string) => {
-     if (socket.checkQuiz === QuizCode.JoinQuiz && reason != QuizCode.ServerDisconnect) {
+    if (socket.checkQuiz === QuizCode.JoinQuiz && reason != QuizCode.ServerDisconnect) {
       const quiz: IQuiz = await QuizModel.findById(socket.quizId)
+      const userObjectId = mongoose.Types.ObjectId(socket.userId)
       const user: IParticipant = quiz.participants.find((participant) => {
-        if (participant.user.equals(mongoose.Types.ObjectId(socket.userId))) {
+        if (participant.user.equals(userObjectId)) {
           return participant
         }
       })
@@ -105,7 +103,7 @@ async function timerService(io, socket) {
 
       user.isGivingQuiz = false
       saveQuiz(quiz)
-    } 
+    }
   })
 }
 

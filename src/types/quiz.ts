@@ -21,7 +21,7 @@ export interface IParticipant {
 export interface IQuiz {
   admin: Types.ObjectId
   managers?: Types.ObjectId[]
-  participants?: Iparticipant[]
+  participants?: IParticipant[]
   isPublished: boolean
   isAcceptingAnswers: boolean
   resultsPublished: boolean
@@ -47,4 +47,10 @@ export interface IQuiz {
     description?: string
     questions?: IQuestion[]
   }[]
+}
+
+export enum QuizCode {
+  JoinQuiz = 'joinQuiz',
+  LeftQuiz = 'leftQuiz',
+  ServerDisconnect = 'server namespace disconnect',
 }

@@ -4,7 +4,6 @@ import http from 'http'
 import cors from 'cors'
 import { Server } from 'socket.io'
 import { connectDB } from '@db/connectDB'
-import staticRouter from '@routers/static'
 import quizRouter from '@routers/quiz'
 import authRouter from '@routers/auth'
 import sectionRouter from '@routers/section'
@@ -38,7 +37,6 @@ const io = new Server(server, {
 })
 io.on('connection', (socket) => {
   logger.silly(`⚡️[server]: User connected with socketId: ${socket.id}`)
-  console.log(`⚡️[server]: User connected with socketId: ${socket.id}`)
   timerService(io, socket)
 })
 
@@ -65,7 +63,6 @@ app.use((req, res, next) => {
 });
 
 // Routers
-app.use('/static', staticRouter)
 app.use('/quiz', quizRouter)
 app.use('/auth', authRouter)
 app.use('/section', sectionRouter)
