@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express'
+import express, { Express, Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import http from 'http'
 import cors from 'cors'
@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
 
 
 // Middleware to access response body and log accordingly
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   // Override the res.send method to access the response
   const originalSend = res.send;
   res.send = function (body) {
@@ -58,7 +58,7 @@ app.use((req, res, next) => {
       logger.debug(`Bad Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`)
     }
     // Call the original send method to send the response to the user
-    originalSend.call(this, body);
+    return originalSend.call(this, body);
   };
   next();
 });

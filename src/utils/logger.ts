@@ -30,7 +30,7 @@ const createTransports = (config: any) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const create = (config: any) => new winston.createLogger({
+const create = (config: any) => winston.createLogger({
   transports: createTransports(config),
   format: winston.format.combine(
     winston.format.timestamp({
