@@ -10,5 +10,3 @@ router.delete('/deleteResponse/:quizId/:questionId/', isAuth, responseController
 
 
 export default router
-
-

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import logger from '@utils/logger'
 
-export const connectDB = async () => {
+const connectDB = async () => {
   mongoose.set('strictQuery', false) // Why this? https://stackoverflow.com/questions/74747476/deprecationwarning-mongoose-the-strictquery-option-will-be-switched-back-to
 
   try {
@@ -13,3 +13,5 @@ export const connectDB = async () => {
     logger.error(error)
   }
 }
+
+export default connectDB

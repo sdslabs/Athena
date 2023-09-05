@@ -1,14 +1,11 @@
 import express, { Express, Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
-import http from 'http'
-import cors from 'cors'
-import { Server } from 'socket.io'
-import { connectDB } from '@db/connectDB'
+import connectDB  from '@db/connectDB'
 import quizRouter from '@routers/quiz'
 import authRouter from '@routers/auth'
-import sectionRouter from '@routers/section'
-import questionRouter from '@routers/question'
-import checkingRouter from '@routers/checking'
+import createQuizRouter from '@routers/createQuiz'
+import giveQuizRouter from '@routers/giveQuiz'
+import checkQuizRouter from '@routers/checkQuiz'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
@@ -64,11 +61,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Routers
-app.use('/quiz', quizRouter)
 app.use('/auth', authRouter)
-app.use('/section', sectionRouter)
-app.use('/question', questionRouter)
-app.use('/checking', checkingRouter)
+app.use('/checkQuiz', checkQuizRouter)
+app.use('/createQuiz', createQuizRouter)
+app.use('/giveQuiz', giveQuizRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
