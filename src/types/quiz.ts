@@ -1,15 +1,27 @@
-import { Types } from 'mongoose'
+import { Date, Types } from 'mongoose'
 import { IQuestion } from './question'
 
-interface participant {
+export interface IParticipant {
   user: Types.ObjectId
   submitted: boolean
+  isGivingQuiz: boolean
+  registrationData: {
+    customFields: {
+      name: string
+      value: string
+    }[]
+  }
+  time: {
+    enterQuiz: number
+    left: number
+    endQuiz: number
+  }
 }
 
 export interface IQuiz {
   admin: Types.ObjectId
   managers?: Types.ObjectId[]
-  participants?: participant[]
+  participants?: IParticipant[]
   isPublished: boolean
   isAcceptingAnswers: boolean
   resultsPublished: boolean
@@ -19,6 +31,7 @@ export interface IQuiz {
     instructions: string
     startDateTimestamp: Date
     endDateTimestamp: Date
+    duration: number
     accessCode?: string
     bannerImage?: string
   }
@@ -34,4 +47,10 @@ export interface IQuiz {
     description?: string
     questions?: IQuestion[]
   }[]
+}
+
+export enum QuizCode {
+  JoinQuiz = 'joinQuiz',
+  LeftQuiz = 'leftQuiz',
+  ServerDisconnect = 'server namespace disconnect',
 }

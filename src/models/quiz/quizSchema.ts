@@ -23,6 +23,38 @@ const quizSchema = new Schema<IQuiz>({
         type: Boolean,
         default: false,
       },
+      registrationData: {
+        customFields: [
+          {
+            name: {
+              type: String,
+              required: true,
+            },
+            value: {
+              type: String,
+              required: true,
+            },
+          },
+        ],
+      },
+      isGivingQuiz: {
+        type: Boolean,
+        default: false,
+      },
+      time: {
+        enterQuiz: {
+          type: Number,
+          default: 0,
+        },
+        left: {
+          type: Number,
+          default: 0,
+        },
+        endQuiz: {
+          type: Number,
+          default: 0,
+        },
+      },
     },
   ],
   isPublished: {
@@ -59,6 +91,10 @@ const quizSchema = new Schema<IQuiz>({
     },
     endDateTimestamp: {
       type: Date,
+      required: true,
+    },
+    duration: {
+      type: Number,
       required: true,
     },
     accessCode: {
