@@ -9,6 +9,6 @@ router.get('/github', authController.getGithubAuth)
 router.get('/google/callback', authController.googleCallback);
 router.get('/github/callback', authController.githubCallback);
 router.post('/onboard', isAuth, authController.onboard);
-router.get('/dashboard', isAuth, authController.getDashBoard);
+router.get('/', isAuth, authController.getDashBoard);
 
 export default router

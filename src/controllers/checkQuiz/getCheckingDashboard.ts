@@ -10,7 +10,7 @@ interface getDashboardRequest extends Request {
     }
 }
 
-const getDashboard = async (req: getDashboardRequest, res: Response) => {
+const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => {
     const quizId = req.params.quizId;
     try {
         const quiz = await QuizModel.findById(quizId).populate({
@@ -53,4 +53,4 @@ const getDashboard = async (req: getDashboardRequest, res: Response) => {
     }
 }
 
-export default getDashboard
+export default getCheckingDashboard

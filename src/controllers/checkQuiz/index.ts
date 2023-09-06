@@ -1,4 +1,4 @@
-export { default as getDashboard } from './getDashboard';
+export { default as getCheckingDashboard } from './getCheckingDashboard';
 export { default as addAssignee } from './addAssignee';
 export { default as removeAssignee } from './removeAssignee';
 export { default as getAllResponses } from './getAllResponses';

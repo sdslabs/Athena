@@ -7,7 +7,7 @@ import isQuizAdmin from '@utils/isQuizAdmin'
 const router = express.Router()
 
 
-router.get('/dashboard/:quizId', isOnboard, hasEditAccess, checkQuizController.getDashboard)
+router.get('/dashboard/:quizId', isOnboard, hasEditAccess, checkQuizController.getCheckingDashboard)
 router.put('/assign/:quizId/:questionId', isOnboard, hasEditAccess, checkQuizController.addAssignee)
 router.put('/unassign/:quizId/:questionId', isOnboard, hasEditAccess, checkQuizController.removeAssignee)
 router.get('/reponses/:quizId/:questionId', isOnboard, hasEditAccess, checkQuizController.getAllResponses)
