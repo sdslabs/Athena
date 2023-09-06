@@ -8,6 +8,7 @@ import quizRouter from '@routers/quiz'
 import authRouter from '@routers/auth'
 import sectionRouter from '@routers/section'
 import questionRouter from '@routers/question'
+import checkingRouter from '@routers/checking'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
@@ -67,6 +68,7 @@ app.use('/quiz', quizRouter)
 app.use('/auth', authRouter)
 app.use('/section', sectionRouter)
 app.use('/question', questionRouter)
+app.use('/checking', checkingRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')

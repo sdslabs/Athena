@@ -1,14 +1,14 @@
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import { Request, Response } from 'express'
 import QuizModel from '@models/quiz/quizModel'
-import { Types } from 'mongoose'
 import sendFailureResponse from '@utils/failureResponse'
 import { scheduleJob } from 'node-schedule'
 import logger from '@utils/logger'
+import { JwtPayload } from 'types'
 
 interface publishQuizRequest extends Request {
     body: {
-        user: Types.ObjectId
+        user: JwtPayload
     }
     params: {
         quizId: string

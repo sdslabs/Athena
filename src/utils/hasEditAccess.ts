@@ -1,27 +1,24 @@
-import QuizModel from '@models/quiz/quizModel';
 import { Request, Response, NextFunction } from 'express';
 import { UserRoles } from 'types';
 import sendUnauthorizedResponse from './unauthorisedResponse';
+import sendInvalidInputResponse from './invalidInputResponse';
+import getQuiz from './getQuiz';
+import sendFailureResponse from './failureResponse';
 
 const hasEditAccess = async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req.body;
     const { quizId } = req.params;
 
-    if(!user || !quizId) {
-        return res.status(400).json({
-            message: 'Invalid input',
-        });
+    if (!quizId) {
+        return sendInvalidInputResponse(res);
     }
 
     try {
         // extract adminId from Quiz
-        const quiz = await QuizModel.findById(quizId);
+        const quiz = await getQuiz(quizId);
         if (!quiz) {
-            return res.status(404).json({
-                message: 'Quiz not found',
-            });
+            return sendInvalidInputResponse(res);
         }
-
         //check if user is superAdmin
         if (user.role === UserRoles.superAdmin) {
             return next();
@@ -39,8 +36,10 @@ const hasEditAccess = async (req: Request, res: Response, next: NextFunction) =>
 
         return sendUnauthorizedResponse(res);
     } catch (error: unknown) {
-        return res.status(500).json({
-            message: 'Internal server error',
+        return sendFailureResponse({
+            res,
+            error,
+            messageToSend: 'Internal Server Error',
         });
     }
 }

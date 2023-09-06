@@ -4,6 +4,7 @@ import { JwtPayload, IResponse } from "types";
 import sendFailureResponse from "@utils/failureResponse";
 import sendInvalidInputResponse from "@utils/invalidInputResponse";
 import QuestionModel from "@models/question/questionModel";
+import getQuiz from "@utils/getQuiz";
 
 
 interface createOrUpdateResponseRequest extends Request {
@@ -30,6 +31,16 @@ const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: R
       return sendInvalidInputResponse(res);
     }
 
+    const quiz = await getQuiz(req.params.quizId);
+    // check if the quiz is accepting answers
+    if (quiz?.isAcceptingAnswers === false) {
+      return sendFailureResponse({
+        res,
+        errorCode: 400,
+        error: new Error("Quiz is not accepting answers"),
+        messageToSend: "Quiz is not accepting answers"
+      });
+    }
     // no need to check the question type etc as the data is being sent by the frontend and we will have cors enabled for the frontend only
     const response = await ResponseModel.findOne({ userId: user.userId, quizId: req.params.quizId, questionId: req.params.questionId });
     if (!response) {
