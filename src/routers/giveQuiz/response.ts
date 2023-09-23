@@ -1,5 +1,5 @@
 import express from 'express'
-import * as responseController from '@controllers/response'
+import * as responseController from '@controllers/giveQuiz/response'
 import isAuth from '@utils/isAuth'
 
 const router = express.Router();
@@ -10,5 +10,3 @@ router.delete('/deleteResponse/:quizId/:questionId/', isAuth, responseController
 
 
 export default router
-
-

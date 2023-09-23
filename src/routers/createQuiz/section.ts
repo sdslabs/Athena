@@ -1,5 +1,5 @@
 import express from 'express'
-import * as sectionController from '@controllers/section'
+import * as sectionController from '@controllers/createQuiz/section'
 import hasEditAccess from '@utils/hasEditAccess'
 import isOnboard from '@utils/isOnboard'
 

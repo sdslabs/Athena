@@ -1,14 +1,13 @@
-import express, { Express, Request, Response } from 'express'
+import express, { Express, Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import http from 'http'
 import cors from 'cors'
 import { Server } from 'socket.io'
-import { connectDB } from '@db/connectDB'
-import quizRouter from '@routers/quiz'
+import connectDB  from '@db/connectDB'
 import authRouter from '@routers/auth'
-import sectionRouter from '@routers/section'
-import questionRouter from '@routers/question'
-import checkingRouter from '@routers/checking'
+import createQuizRouter from '@routers/createQuiz'
+import giveQuizRouter from '@routers/giveQuiz'
+import checkQuizRouter from '@routers/checkQuiz'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
@@ -43,7 +42,7 @@ io.on('connection', (socket) => {
 
 
 // Middleware to access response body and log accordingly
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   // Override the res.send method to access the response
   const originalSend = res.send;
   res.send = function (body) {
@@ -58,17 +57,16 @@ app.use((req, res, next) => {
       logger.debug(`Bad Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`)
     }
     // Call the original send method to send the response to the user
-    originalSend.call(this, body);
+    return originalSend.call(this, body);
   };
   next();
 });
 
 // Routers
-app.use('/quiz', quizRouter)
 app.use('/auth', authRouter)
-app.use('/section', sectionRouter)
-app.use('/question', questionRouter)
-app.use('/checking', checkingRouter)
+app.use('/checkQuiz', checkQuizRouter)
+app.use('/createQuiz', createQuizRouter)
+app.use('/giveQuiz', giveQuizRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')

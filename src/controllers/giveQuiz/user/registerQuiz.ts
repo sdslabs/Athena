@@ -27,7 +27,7 @@ const registerQuiz = async (req: registerQuizRequest, res: Response) => {
     }
 
     try {
-        const quiz = await getQuiz(req.params.quizId);
+        const quiz = await getQuiz(quizId);
         if (!quiz) {
             return sendInvalidInputResponse(res);
         }
@@ -36,8 +36,8 @@ const registerQuiz = async (req: registerQuizRequest, res: Response) => {
         if (!quiz.isPublished) {
             return sendFailureResponse({
                 res,
-                error: 'Error registering quiz, this quiz is not published',
-                messageToSend: 'Error registering quiz, this quiz is not published',
+                error: 'Error registering quiz, this quiz is already published',
+                messageToSend: 'Error registering quiz, this quiz is already published',
                 errorCode: 400
             });
         }
@@ -64,8 +64,9 @@ const registerQuiz = async (req: registerQuizRequest, res: Response) => {
                 customFields
             },
             time: {
-                started: 0,
-                left: quiz.quizMetadata?.duration || 0,
+                enterQuiz: 0,
+                left: 0,
+                endQuiz: 0
             }
         }
         quiz.participants?.push(participant);
