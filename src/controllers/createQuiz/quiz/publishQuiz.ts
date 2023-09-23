@@ -5,6 +5,7 @@ import sendFailureResponse from '@utils/failureResponse'
 import { scheduleJob } from 'node-schedule'
 import logger from '@utils/logger'
 import { JwtPayload } from 'types'
+import { Types } from 'mongoose'
 
 interface publishQuizRequest extends Request {
     body: {
