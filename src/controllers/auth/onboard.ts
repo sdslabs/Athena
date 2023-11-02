@@ -1,6 +1,7 @@
 import userModel from "@models/user/userModel";
 import sendFailureResponse from "@utils/failureResponse";
 import sendInvalidInputResponse from "@utils/invalidInputResponse";
+import { verifyToken } from "@utils/token";
 import { Request, Response } from "express";
 import { IUser, JwtPayload } from "types";
 
@@ -25,16 +26,19 @@ const requiredDetailsPresent = (body: onboardRequest['body']) => {
 
 // Onboard user
 const onboard = async (req: onboardRequest, res:Response) => {
-    const { personalDetails, educationalDetails, socialHandles, user } = req.body;
-    if(!requiredDetailsPresent(req.body)) {
-        return sendInvalidInputResponse(res)
-    }
+    console.log("onboard initiated")
+    const { personalDetails, educationalDetails, socialHandles,user} = req.body;
+    // console.log(req.body)
+    console.log()
+    // if(!requiredDetailsPresent(req.body)) {
+    //     return sendInvalidInputResponse(res)
+    // }
 
     // Check if user has already onboarded
     const userData = await userModel.findById(user.userId);
     if( userData?.onboardingComplete ) {
         // TODO: Change this as per the frontend
-        return res.redirect('/dashboard')
+        return res.status(200).send("success")
     }
 
     try {
@@ -51,7 +55,8 @@ const onboard = async (req: onboardRequest, res:Response) => {
         )
 
         // TODO: Change this as per the frontends
-        res.redirect('/dashboard')
+        // res.redirect(`${process.env.FRONTEND_URL}dashboard/`)
+        res.status(200).send("success");
 
     } catch(error: unknown) {
         sendFailureResponse({

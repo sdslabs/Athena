@@ -11,5 +11,6 @@ router.get('/google/callback', authController.googleCallback);
 router.get('/github/callback', authController.githubCallback);
 router.post('/onboard', isAuth, authController.onboard);
 router.get('/', isOnboard, authController.getDashBoard);
+router.get('/user',authController.getUser);
 
 export default router

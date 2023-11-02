@@ -16,7 +16,6 @@ const githubCallback = async (req: Request, res: Response) => {
                     accept: 'application/json'
                 }
             });
-
     const accessToken = response.data.split('&')[0].split('=')[1];
 
     try {
@@ -63,13 +62,13 @@ const githubCallback = async (req: Request, res: Response) => {
 
         const jwtToken = createToken(payload);
         res.cookie('jwt', jwtToken, { httpOnly: true });
-        return res.redirect('/');
+        res.redirect(process.env.FRONTEND_URL as string+"register");
     }
     catch (error: unknown) {
         return sendFailureResponse({
             res,
             error,
-            messageToSend: 'Failed to get user details from GtHub',
+            messageToSend: 'Failed to get user details from GitHub',
         });
     }
 }
