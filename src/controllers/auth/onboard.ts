@@ -29,7 +29,6 @@ const onboard = async (req: onboardRequest, res:Response) => {
     console.log("onboard initiated")
     const { personalDetails, educationalDetails, socialHandles,user} = req.body;
     // console.log(req.body)
-    console.log()
     // if(!requiredDetailsPresent(req.body)) {
     //     return sendInvalidInputResponse(res)
     // }
