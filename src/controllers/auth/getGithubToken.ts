@@ -62,7 +62,7 @@ const getGithubToken = async (req: Request, res: Response) => {
 
         const jwtToken = createToken(payload);
         res.cookie('jwt', jwtToken, { httpOnly: true });
-        res.send(githubUser)
+        res.status(200).send("sucess")
     }
     catch (error: unknown) {
         return sendFailureResponse({

@@ -49,7 +49,7 @@ const getGoogleToken = async (req: Request, res: Response) => {
     }
     const jwtToken = createToken(payload)
     res.cookie('jwt', jwtToken, { httpOnly: true })
-    res.send(googleUser)
+    res.status(200).send('success')
   } catch (error: unknown) {
     return sendFailureResponse({
       res,
