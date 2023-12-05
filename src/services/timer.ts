@@ -79,7 +79,7 @@ async function timerService(io, socket) {
           return participant
         }
       })
-      // user.isGivingQuiz = true
+      user.isGivingQuiz = true
       user.time.enterQuiz = new Date().getTime()
       user.time.endQuiz = quiz.quizMetadata.endDateTimestamp.getTime()
       user.time.left = Math.min(user.time.left, user.time.endQuiz -19800000 - (new Date()).getTime())
@@ -109,8 +109,8 @@ async function timerService(io, socket) {
       })
       socket.checkQuiz = QuizCode.LeftQuiz
       user.time.left = Math.min(
-        user.time.left - (new Date() + 19800000 - user.time.enterQuiz),
-        user.time.endQuiz -19800000 - new Date(),
+        user.time.left - ((new Date()).getTime() + 19800000 - user.time.enterQuiz),
+        user.time.endQuiz -19800000 - (new Date()).getTime(),
       )
 
       user.isGivingQuiz = false
