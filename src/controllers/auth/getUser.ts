@@ -5,19 +5,18 @@ import { IUser, JwtPayload } from 'types'
 
 const getUser = async (req: Request, res: Response) => {
   const token = req.cookies.jwt
-  let user: JwtPayload
   if (token) {
     try {
-      user = verifyToken(token) as JwtPayload
+      const user : any = verifyToken(token)
       const userId = user.userId
-      const document: IUser = (await userModel.findById(userId)) as IUser
-      if (document.onboardingComplete === true) {
+      const document: IUser | null = await userModel.findById(userId)
+      if (document && document.onboardingComplete === true) {
         res.send({ user, onboarded: true })
       } else {
         res.send({ user, onboarded: false })
       }
     } catch (e) {
-        console.error(e);
+      console.error(e)
     }
   } else {
     res.send({ user: null, onboarded: false })

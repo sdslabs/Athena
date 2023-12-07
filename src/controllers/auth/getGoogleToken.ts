@@ -8,14 +8,14 @@ import { Types } from 'mongoose'
 import sendFailureResponse from '@utils/failureResponse'
 
 const getGoogleToken = async (req: Request, res: Response) => {
-  const { code } = req.params
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URL,
-  )
-  const { tokens } = await oauth2Client.getToken(code)
   try {
+    const { code } = req.body
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URL,
+    )
+    const { tokens } = await oauth2Client.getToken(code)
     const googleUser = await axios.get(`${process.env.GOOGLE_USER_URL}${tokens.access_token}`, {
       headers: {
         Authorization: `Bearer ${tokens.id_token}`,
@@ -25,9 +25,9 @@ const getGoogleToken = async (req: Request, res: Response) => {
       'personalDetails.emailAdd': googleUser.data.email,
       oauthProvider: OAuthProviders.google,
     })
-    let userId: Types.ObjectId
+    let userId: Types.ObjectId | undefined
     if (user) {
-      userId = user._id as Types.ObjectId
+      userId = user._id
     } else {
       const newUser = new UserModel({
         oauthProvider: OAuthProviders.google,
@@ -42,14 +42,18 @@ const getGoogleToken = async (req: Request, res: Response) => {
       const savedUser = await newUser.save()
       userId = savedUser._id
     }
-    const payload: JwtPayload = {
-      userId: userId,
-      emailAdd: googleUser.data.email,
-      role: user ? user.role : UserRoles.user,
+    if (userId) {
+      const payload: JwtPayload = {
+        userId: userId,
+        emailAdd: googleUser.data.email,
+        role: user ? user.role : UserRoles.user,
+      }
+      const jwtToken = createToken(payload)
+      res.cookie('jwt', jwtToken, { httpOnly: true })
+      res.status(200).send('success')
+    } else {
+      res.status(500).send('Internal server error')
     }
-    const jwtToken = createToken(payload)
-    res.cookie('jwt', jwtToken, { httpOnly: true })
-    res.status(200).send('success')
   } catch (error: unknown) {
     return sendFailureResponse({
       res,

@@ -26,7 +26,6 @@ const requiredDetailsPresent = (body: onboardRequest['body']) => {
 
 // Onboard user
 const onboard = async (req: onboardRequest, res:Response) => {
-    console.log("onboard initiated")
     const { personalDetails, educationalDetails, socialHandles,user} = req.body;
     // console.log(req.body)
     // if(!requiredDetailsPresent(req.body)) {
