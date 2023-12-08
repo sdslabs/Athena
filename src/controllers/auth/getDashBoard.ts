@@ -12,8 +12,8 @@ interface getDashBoardRequest extends Request {
 const getDashBoard = async (req: getDashBoardRequest, res: Response) => {
   const user = req.body.user;
   try {
-    const quizzes = await QuizModel.find({ $or: [{ admin: user.userId }, { managers: user.userId }] });
-    const createdQuizzes = await QuizModel.find({})
+    const createdQuizzes = await QuizModel.find({ $or: [{ admin: user.userId }, { managers: user.userId }] });
+    const quizzes = await QuizModel.find({})
     let attemptedQuizzes = 0;
     const quizDetails = quizzes.map((quiz) => {
       if (quiz?.isPublished) {
@@ -28,6 +28,7 @@ const getDashBoard = async (req: getDashBoardRequest, res: Response) => {
           instructions: quiz?.quizMetadata?.instructions,
           startDateTimestamp: quiz?.quizMetadata?.startDateTimestamp,
           endDateTimestamp: quiz?.quizMetadata?.endDateTimestamp,
+          bannerImage: quiz?.quizMetadata?.bannerImage,
           isAcceptingAnswers: quiz?.isAcceptingAnswers,
           registrationMetadata: quiz?.registrationMetadata,
           registered: userStatus ? true : false,
