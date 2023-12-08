@@ -8,13 +8,13 @@ import sendFailureResponse from '@utils/failureResponse'
 
 const getGithubToken = async (req: Request, res: Response) => {
   try {
-    const { code } = req.params
+    const { code } = req.body
 
     const response = await axios.post(`${process.env.GITHUB_TOKEN_URL}${code}`, {
       headers: {
         accept: 'application/json',
       },
-    })
+    });
     const accessToken = response.data.split('&')[0].split('=')[1]
 
     const githubUser = await axios.get(process.env.GITHUB_USER_URL!, {
