@@ -27,10 +27,9 @@ const requiredDetailsPresent = (body: onboardRequest['body']) => {
 // Onboard user
 const onboard = async (req: onboardRequest, res:Response) => {
     const { personalDetails, educationalDetails, socialHandles,user} = req.body;
-    // console.log(req.body)
-    // if(!requiredDetailsPresent(req.body)) {
-    //     return sendInvalidInputResponse(res)
-    // }
+    if(!requiredDetailsPresent(req.body)) {
+        return sendInvalidInputResponse(res)
+    }
 
     // Check if user has already onboarded
     const userData = await userModel.findById(user.userId);
