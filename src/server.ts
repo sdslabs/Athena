@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import http from 'http'
 import cors from 'cors'
 import { Server } from 'socket.io'
-import connectDB  from '@db/connectDB'
+import connectDB from '@db/connectDB'
 import authRouter from '@routers/auth'
 import createQuizRouter from '@routers/createQuiz'
 import giveQuizRouter from '@routers/giveQuiz'
@@ -21,12 +21,12 @@ const app: Express = express()
 const port = process.env.PORT
 
 // Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(mongoSanitize());
-app.use(morgan('dev'));
-app.use(cors());
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+app.use(mongoSanitize())
+app.use(morgan('dev'))
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
 
 //socket.io
 const server = http.createServer(app)
@@ -40,27 +40,28 @@ io.on('connection', (socket) => {
   timerService(io, socket)
 })
 
-
 // Middleware to access response body and log accordingly
 app.use((req: Request, res: Response, next: NextFunction) => {
   // Override the res.send method to access the response
-  const originalSend = res.send;
+  const originalSend = res.send
   res.send = function (body) {
     // Access the response here
-    if(res.statusCode === 401) {
-      logger.warn(`Unauthorized Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`)
-    }
-    else if(res.statusCode === 500) {
-      logger.error(`Internal Server Error: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`)
-    }
-    else if(res.statusCode === 400) {
+    if (res.statusCode === 401) {
+      logger.warn(
+        `Unauthorized Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`,
+      )
+    } else if (res.statusCode === 500) {
+      logger.error(
+        `Internal Server Error: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`,
+      )
+    } else if (res.statusCode === 400) {
       logger.debug(`Bad Request: ${req.method} ${req.originalUrl} ${JSON.stringify(req.body)}`)
     }
     // Call the original send method to send the response to the user
-    return originalSend.call(this, body);
-  };
-  next();
-});
+    return originalSend.call(this, body)
+  }
+  next()
+})
 
 // Routers
 app.use('/auth', authRouter)
@@ -77,4 +78,4 @@ server.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
 })
 
-export default app;
+export default app

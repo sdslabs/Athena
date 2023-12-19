@@ -13,7 +13,7 @@ const userSchema = new Schema<IUser>({
     },
     phoneNo: {
       type: String,
-      required: true,
+      required: false,
     },
   },
   educationalDetails: {
