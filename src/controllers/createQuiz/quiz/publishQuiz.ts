@@ -15,7 +15,7 @@ interface publishQuizRequest extends Request {
         quizId: string
     }
 }
-
+// TODO: check that the quiz is perfect in terms that all data is present
 const startQuizScheduler = async (quizId: Types.ObjectId, startDateTimestamp: Date) => {
     const job = scheduleJob(startDateTimestamp, async () => {
         try {
