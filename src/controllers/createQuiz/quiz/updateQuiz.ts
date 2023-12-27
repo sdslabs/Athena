@@ -7,7 +7,6 @@ import sendFailureResponse from '@utils/failureResponse'
 interface updateQuizRequest extends Request {
   body: {
     managers?: IQuiz['managers']
-    isAcceptingAnswers?: IQuiz['isAcceptingAnswers']
     quizMetadata?: IQuiz['quizMetadata']
     registrationMetadata?: IQuiz['registrationMetadata']
     user: JwtPayload
@@ -23,7 +22,7 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
   }
 
   // get the data from the request body
-  const { managers, isAcceptingAnswers, quizMetadata, registrationMetadata } = req.body
+  const { managers, quizMetadata, registrationMetadata } = req.body
   const quizId = req.params.quizId
 
   if (!quizId) {
@@ -36,7 +35,6 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
       quizId,
       {
         managers: managers,
-        isAcceptingAnswers: isAcceptingAnswers,
         quizMetadata: quizMetadata,
         registrationMetadata: registrationMetadata,
       },
@@ -52,7 +50,7 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
         errorCode: 404
       })
     } else {
-      return res.status(200).send({ message: 'Quiz updated', updatedParameters: { quizId: quiz._id, managers, isAcceptingAnswers, quizMetadata, registrationMetadata }})
+      return res.status(200).send({ message: 'Quiz updated', updatedParameters: { quizId: quiz._id, managers, quizMetadata, registrationMetadata }})
     }
   } catch (error: unknown) {
     sendFailureResponse({

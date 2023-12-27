@@ -8,9 +8,9 @@ import isOnboard from '@utils/isOnboard'
 const router = express.Router()
 
 router.post('/host', isOnboard, isAdmin, quizController.hostQuiz)
-router.put('/update/:quizId', isOnboard, hasEditAccess, quizController.updateQuiz)
-router.patch('/publish/:quizId', isOnboard, hasEditAccess, quizController.publishQuiz)
-router.delete('/delete/:quizId', isOnboard, hasEditAccess, quizController.deleteQuiz)
+router.put('/:quizId', isOnboard, hasEditAccess, quizController.updateQuiz)
+router.patch('/:quizId', isOnboard, hasEditAccess, quizController.publishQuiz)
+router.delete('/:quizId', isOnboard, hasEditAccess, quizController.deleteQuiz)
 router.get('/:quizId', isAuth, quizController.quizGet)
 
 

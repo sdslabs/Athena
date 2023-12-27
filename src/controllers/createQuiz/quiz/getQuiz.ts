@@ -13,37 +13,37 @@ const quizGet = async (req: getQuizRequest, res: Response) => {
   if (!req.params.quizId) {
     return sendInvalidInputResponse(res)
   }
-  try {
+  try{
     const quiz = await getQuiz(req.params.quizId)
     if (!quiz) {
       return sendInvalidInputResponse(res)
-    }
-    if (quiz?.isPublished && quiz?.isAcceptingAnswers) {
+    } else {
+      const { quizMetadata, registrationMetadata, sections, managers} = quiz
+
       const quizDetails = {
-        _id: quiz._id,
-        name: quiz?.quizMetadata?.name,
-        description: quiz?.quizMetadata?.description,
-        instructions: quiz?.quizMetadata?.instructions,
-        startDateTimestamp: quiz?.quizMetadata?.startDateTimestamp,
-        endDateTimestamp: quiz?.quizMetadata?.endDateTimestamp,
-        sections: quiz?.sections
+        name: quizMetadata?.name || '',
+        managers: managers || [],
+        description: quizMetadata?.description || '',
+        instructions: quizMetadata?.instructions || '',
+        startDate: '',
+        startTime: '',
+        endDate: '',
+        endTime: '',
+        duration: '',
+        accessCode: '',
+        bannerImage: quizMetadata?.bannerImage || '',
       }
-      return res.status(200).send({ message: 'Quiz fetched', quiz: quizDetails })
+      const registrationForm = {
+        customFields: registrationMetadata?.customFields || [],
+      }
+      return res.status(200).send({ message: 'Quiz found', quizDetails, registrationForm })
     }
-    else {
-      return sendFailureResponse({
-        res,
-        error: 'Error fetching quiz, this quiz is not alive',
-        messageToSend: 'Error fetching quiz, this quiz is not live',
-        errorCode: 400
-      });
-    }
-  }
-  catch (error: unknown) {
+  } catch (error: unknown) {
     sendFailureResponse({
       res,
       error,
-      messageToSend: 'Failed to fetch quiz',
+      messageToSend: 'Error getting quiz',
+      errorCode: 500
     })
   }
 }
