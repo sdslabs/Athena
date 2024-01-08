@@ -8,6 +8,24 @@ interface getQuizRequest extends Request {
     quizId: string
   }
 }
+const padTo2Digits = (num: number) => {
+  return num.toString().padStart(2, '0');
+}
+
+const formatDate = (timestamp: Date) => {
+  return [
+    timestamp.getFullYear(),
+    padTo2Digits(timestamp.getMonth() + 1),
+    padTo2Digits(timestamp.getDate()),
+  ].join('-');
+}
+
+const formatTime = (timestamp: Date) => {
+  return [
+    padTo2Digits(timestamp.getHours()),
+    padTo2Digits(timestamp.getMinutes()),
+  ].join(':');
+}
 
 const quizGet = async (req: getQuizRequest, res: Response) => {
   if (!req.params.quizId) {
@@ -19,18 +37,17 @@ const quizGet = async (req: getQuizRequest, res: Response) => {
       return sendInvalidInputResponse(res)
     } else {
       const { quizMetadata, registrationMetadata, sections, managers} = quiz
-
       const quizDetails = {
         name: quizMetadata?.name || '',
         managers: managers || [],
         description: quizMetadata?.description || '',
         instructions: quizMetadata?.instructions || '',
-        startDate: '',
-        startTime: '',
-        endDate: '',
-        endTime: '',
-        duration: '',
-        accessCode: '',
+        startDate: quizMetadata?.startDateTimestamp ? formatDate(quizMetadata?.startDateTimestamp) : '',
+        startTime: quizMetadata?.startDateTimestamp ? formatTime(quizMetadata?.startDateTimestamp) : '',
+        endDate: quizMetadata?.endDateTimestamp ? formatDate(quizMetadata?.endDateTimestamp) : '',
+        endTime: quizMetadata?.endDateTimestamp ? formatTime(quizMetadata?.endDateTimestamp) : '',
+        duration: quizMetadata?.duration? `${Math.floor(quizMetadata?.duration / 60).toString().padStart(2, '0')}:${(quizMetadata?.duration % 60).toString().padStart(2, '0')}` : '',
+        accessCode: quizMetadata?.accessCode || '',
         bannerImage: quizMetadata?.bannerImage || '',
       }
       const registrationForm = {
