@@ -18,7 +18,7 @@ const deleteResponse = async (req: deleteResponseRequest, res: Response) => {
   const { user } = req.body;
   const { quizId, questionId } = req.params;
   try {
-    const response = await ResponseModel.findOne({ userId: user.userId, quizId, questionId });
+    const response = await ResponseModel.findOne({ user: user.userId, quizId, questionId });
     if (!response) {
       return sendInvalidInputResponse(res);
     }
