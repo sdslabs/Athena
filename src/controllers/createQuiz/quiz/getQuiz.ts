@@ -53,7 +53,14 @@ const quizGet = async (req: getQuizRequest, res: Response) => {
       const registrationForm = {
         customFields: registrationMetadata?.customFields || [],
       }
-      return res.status(200).send({ message: 'Quiz found', quizDetails, registrationForm })
+      const sectionsDetails = sections?.map((section) => {
+        return {
+          name: section.name || '',
+          instructions: section.instructions || '',
+          questions: section.questions || [],
+        }
+      });
+      return res.status(200).send({ message: 'Quiz found', quizDetails, registrationForm, sectionsDetails })
     }
   } catch (error: unknown) {
     sendFailureResponse({

@@ -13,6 +13,9 @@ import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
 import logger from '@utils/logger'
 import timerService from './services/timer'
+import { createToken } from '@utils/token'
+import { Types } from 'mongoose'
+import { UserRoles } from 'types'
 // Initialize server
 dotenv.config()
 connectDB()
@@ -76,6 +79,11 @@ app.get('/', (req: Request, res: Response) => {
 server.listen(port, () => {
   logger.silly(`⚡️[server]: Server is running at http://localhost:${port}`)
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
+  const userId = new Types.ObjectId('6476ff541d60914819117366')
+  const emailAdd = 'tanmaybajaj567@gmail.com'
+  const role = UserRoles.admin
+  const token = createToken({ userId, emailAdd, role })
+  console.log(token)
 })
 
 export default app

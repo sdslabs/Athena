@@ -129,7 +129,7 @@ const quizSchema = new Schema<IQuiz>({
         type: String,
         required: true,
       },
-      description: {
+      instructions: {
         type: String,
       },
       questions: [{ type: Schema.Types.ObjectId, ref: ModelNames.Question }],
