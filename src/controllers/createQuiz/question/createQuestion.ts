@@ -53,7 +53,7 @@ const createQuestion = async (req: createQuestionRequest, res: Response) => {
             })
         } else {
             return res.status(201).json({
-                questionid: newQuestionDoc._id,
+                questionId: newQuestionDoc._id,
                 message: "Question created",
             })
         }
