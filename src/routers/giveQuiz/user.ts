@@ -5,6 +5,7 @@ import isOnboard from '@utils/isOnboard';
 const router = express.Router();
 
 router.post('/register/:quizId', isOnboard, userController.registerQuiz)
-router.get('/start/:quizId', isOnboard, userController.startQuiz)
+router.post('/start/:quizId', isOnboard, userController.startQuiz)
+router.post('/submit/:quizId', isOnboard,userController.submitQuiz)
 
 export default router;
