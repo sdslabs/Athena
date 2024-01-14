@@ -8,42 +8,66 @@ interface getQuizRequest extends Request {
     quizId: string
   }
 }
+const padTo2Digits = (num: number) => {
+  return num.toString().padStart(2, '0');
+}
+
+const formatDate = (timestamp: Date) => {
+  return [
+    timestamp.getFullYear(),
+    padTo2Digits(timestamp.getMonth() + 1),
+    padTo2Digits(timestamp.getDate()),
+  ].join('-');
+}
+
+const formatTime = (timestamp: Date) => {
+  return [
+    padTo2Digits(timestamp.getHours()),
+    padTo2Digits(timestamp.getMinutes()),
+  ].join(':');
+}
 
 const quizGet = async (req: getQuizRequest, res: Response) => {
   if (!req.params.quizId) {
     return sendInvalidInputResponse(res)
   }
-  try {
+  try{
     const quiz = await getQuiz(req.params.quizId)
     if (!quiz) {
       return sendInvalidInputResponse(res)
-    }
-    if (quiz?.isPublished && quiz?.isAcceptingAnswers) {
+    } else {
+      const { quizMetadata, registrationMetadata, sections, managers} = quiz
       const quizDetails = {
-        _id: quiz._id,
-        name: quiz?.quizMetadata?.name,
-        description: quiz?.quizMetadata?.description,
-        instructions: quiz?.quizMetadata?.instructions,
-        startDateTimestamp: quiz?.quizMetadata?.startDateTimestamp,
-        endDateTimestamp: quiz?.quizMetadata?.endDateTimestamp,
-        sections: quiz?.sections
+        name: quizMetadata?.name || '',
+        managers: managers || [],
+        description: quizMetadata?.description || '',
+        instructions: quizMetadata?.instructions || '',
+        startDate: quizMetadata?.startDateTimestamp ? formatDate(quizMetadata?.startDateTimestamp) : '',
+        startTime: quizMetadata?.startDateTimestamp ? formatTime(quizMetadata?.startDateTimestamp) : '',
+        endDate: quizMetadata?.endDateTimestamp ? formatDate(quizMetadata?.endDateTimestamp) : '',
+        endTime: quizMetadata?.endDateTimestamp ? formatTime(quizMetadata?.endDateTimestamp) : '',
+        duration: quizMetadata?.duration? `${Math.floor(quizMetadata?.duration / 60).toString().padStart(2, '0')}:${(quizMetadata?.duration % 60).toString().padStart(2, '0')}` : '',
+        accessCode: quizMetadata?.accessCode || '',
+        bannerImage: quizMetadata?.bannerImage || '',
       }
-      return res.status(200).send({ message: 'Quiz fetched', quiz: quizDetails })
-    }
-    else {
-      return sendFailureResponse({
-        res,
-        error: 'Error fetching quiz, this quiz is not alive',
-        messageToSend: 'Error fetching quiz, this quiz is not live',
-        errorCode: 400
+      const registrationForm = {
+        customFields: registrationMetadata?.customFields || [],
+      }
+      const sectionsDetails = sections?.map((section) => {
+        return {
+          name: section.name || '',
+          instructions: section.instructions || '',
+          questions: section.questions || [],
+        }
       });
+      return res.status(200).send({ message: 'Quiz found', quizDetails, registrationForm, sectionsDetails })
     }
-  }
-  catch (error: unknown) {
+  } catch (error: unknown) {
     sendFailureResponse({
       res,
       error,
-      messageToSend: 'Failed to fetch quiz',
+      messageToSend: 'Error getting quiz',
+      errorCode: 500
     })
   }
 }

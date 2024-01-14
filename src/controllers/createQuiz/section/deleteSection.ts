@@ -8,11 +8,11 @@ import sendFailureResponse from "@utils/failureResponse";
 
 interface deleteSectionRequest extends Request {
     params: {
-        quizId: string
+        quizId: string,
+        sectionIndex: string
     }
     body: {
         user: JwtPayload
-        sectionIndex: number
     }
 }
 
@@ -21,7 +21,7 @@ const deleteSection = async (req: deleteSectionRequest, res: Response) => {
         return sendInvalidInputResponse(res)
     }
     const quizId = req.params.quizId;
-    const sectionIndex = req.body.sectionIndex;
+    const sectionIndex = parseInt(req.params.sectionIndex,10);
     const quiz = await getQuiz(quizId);
 
     if (!quiz) {

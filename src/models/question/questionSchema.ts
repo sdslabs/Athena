@@ -6,11 +6,10 @@ const questionSchema = new Schema<IQuestion>({
     type: String,
     required: true,
     enum: Object.values(QuestionTypes),
-    default: QuestionTypes.MCQ,
+    default: QuestionTypes.SUB,
   },
   description: {
     type: String,
-    required: true,
   },
   options: [
     {

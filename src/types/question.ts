@@ -18,6 +18,6 @@ export interface IQuestion {
 }
 
 export enum QuestionTypes {
-  MCQ = 'mcq',
-  SUBJECTIVE = 'subjective',
+  MCQ = 'Multiple Choice',
+  SUB = 'Subjective',
 }

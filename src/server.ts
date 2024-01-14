@@ -13,6 +13,9 @@ import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
 import logger from '@utils/logger'
 import timerService from './services/timer'
+import { createToken } from '@utils/token'
+import { Types } from 'mongoose'
+import { UserRoles } from 'types'
 // Initialize server
 dotenv.config()
 connectDB()
@@ -21,12 +24,12 @@ const app: Express = express()
 const port = process.env.PORT
 
 // Middlewares
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
-app.use(mongoSanitize())
-app.use(morgan('dev'))
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(mongoSanitize());
 
 //socket.io
 const server = http.createServer(app)
@@ -76,6 +79,11 @@ app.get('/', (req: Request, res: Response) => {
 server.listen(port, () => {
   logger.silly(`⚡️[server]: Server is running at http://localhost:${port}`)
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
+  const userId = new Types.ObjectId('6476ff541d60914819117366')
+  const emailAdd = 'tanmaybajaj567@gmail.com'
+  const role = UserRoles.admin
+  const token = createToken({ userId, emailAdd, role })
+  console.log(token)
 })
 
 export default app

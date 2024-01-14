@@ -23,21 +23,16 @@ const updateSection = async (req: updateSectionRequest, res: Response) => {
     if (!req.body) {
         return sendInvalidInputResponse(res)
     }
-    if (!req.body) {
-        return sendInvalidInputResponse(res)
-    }
+
     const quizId = req.params.quizId;
     const sectionIndex = req.body.sectionIndex;
     const quiz = await getQuiz(quizId);
 
-    if (!quiz) {
+    if (!quiz || !quiz?.sections || sectionIndex >= quiz.sections.length) {
         return sendInvalidInputResponse(res);
     }
 
-    const section = quiz?.sections?.[sectionIndex];
-    if (!section) {
-        return sendInvalidInputResponse(res);
-    }
+    const section = quiz?.sections[sectionIndex];
     try {
         await QuizModel.findByIdAndUpdate(quizId, {
             $set: {

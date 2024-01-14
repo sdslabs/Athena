@@ -75,27 +75,27 @@ const quizSchema = new Schema<IQuiz>({
   quizMetadata: {
     name: {
       type: String,
-      required: true,
+      required: false,
     },
     description: {
       type: String,
-      required: true,
+      required: false,
     },
     instructions: {
       type: String,
-      required: true,
+      required: false,
     },
     startDateTimestamp: {
       type: Date,
-      required: true,
+      required: false,
     },
     endDateTimestamp: {
       type: Date,
-      required: true,
+      required: false,
     },
     duration: {
       type: Number,
-      required: true,
+      required: false,
     },
     accessCode: {
       type: String,
@@ -129,7 +129,7 @@ const quizSchema = new Schema<IQuiz>({
         type: String,
         required: true,
       },
-      description: {
+      instructions: {
         type: String,
       },
       questions: [{ type: Schema.Types.ObjectId, ref: ModelNames.Question }],

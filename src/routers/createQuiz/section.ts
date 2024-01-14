@@ -6,7 +6,7 @@ import isOnboard from '@utils/isOnboard'
 const router = express.Router()
 
 router.post('/:quizId', isOnboard, hasEditAccess, sectionController.createSection)
-router.delete('/:quizId', isOnboard, hasEditAccess, sectionController.deleteSection)
+router.delete('/:quizId/:sectionIndex', isOnboard, hasEditAccess, sectionController.deleteSection)
 router.get('/:quizId', isOnboard, sectionController.getSection)
 router.put('/:quizId', isOnboard, hasEditAccess, sectionController.updateSection)
 

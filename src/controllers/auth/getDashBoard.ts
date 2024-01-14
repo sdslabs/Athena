@@ -15,7 +15,8 @@ const getDashBoard = async (req: getDashBoardRequest, res: Response) => {
     const createdQuizzes = await QuizModel.find({ $or: [{ admin: user.userId }, { managers: user.userId }] });
     const quizzes = await QuizModel.find({})
     let attemptedQuizzes = 0;
-    const quizDetails = quizzes.map((quiz) => {
+    const quizDetails = quizzes.filter((quiz) => quiz.isPublished) // Filter out unpublished quizzes
+      .map((quiz) => {
       if (quiz?.isPublished) {
         const userStatus = quiz?.participants?.find((participant) => participant.user && participant.user.equals(user.userId));
         if (userStatus?.submitted) {

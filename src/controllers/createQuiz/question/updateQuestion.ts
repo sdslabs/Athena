@@ -17,7 +17,7 @@ interface updateQuestionRequest extends Request {
 }
 
 const updateQuestion = async (req: updateQuestionRequest, res: Response) => {
-    if (!req.body) {
+    if (!req.body.questionId ) {
         return sendInvalidInputResponse(res);
     }
 
@@ -27,11 +27,7 @@ const updateQuestion = async (req: updateQuestionRequest, res: Response) => {
     try {
         
         // find question and update
-        const updatedQuestion = await QuestionModel.findOneAndUpdate(
-            { _id: questionId },
-            question,
-            { new: true }
-        )
+        const updatedQuestion = await QuestionModel.findByIdAndUpdate(questionId, question, { new: true })
 
         // send response
         if (!updatedQuestion) {

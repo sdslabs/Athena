@@ -6,10 +6,6 @@ import sendFailureResponse from "@utils/failureResponse";
 
 interface createSectionRequest extends Request {
     body: {
-        section: {
-            name: string
-            description?: string
-        }
         user: JwtPayload
     }
     params: {
@@ -22,20 +18,19 @@ const createSection = async (req: createSectionRequest, res: Response) => {
         return sendInvalidInputResponse(res)
     }
 
-    const { section } = req.body
     const { quizId } = req.params;
 
-    if (!section) {
-        return sendInvalidInputResponse(res)
-    }
-
-    const quiz = await getQuiz(quizId);
-    if (!quiz) {
-        return sendInvalidInputResponse(res)
-    }
-
     try {
-        quiz?.sections?.push(section)
+        const quiz = await getQuiz(quizId);
+        if (!quiz) {
+            return sendInvalidInputResponse(res)
+        }
+        quiz?.sections?.push({
+            name: 'Section ' + (quiz?.sections?.length + 1),
+            instructions: '',
+            questions: []
+        
+        })
         await quiz.save()
         return res.status(200).json({
             message: "Section Created",

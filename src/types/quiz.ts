@@ -44,7 +44,7 @@ export interface IQuiz {
   }
   sections?: {
     name: string
-    description?: string
+    instructions?: string
     questions?: IQuestion[]
   }[]
 }

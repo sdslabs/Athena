@@ -7,7 +7,6 @@ import sendFailureResponse from '@utils/failureResponse'
 interface updateQuizRequest extends Request {
   body: {
     managers?: IQuiz['managers']
-    isAcceptingAnswers?: IQuiz['isAcceptingAnswers']
     quizMetadata?: IQuiz['quizMetadata']
     registrationMetadata?: IQuiz['registrationMetadata']
     user: JwtPayload
@@ -18,31 +17,23 @@ interface updateQuizRequest extends Request {
 }
 
 const updateQuiz = async (req: updateQuizRequest, res: Response) => {
+
   if (!req.body || !req.params.quizId || !req.body.user ) {
     return sendInvalidInputResponse(res)
   }
 
   // get the data from the request body
-  const { managers, isAcceptingAnswers, quizMetadata, registrationMetadata } = req.body
+  const { managers, quizMetadata, registrationMetadata } = req.body
+  
   const quizId = req.params.quizId
-
-  if (!quizId) {
-    return sendInvalidInputResponse(res)
-  }
-
   try {
-    // update the quiz
-    const quiz = await QuizModel.findByIdAndUpdate(
-      quizId,
-      {
-        managers: managers,
-        isAcceptingAnswers: isAcceptingAnswers,
-        quizMetadata: quizMetadata,
-        registrationMetadata: registrationMetadata,
-      },
-      { new: true }
-    )
-    
+    // the fields present in the request body are only updated
+    // this helps to prevent overwriting of the data and also use the same API for updating different fields
+    const quiz = await QuizModel.findByIdAndUpdate(quizId, {
+      ...(managers && { managers }),
+      ...(quizMetadata && { quizMetadata }),
+      ...(registrationMetadata && { registrationMetadata }),
+    }, { new: true });
     // send the response back
     if(!quiz) {
       return sendFailureResponse({
@@ -52,7 +43,7 @@ const updateQuiz = async (req: updateQuizRequest, res: Response) => {
         errorCode: 404
       })
     } else {
-      return res.status(200).send({ message: 'Quiz updated', updatedParameters: { quizId: quiz._id, managers, isAcceptingAnswers, quizMetadata, registrationMetadata }})
+      return res.status(200).send({ message: 'Quiz updated', updatedParameters: { quizId: quiz._id, managers, quizMetadata, registrationMetadata }})
     }
   } catch (error: unknown) {
     sendFailureResponse({
