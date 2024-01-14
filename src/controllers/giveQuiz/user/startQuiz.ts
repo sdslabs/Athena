@@ -34,26 +34,6 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
         message: 'Invalid access code',
       })
     }
-
-    // set isGivingQuiz to true for the user
-    // quiz.participants?.forEach((participant) => {
-    //     if (participant.user === user.userId) {
-    //         participant.isGivingQuiz = true;
-    //     }
-    // })
-
-    // TODO: set the time for the user (left b/c brain not working rn)
-    // const startTime = Date.now();
-    // const leftTime = min(quizEndingTime-startTime, participant.time.left)
-    // quiz.participants?.forEach((participant) => {
-    //     if (participant.user === user.userId) {
-    //         participant.time.started = startTime;
-    //         participant.time.left = leftTime;
-    //     }
-    // })
-
-    // Return the time left to the user
-
     await quiz.save()
     return res.status(200).json({
       success: true,
