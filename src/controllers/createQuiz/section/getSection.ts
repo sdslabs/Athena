@@ -5,11 +5,11 @@ import getQuiz from "@utils/getQuiz";
 
 interface getSectionRequest extends Request {
     params: {
-        quizId: string
+        quizId: string,
+        sectionIndex: string
     }
     body: {
         user: JwtPayload
-        sectionIndex: number
     }
 }
 
@@ -18,7 +18,7 @@ const getSection = async (req: getSectionRequest, res: Response) => {
         return sendInvalidInputResponse(res)
     }
     const quizId = req.params.quizId;
-    const sectionIndex = req.body.sectionIndex;
+    const sectionIndex = parseInt(req.params.sectionIndex,10);
     const quiz = await getQuiz(quizId);
 
     if (!quiz) {
