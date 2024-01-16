@@ -16,6 +16,7 @@ import timerService from './services/timer'
 import { createToken } from '@utils/token'
 import { Types } from 'mongoose'
 import { UserRoles } from 'types'
+import createLog from '@controllers/createLog'
 // Initialize server
 dotenv.config()
 connectDB()
@@ -75,6 +76,7 @@ app.use('/giveQuiz', giveQuizRouter)
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
 })
+app.post('/log', createLog);
 
 server.listen(port, () => {
   logger.silly(`⚡️[server]: Server is running at http://localhost:${port}`)
