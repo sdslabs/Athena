@@ -12,6 +12,7 @@ interface getDashboardRequest extends Request {
 
 const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => {
     const quizId = req.params.quizId;
+    console.log(quizId);
     try {
         const quiz = await QuizModel.findById(quizId).populate({
             path: 'sections',
@@ -29,19 +30,23 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
             return sendInvalidInputResponse(res);
         }
         let checksCompleted = 0;
+        let totalAttempts = 0;
         quiz?.sections?.forEach(section => {
             section?.questions?.forEach(question => {
                 checksCompleted += question?.checkedAttempts || 0;
+                totalAttempts += question?.totalAttempts || 0;
             })
         })
-        const leaderboard = LeaderboardModel.find({ quizId: quizId });
+        const leaderboard = await LeaderboardModel.find({ quizId: quizId }); 
         return res.status(200).json({
             admin: quiz.admin,
             scheduled: quiz.quizMetadata?.startDateTimestamp,
             sections: quiz.sections,
             participants: quiz?.participants?.length,
             checksCompleted: checksCompleted,
-            leaderboard: leaderboard
+            totalAttempts: totalAttempts,
+            leaderboard: leaderboard,
+            name: quiz?.quizMetadata?.name
         })
     }
     catch (error: unknown) {

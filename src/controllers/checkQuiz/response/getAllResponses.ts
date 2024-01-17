@@ -13,6 +13,7 @@ interface getAllResponsesRequest extends Request {
 
 const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
   const { quizId, questionId } = req.params;
+  console.log(req.params)
   try {
     const question = await QuestionModel.findById(questionId);
     if (!question) {
@@ -35,7 +36,7 @@ const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
     });
 
     return res.status(200).json({
-      responses: responsesToSend,
+      responses: responsesToSend || [],
       firstResponse: {
         user: firstResponse?.user,
         selectedOptionId: firstResponse?.selectedOptionId,
@@ -43,7 +44,9 @@ const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
         marksAwarded: firstResponse?.marksAwarded,
         status: firstResponse?.status,
         checkedBy: firstResponse?.checkedBy
-      }
+      },
+      // TODO: to remove, Frontend Issue
+      questionId: question._id,
     });
   }
   catch (error: unknown) {

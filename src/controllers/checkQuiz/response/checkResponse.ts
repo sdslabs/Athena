@@ -10,24 +10,28 @@ interface checkResponseRequest extends Request {
     responseId: string
   }
   body: {
-    user: JwtPayload,
     marksAwarded: number
   }
 }
 
 const checkResponse = async (req: checkResponseRequest, res: Response) => {
   const { quizId, responseId } = req.params;
-  const { user, marksAwarded } = req.body;
+  const { marksAwarded } = req.body;
+
+  console.log("dekh",quizId, responseId, marksAwarded);
 
   try {
     const response = await ResponseModel.findById(responseId);
+    console.log("dekh",response);
     if (!response || response?.quizId.toString() !== quizId) {
       return sendInvalidInputResponse(res);
     }
     await ResponseModel.findByIdAndUpdate(responseId, {
       status: ResponseStatus.checked,
       marksAwarded: marksAwarded,
-      checkedBy: user.userId
+    });
+    return res.status(200).json({
+      message: "Response checked",
     });
   }
   catch (error: unknown) {

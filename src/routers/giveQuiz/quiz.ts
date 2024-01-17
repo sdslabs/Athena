@@ -4,7 +4,7 @@ import isOnboard from '@utils/isOnboard';
 
 const router = express.Router();
 
-router.get('/quiz/:quizId', isOnboard, quizController.getQuiz)
-router.get('/question/:questionId', isOnboard, quizController.getQuestion)
+router.get('/quiz/:quizId', quizController.getQuiz)
+router.get('/question/:questionId', quizController.getQuestion)
 
 export default router;
