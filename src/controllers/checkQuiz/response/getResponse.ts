@@ -30,7 +30,7 @@ const getResponse = async (req: getResponseRequest, res: Response) => {
         subjectiveAnswer: response?.subjectiveAnswer,
         marksAwarded: response?.marksAwarded,
         status: response?.status,
-        checkedBy: response?.checkedBy
+        checkedBy: response?.checkedBy,
       }
     });
   }
