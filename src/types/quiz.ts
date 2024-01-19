@@ -2,7 +2,7 @@ import { Date, Types } from 'mongoose'
 import { IQuestion } from './question'
 
 export interface IParticipant {
-  user: Types.ObjectId
+  userId: Types.ObjectId
   submitted: boolean
   isGivingQuiz: boolean
   registrationData: {

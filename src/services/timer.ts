@@ -21,7 +21,7 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
   }
   const userObjectId = mongoose.Types.ObjectId(userId)
   const user: IParticipant = quiz.participants.find((participant) => {
-    if (participant.user && participant.user.equals(userObjectId)) {
+    if (participant.userId && participant.userId.equals(userObjectId)) {
       return participant
     }
   })
@@ -69,7 +69,7 @@ async function timerService(io, socket) {
       const quiz: IQuiz = await QuizModel.findById(socket.quizId)
       const userObjectId = mongoose.Types.ObjectId(socket.userId)
       const user: IParticipant = quiz.participants.find((participant) => {
-        if (participant.user && participant.user.equals(userObjectId)) {
+        if (participant.userId && participant.userId.equals(userObjectId)) {
           return participant
         }
       })
@@ -91,7 +91,7 @@ async function timerService(io, socket) {
       const quiz: IQuiz = await QuizModel.findById(socket.quizId)
       const userObjectId = mongoose.Types.ObjectId(socket.userId)
       const user: IParticipant = quiz.participants.find((participant) => {
-        if (participant.user && participant.user.equals(userObjectId)) {
+        if (participant.userId && participant.userId.equals(userObjectId)) {
           return participant
         }
       })

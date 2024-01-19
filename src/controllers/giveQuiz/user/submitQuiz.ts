@@ -31,7 +31,7 @@ const submitQuiz = async (req: submitQuizRequest, res: Response) => {
 
         // set isGivingQuiz to true for the user
         quiz.participants?.forEach((participant) => {
-            if (participant.user && participant.user.equals(user.userId)) {
+            if (participant.userId && participant.userId.equals(user.userId)) {
                 participant.isGivingQuiz = false;
                 participant.time.left = 0;
                 participant.submitted = true;

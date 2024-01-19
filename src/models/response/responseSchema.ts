@@ -12,7 +12,7 @@ const responseSchema = new Schema<IResponse>({
     ref: ModelNames.Quiz,
     required: true,
   },
-  user: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: ModelNames.User,
     required: true,

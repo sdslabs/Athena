@@ -4,7 +4,7 @@ import { IUser } from './user'
 export interface IResponse {
   questionId: Types.ObjectId
   quizId: Types.ObjectId
-  user: IUser
+  userId: IUser
   selectedOptionId?: string
   subjectiveAnswer?: string
   marksAwarded?: number

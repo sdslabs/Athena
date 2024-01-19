@@ -25,7 +25,7 @@ const generateLeaderBoard = async (req : generateLeaderBoardRequest, res : Respo
     const quiz = await getQuiz(quizId);
     const participants: Participant[] = [];
     quiz?.participants?.forEach(async participant =>  {
-      const responses = await ResponseModel.find({ quizId: quizId, participantId: participant });
+      const responses = await ResponseModel.find({ quizId: quizId, userId: participant.userId });
       let score = 0;
       let questionsAttempted = 0;
       let questionsChecked = 0;
@@ -35,7 +35,7 @@ const generateLeaderBoard = async (req : generateLeaderBoardRequest, res : Respo
         questionsChecked += response.status === ResponseStatus.checked ? 1 : 0;
       });
       const leaderboardEntry = {
-        userId: participant.user,
+        userId: participant.userId,
         marks: score,
         questionsAttempted: questionsAttempted,
         questionsChecked: questionsChecked

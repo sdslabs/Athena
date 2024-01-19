@@ -24,7 +24,7 @@ const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
     });
     const responsesToSend = responses.map(response => {
       return {
-        name: response.user?.personalDetails?.name,
+        name: response.userId?.personalDetails?.name,
         responseId: response._id
       }
     });
@@ -37,7 +37,7 @@ const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
     return res.status(200).json({
       responses: responsesToSend,
       firstResponse: {
-        user: firstResponse?.user,
+        user: firstResponse?.userId,
         selectedOptionId: firstResponse?.selectedOptionId,
         subjectiveAnswer: firstResponse?.subjectiveAnswer,
         marksAwarded: firstResponse?.marksAwarded,

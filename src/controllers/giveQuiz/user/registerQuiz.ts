@@ -44,7 +44,7 @@ const registerQuiz = async (req: registerQuizRequest, res: Response) => {
 
         // Check if user is already registered
         const isUserRegistered = quiz.participants?.find(
-            participant => participant.user && participant.user.equals(user.userId)
+            participant => participant.userId && participant.userId.equals(user.userId)
          );
          
         if (isUserRegistered) {
@@ -58,7 +58,7 @@ const registerQuiz = async (req: registerQuizRequest, res: Response) => {
 
         // Add participant to quiz
         const participant = {
-            user: user.userId,
+            userId: user.userId,
             submitted: false,
             isGivingQuiz: false,
             registrationData: {
