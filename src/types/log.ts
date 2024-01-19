@@ -4,9 +4,15 @@ export interface ILog {
   _id?: Types.ObjectId,
   quizId: Types.ObjectId,
   userId: Types.ObjectId,
-  questionId: Types.ObjectId,
+  questionId?: Types.ObjectId,
   logType: LogType,
   timestamp: Date,
+  location?: {
+    longitude: number,
+    latitude: number,
+  },
+  key?: string,
+  ip?: string,
 }
 
 export enum LogType {
@@ -17,4 +23,6 @@ export enum LogType {
   SusKey = 'susKey',
   RightClick = 'rightClick',
   IP = 'ip',
+  Location = 'locationAccess',
+  FullScreenExit = 'fullScreenExit'
 }

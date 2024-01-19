@@ -15,7 +15,6 @@ const logSchema = new Schema<ILog>({
   questionId: {
     type: Schema.Types.ObjectId,
     ref: ModelNames.Question,
-    required: true,
   },
   logType: {
     type: String,
@@ -26,6 +25,20 @@ const logSchema = new Schema<ILog>({
     type: Date,
     required: true,
     default: Date.now,
+  },
+  location: {
+    longitude: {
+      type: Number,
+    },
+    latitude: {
+      type: Number,
+    }
+  },
+  key: {
+    type: String,
+  },
+  ip: {
+    type: String,
   },
 })
 
