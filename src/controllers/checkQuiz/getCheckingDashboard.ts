@@ -12,7 +12,6 @@ interface getDashboardRequest extends Request {
 
 const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => {
     const quizId = req.params.quizId;
-    console.log(quizId);
     try {
         const quiz = await QuizModel.findById(quizId).populate({
             path: 'sections',

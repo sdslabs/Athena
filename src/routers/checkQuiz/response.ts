@@ -5,8 +5,8 @@ import isOnboard from '@utils/isOnboard'
 
 const router = express.Router()
 
-router.get('/responses/:quizId/:questionId', responseController.getAllResponses)
-router.post('/check/:quizId/:responseId', responseController.checkResponse);
-router.get('/getResponse/:responseId', responseController.getResponse)
+router.get('/reponses/:quizId/:questionId', isOnboard, hasEditAccess, responseController.getAllResponses)
+router.patch('/check/:quizId/:reponseId', isOnboard, hasEditAccess, responseController.checkResponse);
+router.get('/getResponse/:responseId', isOnboard, hasEditAccess, responseController.getResponse)
 
 export default router

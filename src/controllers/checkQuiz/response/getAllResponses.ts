@@ -13,7 +13,6 @@ interface getAllResponsesRequest extends Request {
 
 const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
   const { quizId, questionId } = req.params
-  console.log(req.params)
   try {
     const question = await QuestionModel.findById(questionId)
     if (!question) {

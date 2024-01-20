@@ -1,45 +1,43 @@
-import ResponseModel from "@models/response/responseModel";
-import sendFailureResponse from "@utils/failureResponse";
-import sendInvalidInputResponse from "@utils/invalidInputResponse";
-import { Request, Response } from "express";
-import { JwtPayload, ResponseStatus } from "types";
+import ResponseModel from '@models/response/responseModel'
+import sendFailureResponse from '@utils/failureResponse'
+import sendInvalidInputResponse from '@utils/invalidInputResponse'
+import { Request, Response } from 'express'
+import { JwtPayload, ResponseStatus } from 'types'
 
 interface checkResponseRequest extends Request {
   params: {
-    quizId: string,
+    quizId: string
     responseId: string
   }
   body: {
+    user: JwtPayload
     marksAwarded: number
   }
 }
 
 const checkResponse = async (req: checkResponseRequest, res: Response) => {
-  const { quizId, responseId } = req.params;
-  const { marksAwarded } = req.body;
-
-  console.log("dekh",quizId, responseId, marksAwarded);
+  const { quizId, responseId } = req.params
+  const { user, marksAwarded } = req.body
 
   try {
-    const response = await ResponseModel.findById(responseId);
-    console.log("dekh",response);
+    const response = await ResponseModel.findById(responseId)
     if (!response || response?.quizId.toString() !== quizId) {
-      return sendInvalidInputResponse(res);
+      return sendInvalidInputResponse(res)
     }
     await ResponseModel.findByIdAndUpdate(responseId, {
       status: ResponseStatus.checked,
       marksAwarded: marksAwarded,
-    });
+      checkedBy: user,
+    })
     return res.status(200).json({
-      message: "Response checked",
-    });
-  }
-  catch (error: unknown) {
+      message: 'Response checked',
+    })
+  } catch (error: unknown) {
     return sendFailureResponse({
       res,
       error,
-      messageToSend: "Failed to check response"
-    });
+      messageToSend: 'Failed to check response',
+    })
   }
 }
 

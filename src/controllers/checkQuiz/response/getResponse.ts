@@ -11,7 +11,6 @@ interface getResponseRequest extends Request {
 
 const getResponse = async (req: getResponseRequest, res: Response) => {
   const { responseId } = req.params;
-  console.log(req.params, req.body)
   if(!responseId) {
     return sendInvalidInputResponse(res);
   }
@@ -19,7 +18,7 @@ const getResponse = async (req: getResponseRequest, res: Response) => {
     const response = await ResponseModel.findById(responseId).populate({
       path: 'checkedBy',
       select: 'personalDetails.name personalDetails.emailAdd'
-    });
+    })
     if(!response) {
       return sendInvalidInputResponse(res);
     }
