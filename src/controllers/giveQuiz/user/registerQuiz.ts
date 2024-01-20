@@ -3,6 +3,7 @@ import { JwtPayload } from "types";
 import sendFailureResponse from "@utils/failureResponse";
 import sendInvalidInputResponse from "@utils/invalidInputResponse";
 import getQuiz from "@utils/getQuiz";
+import isParticipant from "@utils/isParticipant";
 
 interface registerQuizRequest extends Request {
     body: {
@@ -43,9 +44,7 @@ const registerQuiz = async (req: registerQuizRequest, res: Response) => {
         }
 
         // Check if user is already registered
-        const isUserRegistered = quiz.participants?.find(
-            participant => participant.userId && participant.userId.equals(user.userId)
-         );
+        const isUserRegistered = isParticipant(user.userId, quiz?.participants);
          
         if (isUserRegistered) {
             return sendFailureResponse({

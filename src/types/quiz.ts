@@ -19,6 +19,7 @@ export interface IParticipant {
 }
 
 export interface IQuiz {
+  _id?: Types.ObjectId
   admin: Types.ObjectId
   managers?: Types.ObjectId[]
   participants?: IParticipant[]

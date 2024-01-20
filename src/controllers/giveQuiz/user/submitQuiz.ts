@@ -29,9 +29,9 @@ const submitQuiz = async (req: submitQuizRequest, res: Response) => {
             return sendInvalidInputResponse(res)
         }
 
-        // set isGivingQuiz to true for the user
+        // set isGivingQuiz to false and isSubmitted true for the user
         quiz.participants?.forEach((participant) => {
-            if (participant.userId && participant.userId.equals(user.userId)) {
+            if (participant?.userId?.equals(user.userId)) {
                 participant.isGivingQuiz = false;
                 participant.time.left = 0;
                 participant.submitted = true;
