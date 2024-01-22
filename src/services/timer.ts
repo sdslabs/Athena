@@ -20,8 +20,11 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
   const quiz = await getQuiz(quizId)
   const userObjectId = new Types.ObjectId(userId)
   const user = isParticipant(userObjectId, quiz?.participants)
+  if(!user){
+    return true
+  }
 
-  if (user?.isGivingQuiz || !user?.submitted) {
+  if (user?.isGivingQuiz || user?.submitted) {
     return true
   }
   return false
@@ -65,6 +68,9 @@ async function timerService(io: any, socket: any) {
       }
       const userObjectId = new Types.ObjectId(socket.userId)
       const user = isParticipant(userObjectId, quiz?.participants) as IParticipant
+      if(!user){
+        socket.disconnect();
+      }
       user.isGivingQuiz = true
       user.time.enterQuiz = new Date().getTime()
       user.time.endQuiz = quiz?.quizMetadata?.endDateTimestamp.getTime()
