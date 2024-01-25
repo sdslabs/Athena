@@ -19,6 +19,8 @@ services:
       - 27017:27017
     networks:
       - quizio
+    volumes:
+      - './data:/data/db'
 networks:
   quizio:
     name: quizio
