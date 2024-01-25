@@ -2,6 +2,7 @@ import { Response, Request } from 'express'
 import sendFailureResponse from '@utils/failureResponse'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import getQuiz from '@utils/getQuiz'
+import mongoose, { Types } from 'mongoose'
 
 interface getQuizRequest extends Request {
   params: {
@@ -12,7 +13,7 @@ const padTo2Digits = (num: number) => {
   return num.toString().padStart(2, '0');
 }
 
-const formatDate = (timestamp: Date) => {
+const formatDate = (timestamp: any) => {
   return [
     timestamp.getFullYear(),
     padTo2Digits(timestamp.getMonth() + 1),
@@ -20,7 +21,7 @@ const formatDate = (timestamp: Date) => {
   ].join('-');
 }
 
-const formatTime = (timestamp: Date) => {
+const formatTime = (timestamp: any) => {
   return [
     padTo2Digits(timestamp.getHours()),
     padTo2Digits(timestamp.getMinutes()),

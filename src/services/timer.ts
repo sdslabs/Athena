@@ -73,7 +73,7 @@ async function timerService(io: any, socket: any) {
       }
       user.isGivingQuiz = true
       user.time.enterQuiz = new Date().getTime()
-      user.time.endQuiz = quiz?.quizMetadata?.endDateTimestamp.getTime()
+      user.time.endQuiz = (quiz?.quizMetadata?.endDateTimestamp as any).getTime()
       user.time.left = Math.min(user.time.left, user.time.endQuiz - new Date().getTime())
       saveQuiz(quiz)
       if (user.time.left <= 0) {
