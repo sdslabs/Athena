@@ -18,6 +18,7 @@ import timerService from './services/timer'
 // Initialize server
 dotenv.config()
 connectDB()
+console.log(process.env.NODE_ENV)
 
 const app: Express = express()
 const port = process.env.PORT
@@ -34,7 +35,7 @@ app.use(mongoSanitize());
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: process.env.FRONTEND_URL,
   },
 })
 io.on('connection', (socket) => {
