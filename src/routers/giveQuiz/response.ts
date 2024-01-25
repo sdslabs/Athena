@@ -4,9 +4,9 @@ import isAuth from '@utils/isAuth'
 
 const router = express.Router();
 
-router.get('/getResponse/:quizId/:questionId/', isAuth, responseController.getResponse)
-router.post('/createResponse/:quizId/:questionId/', isAuth, responseController.createOrUpdateResponse)
-router.delete('/deleteResponse/:quizId/:questionId/', isAuth, responseController.deleteResponse)
+router.get('/:quizId/:questionId/', isAuth, responseController.getResponse)
+router.post('/:quizId/:questionId/', isAuth, responseController.createOrUpdateResponse)
+router.delete('/:quizId/:questionId/', isAuth, responseController.deleteResponse)
 
 
 export default router

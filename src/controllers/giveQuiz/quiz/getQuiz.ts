@@ -3,14 +3,19 @@ import sendFailureResponse from '@utils/failureResponse'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import QuizModel from '@models/quiz/quizModel'
 import ResponseModel from '@models/response/responseModel'
+import { JwtPayload, ResponseStatus } from 'types'
 
 interface getQuizRequest extends Request {
   params: {
     quizId: string
   }
+  body: {
+    user: JwtPayload
+  }
 }
 
 const getQuiz = async (req: getQuizRequest, res: Response) => {
+  const { user } = req.body
   if (!req.params.quizId) {
     return sendInvalidInputResponse(res)
   }
@@ -30,22 +35,14 @@ const getQuiz = async (req: getQuizRequest, res: Response) => {
         sections: quiz?.sections,
       }
 
-      // Get answered question IDs
-      const answeredResponses = await ResponseModel.find({ status: 'answered', quizId: quiz._id })
+      const answeredResponses = await ResponseModel.find({ status: ResponseStatus.answered, quizId: quiz._id, userId: user.userId })
       const answeredQuestionIds = answeredResponses.map((response) => response.questionId)
 
-      // Get marked question IDs
-      const markedResponses = await ResponseModel.find({ status: 'marked', quizId: quiz._id })
+      const markedResponses = await ResponseModel.find({ status: ResponseStatus.marked, quizId: quiz._id, userId: user.userId })
       const markedQuestionIds = markedResponses.map((response) => response.questionId)
 
-      // Get markedanswered question IDs
-      const markedAnsweredResponses = await ResponseModel.find({
-        status: 'markedanswered',
-        quizId: quiz._id,
-      })
-      const markedAnsweredQuestionIds = markedAnsweredResponses.map(
-        (response) => response.questionId,
-      )
+      const markedAnsweredResponses = await ResponseModel.find({ status: ResponseStatus.markedanswer, quizId: quiz._id, userId: user.userId })
+      const markedAnsweredQuestionIds = markedAnsweredResponses.map( (response) => response.questionId,)
 
       return res
         .status(200)
@@ -59,7 +56,7 @@ const getQuiz = async (req: getQuizRequest, res: Response) => {
     } else {
       return sendFailureResponse({
         res,
-        error: 'Error fetching quiz, this quiz is not alive',
+        error: 'Error fetching quiz, this quiz is not live',
         messageToSend: 'Error fetching quiz, this quiz is not live',
         errorCode: 400,
       })

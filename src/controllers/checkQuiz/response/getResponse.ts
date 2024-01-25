@@ -24,7 +24,7 @@ const getResponse = async (req: getResponseRequest, res: Response) => {
     }
     return res.status(200).json({
       response: {
-        user: response?.user,
+        user: response?.userId,
         selectedOptionId: response?.selectedOptionId,
         subjectiveAnswer: response?.subjectiveAnswer,
         marksAwarded: response?.marksAwarded,

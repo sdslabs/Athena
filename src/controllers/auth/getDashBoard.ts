@@ -18,7 +18,7 @@ const getDashBoard = async (req: getDashBoardRequest, res: Response) => {
     const quizDetails = quizzes.filter((quiz) => quiz.isPublished) // Filter out unpublished quizzes
       .map((quiz) => {
       if (quiz?.isPublished) {
-        const userStatus = quiz?.participants?.find((participant) => participant.user && participant.user.equals(user.userId));
+        const userStatus = quiz?.participants?.find((participant) => participant.userId && participant.userId.equals(user.userId));
         if (userStatus?.submitted) {
           attemptedQuizzes += 1
         }

@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.post('/:quizId', isOnboard, hasEditAccess, sectionController.createSection)
 router.delete('/:quizId/:sectionIndex', isOnboard, hasEditAccess, sectionController.deleteSection)
-router.get('/:quizId', isOnboard, sectionController.getSection)
+router.get('/:quizId/:sectionIndex', isOnboard, sectionController.getSection)
 router.put('/:quizId', isOnboard, hasEditAccess, sectionController.updateSection)
 
 export default router

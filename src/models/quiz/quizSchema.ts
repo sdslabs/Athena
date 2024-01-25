@@ -15,7 +15,7 @@ const quizSchema = new Schema<IQuiz>({
   ],
   participants: [
     {
-      user: {
+      userId: {
         type: Schema.Types.ObjectId,
         ref: ModelNames.User,
       },

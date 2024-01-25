@@ -2,7 +2,7 @@ import { Date, Types } from 'mongoose'
 import { IQuestion } from './question'
 
 export interface IParticipant {
-  user: Types.ObjectId
+  userId: Types.ObjectId
   submitted: boolean
   isGivingQuiz: boolean
   registrationData: {
@@ -19,6 +19,7 @@ export interface IParticipant {
 }
 
 export interface IQuiz {
+  _id?: Types.ObjectId
   admin: Types.ObjectId
   managers?: Types.ObjectId[]
   participants?: IParticipant[]

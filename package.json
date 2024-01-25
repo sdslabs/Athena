@@ -4,7 +4,8 @@
   "description": "Quizio Backend that works!!",
   "main": "build/server.js",
   "scripts": {
-    "start": "node build/server.js",
+    "build": "tsc",
+    "start": "TS_NODE_PROJECT=./tsconfig.json node --loader ts-node/esm --experimental-specifier-resolution=node build/server.js",
     "dev": "TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true nodemon src/server.ts",
     "lint": "eslint ./src",
     "prepare": "husky install"
@@ -35,7 +36,7 @@
     "nodemon": "^3.0.2",
     "prettier": "^2.8.3",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.1.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^4.9.4"
   },
   "dependencies": {

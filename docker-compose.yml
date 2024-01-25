@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    ports:
+      - 4000:4000
+    networks:
+      - quizio
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - quizio
+    volumes:
+      - './data:/data/db'
+networks:
+  quizio:
+    name: quizio

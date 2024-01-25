@@ -41,14 +41,33 @@ const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: R
       })
     }
     // no need to check the question type etc as the data is being sent by the frontend and we will have cors enabled for the frontend only
+    // TODO: use the following upsert type of query to update the response 
+    // const result = await ResponseModel.updateOne(
+    //   {
+    //     userId: user.userId,
+    //     quizId: req.params.quizId,
+    //     questionId: req.params.questionId,
+    //   },
+    //   {
+    //     $set: {
+    //       userId: user.userId,
+    //       quizId: req.params.quizId,
+    //       questionId: req.params.questionId,
+    //       subjectiveAnswer,
+    //       selectedOptionId,
+    //       status,
+    //     },
+    //   },
+    //   { upsert: true }
+    // );
     const response = await ResponseModel.findOne({
-      user: user.userId,
+      userId: user.userId,
       quizId: req.params.quizId,
       questionId: req.params.questionId,
     })
     if (!response) {
       const newResponse = new ResponseModel({
-        user: user.userId,
+        userId: user.userId,
         quizId: req.params.quizId,
         questionId: req.params.questionId,
         subjectiveAnswer,

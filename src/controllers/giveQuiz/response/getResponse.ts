@@ -24,7 +24,7 @@ const getResponse = async (req: getResponseRequest, res: Response) => {
 
   try {
     if (user) {
-      const response = await ResponseModel.find({ questionId, quizId, user: user.userId })
+      const response = await ResponseModel.find({ questionId, quizId, userId: user.userId })
       if (!response) {
         return sendInvalidInputResponse(res)
       }

@@ -2,6 +2,7 @@ import { Response, Request } from 'express'
 import QuizModel from '@models/quiz/quizModel'
 import { JwtPayload } from 'types'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
+import isParticipant from '@utils/isParticipant'
 
 interface startQuizRequest extends Request {
   body: {
@@ -23,8 +24,9 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
 
   try {
     const quiz = await QuizModel.findById(quizId)
+    const isUserRegistered = isParticipant(user.userId, quiz?.participants)
 
-    if (!quiz || !quiz.isPublished) {
+    if (!quiz || !quiz.isPublished || !isUserRegistered) {
       return sendInvalidInputResponse(res)
     }
 

@@ -8,17 +8,17 @@ import authRouter from '@routers/auth'
 import createQuizRouter from '@routers/createQuiz'
 import giveQuizRouter from '@routers/giveQuiz'
 import checkQuizRouter from '@routers/checkQuiz'
+import logRouter from '@routers/log'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
 import logger from '@utils/logger'
 import timerService from './services/timer'
-import { createToken } from '@utils/token'
-import { Types } from 'mongoose'
-import { UserRoles } from 'types'
+
 // Initialize server
 dotenv.config()
 connectDB()
+console.log(process.env.NODE_ENV)
 
 const app: Express = express()
 const port = process.env.PORT
@@ -35,7 +35,7 @@ app.use(mongoSanitize());
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: process.env.FRONTEND_URL,
   },
 })
 io.on('connection', (socket) => {
@@ -71,6 +71,7 @@ app.use('/auth', authRouter)
 app.use('/checkQuiz', checkQuizRouter)
 app.use('/createQuiz', createQuizRouter)
 app.use('/giveQuiz', giveQuizRouter)
+app.use('/log', logRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
@@ -79,11 +80,6 @@ app.get('/', (req: Request, res: Response) => {
 server.listen(port, () => {
   logger.silly(`⚡️[server]: Server is running at http://localhost:${port}`)
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
-  const userId = new Types.ObjectId('6476ff541d60914819117366')
-  const emailAdd = 'tanmaybajaj567@gmail.com'
-  const role = UserRoles.admin
-  const token = createToken({ userId, emailAdd, role })
-  console.log(token)
 })
 
 export default app
