@@ -27,7 +27,10 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
     const isUserRegistered = isParticipant(user.userId, quiz?.participants)
 
     if (!quiz || !quiz.isPublished || !isUserRegistered) {
-      return sendInvalidInputResponse(res)
+      return res.status(400).json({
+        success: false,
+        message: 'User not registered for this quiz',
+      })
     }
 
     if (quiz.quizMetadata?.accessCode !== accessCode) {

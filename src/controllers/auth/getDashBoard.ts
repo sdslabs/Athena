@@ -32,6 +32,7 @@ const getDashBoard = async (req: getDashBoardRequest, res: Response) => {
           bannerImage: quiz?.quizMetadata?.bannerImage,
           isAcceptingAnswers: quiz?.isAcceptingAnswers,
           registrationMetadata: quiz?.registrationMetadata,
+          isAccessCodePresent: quiz?.quizMetadata?.accessCode ? (quiz?.quizMetadata?.accessCode.length > 0 ? true : false) : false,
           registered: userStatus ? true : false,
           submitted: userStatus?.submitted,
         }
