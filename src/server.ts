@@ -18,7 +18,6 @@ import timerService from './services/timer'
 // Initialize server
 dotenv.config()
 connectDB()
-console.log(process.env.NODE_ENV)
 
 const app: Express = express()
 const port = process.env.PORT

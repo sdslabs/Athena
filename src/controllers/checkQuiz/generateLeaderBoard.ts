@@ -25,7 +25,7 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
 
     await Promise.all(
       quiz?.participants?.map(async (participant) => {
-        const responses = await ResponseModel.find({ quizId: quizId, participantId: participant })
+        const responses = await ResponseModel.find({ quizId: quizId, userId: participant.userId })
 
         let score = 0
         let questionsAttempted = 0
@@ -37,31 +37,33 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
           questionsChecked += response.status === ResponseStatus.checked ? 1 : 0
         })
 
-        if (Types.ObjectId.isValid(participant.user)) {
+        if (Types.ObjectId.isValid(participant.userId)) {
           const leaderboardEntry: Participant = {
-            userId: participant.user,
+            userId: participant.userId,
             marks: score,
             questionsAttempted: questionsAttempted,
             questionsChecked: questionsChecked,
           }
           participants.push(leaderboardEntry)
         }
-      }),
+      }) as Promise<void>[],
     )
 
     const sortedParticipants = participants.sort((a, b) => {
       if (a.marks > b.marks) {
         return -1
-      } else if (a.marks < b.marks) {
+      } else
         return 1
-      }
     })
 
-    await LeaderboardModel.create({
-      quizId: quizId,
-      participants: sortedParticipants,
-    })
-
+    await LeaderboardModel.findOneAndUpdate(
+      { quizId: quizId },
+      {
+        quizId: quizId,
+        participants: sortedParticipants,
+      },
+      { upsert: true },
+    );
     return res.status(200).json({
       message: 'Leaderboard generated successfully',
       leaderboard: participants,
