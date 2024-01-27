@@ -7,7 +7,7 @@ import isParticipant from '@utils/isParticipant'
 interface startQuizRequest extends Request {
   body: {
     user: JwtPayload
-    accessCode: string
+    accessCode?: string
   }
   params: {
     quizId: string
@@ -18,7 +18,7 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
   const { user, accessCode } = req.body
   const { quizId } = req.params
 
-  if (!user || !accessCode) {
+  if (!user) {
     return sendInvalidInputResponse(res)
   }
 
