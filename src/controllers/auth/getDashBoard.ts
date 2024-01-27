@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import sendFailureResponse from "@utils/failureResponse";
 import QuizModel from "@models/quiz/quizModel";
 import { JwtPayload } from "types";
+import UserModel from "@models/user/userModel";
 
 interface getDashBoardRequest extends Request {
   body: {
@@ -38,12 +39,21 @@ const getDashBoard = async (req: getDashBoardRequest, res: Response) => {
         }
       }
     })
+    const userDocument = await UserModel.findById(user.userId);
+    const userDetails = {
+      firstName: userDocument?.personalDetails?.name.split(' ')[0] || '',
+      lastName: userDocument?.personalDetails?.name.split(' ')[1] || '',
+      emailAdd: userDocument?.personalDetails?.emailAdd,
+      phoneNo: userDocument?.personalDetails?.phoneNo,
+      instituteName: userDocument?.educationalDetails?.instituteName,
+    }
     return res.status(200).send({
-      message: 'Dashboard detailes fetched',
+      message: 'Dashboard details fetched',
       createdQuizzes: createdQuizzes,
       quizzes: quizDetails,
       attemptedQuizzes: attemptedQuizzes,
       hostedQuizzes: createdQuizzes.length,
+      userDetails: userDetails,
     })
   }
   catch (error: unknown) {
