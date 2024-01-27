@@ -65,7 +65,7 @@ const registerQuiz = async (req: registerQuizRequest, res: Response) => {
             },
             time: {
                 enterQuiz: 0,
-                left: 0,
+                left: (quiz?.quizMetadata?.duration??0)*60000,
                 endQuiz: 0
             }
         }
