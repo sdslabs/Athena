@@ -4,6 +4,8 @@ import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import QuizModel from '@models/quiz/quizModel'
 import ResponseModel from '@models/response/responseModel'
 import { JwtPayload, ResponseStatus } from 'types'
+import isParticipant from '@utils/isParticipant'
+import { Types } from 'mongoose'
 
 interface getQuizRequest extends Request {
   params: {
@@ -33,6 +35,28 @@ const getQuiz = async (req: getQuizRequest, res: Response) => {
         startDateTimestamp: quiz?.quizMetadata?.startDateTimestamp,
         endDateTimestamp: quiz?.quizMetadata?.endDateTimestamp,
         sections: quiz?.sections,
+      }
+
+      console.log(user);
+
+      const userObjectId = new Types.ObjectId(user.userId)
+      const dbUser = isParticipant(userObjectId, quiz?.participants)
+      if(!dbUser){
+        return sendFailureResponse({
+          res,
+          error: 'Error fetching quiz, Invalid User' ,
+          messageToSend: 'Error fetching quiz, User does not exist',
+          errorCode: 400,
+        })
+      }
+    
+      if (dbUser?.submitted) {
+        return sendFailureResponse({
+          res,
+          error: 'Error fetching quiz, User has already submitted the quiz' ,
+          messageToSend: 'Error fetching quiz, User has already submitted the quiz',
+          errorCode: 400,
+        })
       }
 
       const answeredResponses = await ResponseModel.find({ status: ResponseStatus.answered, quizId: quiz._id, userId: user.userId })
