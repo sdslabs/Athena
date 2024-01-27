@@ -5,6 +5,8 @@ import sendFailureResponse from '@utils/failureResponse'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import QuestionModel from '@models/question/questionModel'
 import getQuiz from '@utils/getQuiz'
+import { Types } from 'mongoose'
+import isParticipant from '@utils/isParticipant'
 
 interface createOrUpdateResponseRequest extends Request {
   body: {
@@ -38,6 +40,28 @@ const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: R
         errorCode: 400,
         error: new Error('Quiz is not accepting answers'),
         messageToSend: 'Quiz is not accepting answers',
+      })
+    }
+
+    console.log("here");
+    const userObjectId = new Types.ObjectId(user.userId)
+      const dbUser = isParticipant(userObjectId, quiz?.participants)
+      console.log(dbUser);
+      if(!dbUser){
+        return sendFailureResponse({
+          res,
+          error: 'Error fetching quiz, Invalid User' ,
+          messageToSend: 'Error fetching quiz, User does not exist',
+          errorCode: 400,
+        })
+      }
+    
+      if (dbUser?.submitted) {
+        return sendFailureResponse({
+          res,
+          error: 'Error fetching quiz, User has already submitted the quiz' ,
+          messageToSend: 'Error fetching quiz, User has already submitted the quiz',
+          errorCode: 400,
       })
     }
     // no need to check the question type etc as the data is being sent by the frontend and we will have cors enabled for the frontend only
