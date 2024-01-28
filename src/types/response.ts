@@ -9,7 +9,7 @@ export interface IResponse {
   selectedOptionId?: string
   subjectiveAnswer?: string
   marksAwarded?: number
-  checkedBy?: Types.ObjectId
+  checkedBy?: IUser
   status: ResponseStatus
 }
 

@@ -19,7 +19,7 @@ const getResponse = async (req: getResponseRequest, res: Response) => {
       path: 'checkedBy',
       select: 'personalDetails.name personalDetails.emailAdd'
     })
-    if(!response) {
+    if (!response) {
       return sendInvalidInputResponse(res);
     }
     return res.status(200).json({
@@ -29,8 +29,8 @@ const getResponse = async (req: getResponseRequest, res: Response) => {
         subjectiveAnswer: response?.subjectiveAnswer,
         marksAwarded: response?.marksAwarded,
         status: response?.status,
-        checkedBy: response?.checkedBy,
-      }
+        checkedBy: response?.checkedBy?.personalDetails?.name,
+      },
     });
   }
 
