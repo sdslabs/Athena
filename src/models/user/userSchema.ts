@@ -16,6 +16,10 @@ const userSchema = new Schema<IUser>({
       required: false,
     },
   },
+  profileImage: {
+    type: String,
+    required: false,
+  },
   educationalDetails: {
     instituteName: {
       type: String,

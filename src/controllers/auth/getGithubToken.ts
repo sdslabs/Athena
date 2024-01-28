@@ -47,6 +47,7 @@ const getGithubToken = async (req: Request, res: Response) => {
           emailAdd: githubUser.data.email,
           role: UserRoles.user,
         },
+        profileImage: githubUser.data.avatar_url,
       })
       const savedUser = await newUser.save()
       userId = savedUser._id

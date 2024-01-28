@@ -7,6 +7,7 @@ export interface IUser {
     emailAdd: string
     phoneNo: string
   }
+  profileImage: string
   educationalDetails?: {
     instituteName?: string
     city?: string

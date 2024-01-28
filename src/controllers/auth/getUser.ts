@@ -11,9 +11,9 @@ const getUser = async (req: Request, res: Response) => {
       const userId = user.userId
       const document: IUser | null = await userModel.findById(userId)
       if (document && document.onboardingComplete === true) {
-        res.send({ user, onboarded: true })
+        res.send({ user, onboarded: true, profileUrl: document?.profileImage })
       } else {
-        res.send({ user, onboarded: false })
+        res.send({ user, onboarded: false, profileUrl: document?.profileImage})
       }
     } catch (e) {
       console.error(e)
