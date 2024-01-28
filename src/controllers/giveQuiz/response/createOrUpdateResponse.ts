@@ -43,10 +43,8 @@ const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: R
       })
     }
 
-    console.log("here");
     const userObjectId = new Types.ObjectId(user.userId)
       const dbUser = isParticipant(userObjectId, quiz?.participants)
-      console.log(dbUser);
       if(!dbUser){
         return sendFailureResponse({
           res,

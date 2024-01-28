@@ -37,7 +37,6 @@ const getQuiz = async (req: getQuizRequest, res: Response) => {
         sections: quiz?.sections,
       }
 
-      console.log(user);
 
       const userObjectId = new Types.ObjectId(user.userId)
       const dbUser = isParticipant(userObjectId, quiz?.participants)

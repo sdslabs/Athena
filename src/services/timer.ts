@@ -33,8 +33,6 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
 async function checkUserQuizStatus(quizId: string, userId: string) {
   const isAcceptingAnswers: boolean = await isQuizAcceptingAnswers(quizId)
   const isGivingQuiz: boolean = await isParticipantGivingQuiz(quizId, userId)
-  console.log("a:" + isAcceptingAnswers)
-  console.log("b:" + isGivingQuiz)
   if (!isAcceptingAnswers || isGivingQuiz) {
     return false
   }
@@ -80,17 +78,14 @@ async function timerService(io: any, socket: any) {
       saveQuiz(quiz)
       if (user.time.left <= 0) {
         socket.emit('sendTime', -1);
-        console.log('here ');
         socket.disconnect()
         return
       }
-      console.log(user.time.left);
       socket.emit('sendTime', user.time.left)
     }
   })
 
   socket.on('disconnect', async (reason: string) => {
-    console.log("Disconnect: "+reason)
     if (socket.checkQuiz === QuizCode.JoinQuiz && reason != QuizCode.ServerDisconnect) {
 
       const quiz = await getQuiz(socket.quizId)
@@ -105,18 +100,13 @@ async function timerService(io: any, socket: any) {
         user.time.endQuiz - new Date().getTime(),
       )
 
-      console.log(user.time.left);
-
       user.isGivingQuiz = false
       saveQuiz(quiz)
     }
   })
 
   socket.on('checkRejoin', async(data:any) => {
-    // console.log(data);
-    console.log("Rejoin");
-    // console.log(data.userId);
-    // console.log(data.quizId);
+
     socket.quizId = data.quizId
     socket.userId = data.userId
     const quiz = await getQuiz(socket.quizId)
@@ -127,17 +117,15 @@ async function timerService(io: any, socket: any) {
       const user = isParticipant(userObjectId, quiz?.participants) as IParticipant
       if(!user) socket.disconnect();
       if(user.isGivingQuiz){
-        console.log("yoyp");
         user.isGivingQuiz=false;
         user.time.endQuiz = (quiz?.quizMetadata?.endDateTimestamp as any).getTime()
         user.time.left = Math.min(
           user.time.left - (new Date().getTime() - user.time.enterQuiz),
           user.time.endQuiz - new Date().getTime(),
         )
-        console.log(user.time.left);
-        saveQuiz(quiz)
+        if(quiz)
+          saveQuiz(quiz)
       }
-      // console.log(user.isGivingQuiz);
   })
 }
 
