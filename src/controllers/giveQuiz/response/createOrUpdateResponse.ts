@@ -22,7 +22,7 @@ interface createOrUpdateResponseRequest extends Request {
 }
 
 const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: Response) => {
-  if (!req.body || !(req.body.selectedOptionId || req.body.subjectiveAnswer) || !req.body.status) {
+  if (!req.body  || !req.body.status) {
     return sendInvalidInputResponse(res)
   }
   const { user, selectedOptionId, subjectiveAnswer, status } = req.body
