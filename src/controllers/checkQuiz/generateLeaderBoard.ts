@@ -52,8 +52,7 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
     const sortedParticipants = participants.sort((a, b) => {
       if (a.marks > b.marks) {
         return -1
-      } else
-        return 1
+      } else return 1
     })
 
     await LeaderboardModel.findOneAndUpdate(
@@ -63,7 +62,7 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
         participants: sortedParticipants,
       },
       { upsert: true },
-    );
+    )
     return res.status(200).json({
       message: 'Leaderboard generated successfully',
       leaderboard: participants,

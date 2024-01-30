@@ -5,7 +5,6 @@ import ResponseModel from '@models/response/responseModel'
 import sendFailureResponse from '@utils/failureResponse'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 
-
 interface deleteQuizRequest extends Request {
   params: {
     quizId: string
@@ -32,8 +31,7 @@ const deleteQuiz = async (req: deleteQuizRequest, res: Response) => {
     await ResponseModel.deleteMany({ quizId: req.params.quizId })
     await QuizModel.findByIdAndDelete(req.params.quizId)
     return res.status(200).send({ message: 'Quiz deleted' })
-  }
-  catch (error: unknown) {
+  } catch (error: unknown) {
     sendFailureResponse({
       res,
       error,

@@ -1,10 +1,10 @@
-import express from 'express';
+import express from 'express'
 import * as quizController from '@controllers/giveQuiz/quiz'
-import isOnboard from '@utils/isOnboard';
+import isOnboard from '@utils/isOnboard'
 
-const router = express.Router();
+const router = express.Router()
 
 router.get('/:quizId', isOnboard, quizController.getQuiz)
 router.get('/question/:questionId', isOnboard, quizController.getQuestion)
 
-export default router;
+export default router

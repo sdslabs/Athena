@@ -1,21 +1,20 @@
-import { Request, Response } from "express";
-import LogModel from "@models/log/logModel";
-import { JwtPayload } from "types";
-
+import { Request, Response } from 'express'
+import LogModel from '@models/log/logModel'
+import { JwtPayload } from 'types'
 
 interface getLogsRequest extends Request {
-    body: {
-      user: JwtPayload
-      logType: string
-      questionId?: string
-      quizId: string
-      location?: {
-        longitude: number
-        latitude: number
-      }
-      key?: string
-      ip?: string
+  body: {
+    user: JwtPayload
+    logType: string
+    questionId?: string
+    quizId: string
+    location?: {
+      longitude: number
+      latitude: number
     }
+    key?: string
+    ip?: string
+  }
 }
 
 const createLog = async (req: getLogsRequest, res: Response) => {
@@ -28,17 +27,16 @@ const createLog = async (req: getLogsRequest, res: Response) => {
       quizId,
     })
     return res.status(200).json({
-      message: "Log created successfully",
-      log
+      message: 'Log created successfully',
+      log,
     })
   } catch (error: unknown) {
     console.log(error)
     return res.status(500).json({
-      message: "Error in creating log",
-      error
+      message: 'Error in creating log',
+      error,
     })
   }
-
 }
 
 export default createLog

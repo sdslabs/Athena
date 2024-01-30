@@ -23,12 +23,12 @@ const app: Express = express()
 const port = process.env.PORT
 
 // Middlewares
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
-app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(mongoSanitize());
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
+app.use(morgan('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+app.use(mongoSanitize())
 
 //socket.io
 const server = http.createServer(app)

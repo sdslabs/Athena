@@ -1,18 +1,18 @@
-import { Types, Date } from "mongoose";
+import { Types, Date } from 'mongoose'
 
 export interface ILog {
-  _id?: Types.ObjectId,
-  quizId: Types.ObjectId,
-  userId: Types.ObjectId,
-  questionId?: Types.ObjectId,
-  logType: LogType,
-  timestamp: Date,
+  _id?: Types.ObjectId
+  quizId: Types.ObjectId
+  userId: Types.ObjectId
+  questionId?: Types.ObjectId
+  logType: LogType
+  timestamp: Date
   location?: {
-    longitude: number,
-    latitude: number,
-  },
-  key?: string,
-  ip?: string,
+    longitude: number
+    latitude: number
+  }
+  key?: string
+  ip?: string
 }
 
 export enum LogType {
@@ -24,5 +24,5 @@ export enum LogType {
   RightClick = 'rightClick',
   IP = 'ip',
   Location = 'locationAccess',
-  FullScreenExit = 'fullScreenExit'
+  FullScreenExit = 'fullScreenExit',
 }

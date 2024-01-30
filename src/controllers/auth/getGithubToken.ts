@@ -14,7 +14,7 @@ const getGithubToken = async (req: Request, res: Response) => {
       headers: {
         accept: 'application/json',
       },
-    });
+    })
     const accessToken = response.data.split('&')[0].split('=')[1]
 
     const githubUser = await axios.get(process.env.GITHUB_USER_URL!, {

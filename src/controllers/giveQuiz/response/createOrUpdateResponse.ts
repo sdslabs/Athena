@@ -22,7 +22,7 @@ interface createOrUpdateResponseRequest extends Request {
 }
 
 const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: Response) => {
-  if (!req.body  || !req.body.status) {
+  if (!req.body || !req.body.status) {
     return sendInvalidInputResponse(res)
   }
   const { user, selectedOptionId, subjectiveAnswer, status } = req.body
@@ -44,26 +44,26 @@ const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: R
     }
 
     const userObjectId = new Types.ObjectId(user.userId)
-      const dbUser = isParticipant(userObjectId, quiz?.participants)
-      if(!dbUser){
-        return sendFailureResponse({
-          res,
-          error: 'Error fetching quiz, Invalid User' ,
-          messageToSend: 'Error fetching quiz, User does not exist',
-          errorCode: 400,
-        })
-      }
-    
-      if (dbUser?.submitted) {
-        return sendFailureResponse({
-          res,
-          error: 'Error fetching quiz, User has already submitted the quiz' ,
-          messageToSend: 'Error fetching quiz, User has already submitted the quiz',
-          errorCode: 400,
+    const dbUser = isParticipant(userObjectId, quiz?.participants)
+    if (!dbUser) {
+      return sendFailureResponse({
+        res,
+        error: 'Error fetching quiz, Invalid User',
+        messageToSend: 'Error fetching quiz, User does not exist',
+        errorCode: 400,
+      })
+    }
+
+    if (dbUser?.submitted) {
+      return sendFailureResponse({
+        res,
+        error: 'Error fetching quiz, User has already submitted the quiz',
+        messageToSend: 'Error fetching quiz, User has already submitted the quiz',
+        errorCode: 400,
       })
     }
     // no need to check the question type etc as the data is being sent by the frontend and we will have cors enabled for the frontend only
-    // TODO: use the following upsert type of query to update the response 
+    // TODO: use the following upsert type of query to update the response
     // const result = await ResponseModel.updateOne(
     //   {
     //     userId: user.userId,

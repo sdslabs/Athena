@@ -20,7 +20,7 @@ const isParticipantGivingQuiz = async (quizId: string, userId: string) => {
   const quiz = await getQuiz(quizId)
   const userObjectId = new Types.ObjectId(userId)
   const user = isParticipant(userObjectId, quiz?.participants)
-  if(!user){
+  if (!user) {
     return true
   }
 
@@ -62,14 +62,14 @@ async function timerService(io: any, socket: any) {
       socket.disconnect()
     } else {
       const quiz = await getQuiz(socket.quizId)
-      if(!quiz) {
+      if (!quiz) {
         socket.disconnect()
         return
       }
       const userObjectId = new Types.ObjectId(socket.userId)
       const user = isParticipant(userObjectId, quiz?.participants) as IParticipant
-      if(!user){
-        socket.disconnect();
+      if (!user) {
+        socket.disconnect()
       }
       user.isGivingQuiz = true
       user.time.enterQuiz = new Date().getTime()
@@ -77,7 +77,7 @@ async function timerService(io: any, socket: any) {
       user.time.left = Math.min(user.time.left, user.time.endQuiz - new Date().getTime())
       saveQuiz(quiz)
       if (user.time.left <= 0) {
-        socket.emit('sendTime', -1);
+        socket.emit('sendTime', -1)
         socket.disconnect()
         return
       }
@@ -86,10 +86,10 @@ async function timerService(io: any, socket: any) {
   })
 
   socket.on('disconnect', async (reason: string) => {
+    console.log(reason, socket.checkQuiz, socket.quizId, socket.userId)
     if (socket.checkQuiz === QuizCode.JoinQuiz && reason != QuizCode.ServerDisconnect) {
-
       const quiz = await getQuiz(socket.quizId)
-      if(!quiz) {
+      if (!quiz) {
         return
       }
       const userObjectId = new Types.ObjectId(socket.userId)
@@ -105,27 +105,25 @@ async function timerService(io: any, socket: any) {
     }
   })
 
-  socket.on('checkRejoin', async(data:any) => {
-
+  socket.on('checkRejoin', async (data: any) => {
     socket.quizId = data.quizId
     socket.userId = data.userId
     const quiz = await getQuiz(socket.quizId)
-      if(!quiz) {
-        socket.disconnect();
-      }
-      const userObjectId = new Types.ObjectId(socket.userId)
-      const user = isParticipant(userObjectId, quiz?.participants) as IParticipant
-      if(!user) socket.disconnect();
-      if(user.isGivingQuiz){
-        user.isGivingQuiz=false;
-        user.time.endQuiz = (quiz?.quizMetadata?.endDateTimestamp as any).getTime()
-        user.time.left = Math.min(
-          user.time.left - (new Date().getTime() - user.time.enterQuiz),
-          user.time.endQuiz - new Date().getTime(),
-        )
-        if(quiz)
-          saveQuiz(quiz)
-      }
+    if (!quiz) {
+      socket.disconnect()
+    }
+    const userObjectId = new Types.ObjectId(socket.userId)
+    const user = isParticipant(userObjectId, quiz?.participants) as IParticipant
+    if (!user) socket.disconnect()
+    if (user.isGivingQuiz) {
+      user.isGivingQuiz = false
+      user.time.endQuiz = (quiz?.quizMetadata?.endDateTimestamp as any).getTime()
+      user.time.left = Math.min(
+        user.time.left - (new Date().getTime() - user.time.enterQuiz),
+        user.time.endQuiz - new Date().getTime(),
+      )
+      if (quiz) saveQuiz(quiz)
+    }
   })
 }
 

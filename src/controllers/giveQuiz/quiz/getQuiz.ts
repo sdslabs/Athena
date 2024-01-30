@@ -37,45 +37,56 @@ const getQuiz = async (req: getQuizRequest, res: Response) => {
         sections: quiz?.sections,
       }
 
-
       const userObjectId = new Types.ObjectId(user.userId)
       const dbUser = isParticipant(userObjectId, quiz?.participants)
-      if(!dbUser){
+      if (!dbUser) {
         return sendFailureResponse({
           res,
-          error: 'Error fetching quiz, Invalid User' ,
+          error: 'Error fetching quiz, Invalid User',
           messageToSend: 'Error fetching quiz, User does not exist',
           errorCode: 400,
         })
       }
-    
+
       if (dbUser?.submitted) {
         return sendFailureResponse({
           res,
-          error: 'Error fetching quiz, User has already submitted the quiz' ,
+          error: 'Error fetching quiz, User has already submitted the quiz',
           messageToSend: 'Error fetching quiz, User has already submitted the quiz',
           errorCode: 400,
         })
       }
 
-      const answeredResponses = await ResponseModel.find({ status: ResponseStatus.answered, quizId: quiz._id, userId: user.userId })
+      const answeredResponses = await ResponseModel.find({
+        status: ResponseStatus.answered,
+        quizId: quiz._id,
+        userId: user.userId,
+      })
       const answeredQuestionIds = answeredResponses.map((response) => response.questionId)
 
-      const markedResponses = await ResponseModel.find({ status: ResponseStatus.marked, quizId: quiz._id, userId: user.userId })
+      const markedResponses = await ResponseModel.find({
+        status: ResponseStatus.marked,
+        quizId: quiz._id,
+        userId: user.userId,
+      })
       const markedQuestionIds = markedResponses.map((response) => response.questionId)
 
-      const markedAnsweredResponses = await ResponseModel.find({ status: ResponseStatus.markedanswer, quizId: quiz._id, userId: user.userId })
-      const markedAnsweredQuestionIds = markedAnsweredResponses.map( (response) => response.questionId,)
+      const markedAnsweredResponses = await ResponseModel.find({
+        status: ResponseStatus.markedanswer,
+        quizId: quiz._id,
+        userId: user.userId,
+      })
+      const markedAnsweredQuestionIds = markedAnsweredResponses.map(
+        (response) => response.questionId,
+      )
 
-      return res
-        .status(200)
-        .send({
-          message: 'Quiz fetched',
-          quiz: quizDetails,
-          answeredQuestionIds,
-          markedQuestionIds,
-          markedAnsweredQuestionIds,
-        })
+      return res.status(200).send({
+        message: 'Quiz fetched',
+        quiz: quizDetails,
+        answeredQuestionIds,
+        markedQuestionIds,
+        markedAnsweredQuestionIds,
+      })
     } else {
       return sendFailureResponse({
         res,

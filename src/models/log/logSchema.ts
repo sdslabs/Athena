@@ -1,5 +1,5 @@
-import { Schema } from "mongoose"
-import { ModelNames, ILog, LogType } from "types"
+import { Schema } from 'mongoose'
+import { ModelNames, ILog, LogType } from 'types'
 
 const logSchema = new Schema<ILog>({
   quizId: {
@@ -32,7 +32,7 @@ const logSchema = new Schema<ILog>({
     },
     latitude: {
       type: Number,
-    }
+    },
   },
   key: {
     type: String,
