@@ -1,7 +1,7 @@
 import userModel from '@models/user/userModel'
 import { verifyToken } from '@utils/token'
 import { Request, Response } from 'express'
-import { IUser, JwtPayload } from 'types'
+import { IUser } from 'types'
 
 const getUser = async (req: Request, res: Response) => {
   const token = req.cookies.jwt

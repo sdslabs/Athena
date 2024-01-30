@@ -2,7 +2,6 @@ import { Response, Request } from 'express'
 import sendFailureResponse from '@utils/failureResponse'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import getQuiz from '@utils/getQuiz'
-import mongoose, { Types } from 'mongoose'
 
 interface getQuizRequest extends Request {
   params: {

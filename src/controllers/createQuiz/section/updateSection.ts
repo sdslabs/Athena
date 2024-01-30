@@ -32,7 +32,6 @@ const updateSection = async (req: updateSectionRequest, res: Response) => {
     return sendInvalidInputResponse(res)
   }
 
-  const section = quiz?.sections[sectionIndex]
   try {
     await QuizModel.findByIdAndUpdate(
       quizId,

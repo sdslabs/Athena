@@ -86,7 +86,6 @@ async function timerService(io: any, socket: any) {
   })
 
   socket.on('disconnect', async (reason: string) => {
-    console.log(reason, socket.checkQuiz, socket.quizId, socket.userId)
     if (socket.checkQuiz === QuizCode.JoinQuiz && reason != QuizCode.ServerDisconnect) {
       const quiz = await getQuiz(socket.quizId)
       if (!quiz) {

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import { Request, Response } from 'express'
 import UserModel from '@models/user/userModel'
 import { OAuthProviders, UserRoles, IUser, JwtPayload } from 'types'
