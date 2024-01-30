@@ -3,6 +3,8 @@ import QuizModel from '@models/quiz/quizModel'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import sendFailureResponse from '@utils/failureResponse'
 import LeaderboardModel from '@models/leaderboard/leaderboardModel'
+import UserModel from '@models/user/userModel';
+import { Types } from "mongoose";
 
 interface getDashboardRequest extends Request {
   params: {
@@ -10,8 +12,15 @@ interface getDashboardRequest extends Request {
   }
 }
 
+interface UserDetails {
+  userId: Types.ObjectId;
+  name: string | undefined;
+  phoneNumber: string | undefined ;
+ }
+
 const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => {
   const quizId = req.params.quizId
+  const users: UserDetails[] = [];
   try {
     const quiz = await QuizModel.findById(quizId).populate({
       path: 'sections',
@@ -35,8 +44,24 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
         checksCompleted += question?.checkedAttempts || 0
         totalAttempts += question?.totalAttempts || 0
       })
-    })
+    })   
     const leaderboard = await LeaderboardModel.find({ quizId: quizId })
+
+    for (let i = 0; i < leaderboard.length; i++) {
+      for (let j = 0; j < leaderboard[i].participants.length; j++) {
+        const userId = leaderboard[i].participants[j].userId;
+        const user = await UserModel.findById(userId);
+        console.log("userrrr",user);
+        if(user){
+        users.push({
+          userId: user._id,
+          name: user.personalDetails?.name,
+          phoneNumber: user.personalDetails?.phoneNo
+        });
+      }
+      }
+    }
+
     return res.status(200).json({
       admin: quiz.admin,
       scheduled: quiz.quizMetadata?.startDateTimestamp,
@@ -45,6 +70,7 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
       checksCompleted: checksCompleted,
       totalAttempts: totalAttempts,
       leaderboard: leaderboard,
+      users : users,
       name: quiz?.quizMetadata?.name,
     })
   } catch (error: unknown) {
