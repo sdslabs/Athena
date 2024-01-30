@@ -3,7 +3,7 @@ import ResponseModel from "@models/response/responseModel";
 import sendFailureResponse from "@utils/failureResponse";
 import getQuiz from "@utils/getQuiz";
 import sendInvalidInputResponse from "@utils/invalidInputResponse";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { ResponseStatus } from "types";
 

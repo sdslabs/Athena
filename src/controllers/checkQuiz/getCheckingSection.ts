@@ -1,6 +1,6 @@
 import SectionLeaderboardModel from "@models/leaderboard/sectionLeaderboardModel";
 import sendFailureResponse from "@utils/failureResponse";
-import { Response } from "express";
+import { Request, Response } from "express";
 
 interface getCheckingSectionRequest extends Request {
     params: {
