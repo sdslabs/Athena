@@ -13,6 +13,11 @@ router.use('/response', responseRouter)
 
 router.get('/dashboard/:quizId', isOnboard, hasEditAccess, checkQuizController.getCheckingDashboard)
 router.patch('/autocheck/:quizId', isOnboard, isQuizAdmin, checkQuizController.autoCheck)
+
 router.patch('/leaderboard/:quizId', isOnboard, isQuizAdmin, checkQuizController.generateLeaderBoard)
+
+router.get('/sectionLeaderboard/:quizId/:sectionIndex', isOnboard, hasEditAccess, checkQuizController.getCheckingSection)
+router.patch('/generateSectionLeaderboard/:quizId/:sectionIndex', isOnboard, isQuizAdmin, checkQuizController.generateSectionLeaderboard);
+
 
 export default router
