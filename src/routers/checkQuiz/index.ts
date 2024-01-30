@@ -11,8 +11,11 @@ const router = express.Router()
 router.use('/question', questionRouter)
 router.use('/response', responseRouter)
 
-router.get('/dashboard/:quizId', isOnboard, hasEditAccess, checkQuizController.getCheckingDashboard)
-router.patch('/autocheck/:quizId', isOnboard, isQuizAdmin, checkQuizController.autoCheck)
-router.patch('/leaderboard/:quizId', isOnboard, isQuizAdmin, checkQuizController.generateLeaderBoard)
+router.get('/dashboard/:quizId', checkQuizController.getCheckingDashboard)
+router.get('/sectionLeaderboard/:quizId/:sectionIndex', checkQuizController.getCheckingSection)
+router.patch('/autocheck/:quizId', checkQuizController.autoCheck);
+router.patch('/leaderboard/:quizId', checkQuizController.generateLeaderBoard);
+router.patch('/generateSectionLeaderboard/:quizId/:sectionIndex', checkQuizController.generateSectionLeaderboard);
+
 
 export default router
