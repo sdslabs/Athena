@@ -30,7 +30,7 @@ const questionSchema = new Schema<IQuestion>({
     type: Number,
     required: true,
   },
-  notes: {
+  checkerNotes: {
     type: String,
   },
   autoCheck: {

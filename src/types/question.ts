@@ -10,7 +10,7 @@ export interface IQuestion {
   }[]
   correctAnswer?: string
   maxMarks: number
-  notes?: string
+  checkerNotes?: string
   autoCheck: boolean
   totalAttempts?: number
   checkedAttempts?: number

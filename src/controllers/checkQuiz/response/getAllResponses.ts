@@ -18,7 +18,7 @@ const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
     if (!question) {
       sendInvalidInputResponse(res)
     }
-    const responses = await ResponseModel.find({ questionId, quizId }).populate({
+    const responses = await ResponseModel.find({ questionId }).populate({
       path: 'userId',
       select: 'personalDetails.name',
     })
