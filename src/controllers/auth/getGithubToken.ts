@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import { Request, Response } from 'express'
 import UserModel from '@models/user/userModel'
 import { OAuthProviders, UserRoles, IUser, JwtPayload } from 'types'
@@ -14,7 +14,7 @@ const getGithubToken = async (req: Request, res: Response) => {
       headers: {
         accept: 'application/json',
       },
-    });
+    })
     const accessToken = response.data.split('&')[0].split('=')[1]
 
     const githubUser = await axios.get(process.env.GITHUB_USER_URL!, {
@@ -47,6 +47,7 @@ const getGithubToken = async (req: Request, res: Response) => {
           emailAdd: githubUser.data.email,
           role: UserRoles.user,
         },
+        profileImage: githubUser.data.avatar_url,
       })
       const savedUser = await newUser.save()
       userId = savedUser._id

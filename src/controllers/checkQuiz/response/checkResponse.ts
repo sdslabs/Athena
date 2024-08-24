@@ -27,7 +27,7 @@ const checkResponse = async (req: checkResponseRequest, res: Response) => {
     await ResponseModel.findByIdAndUpdate(responseId, {
       status: ResponseStatus.checked,
       marksAwarded: marksAwarded,
-      checkedBy: user,
+      checkedBy: user.userId,
     })
     return res.status(200).json({
       message: 'Response checked',

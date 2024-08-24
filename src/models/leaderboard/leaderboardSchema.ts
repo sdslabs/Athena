@@ -1,5 +1,5 @@
-import { Schema } from "mongoose"
-import { ModelNames, ILeaderboard } from "types"
+import { Schema } from 'mongoose'
+import { ModelNames, ILeaderboard } from 'types'
 
 const leaderboardSchema = new Schema<ILeaderboard>({
   quizId: {

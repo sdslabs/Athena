@@ -19,12 +19,12 @@ const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
       sendInvalidInputResponse(res)
     }
     const responses = await ResponseModel.find({ questionId, quizId }).populate({
-      path: 'user',
+      path: 'userId',
       select: 'personalDetails.name',
     })
     const responsesToSend = responses.map((response) => {
       return {
-        name: response.user?.personalDetails?.name,
+        name: response.userId?.personalDetails?.name,
         responseId: response._id,
         status: response.status,
       }
@@ -46,7 +46,7 @@ const getAllResponses = async (req: getAllResponsesRequest, res: Response) => {
         checkedBy: firstResponse?.checkedBy,
       },
       // TODO: to remove, Frontend Issue
-      questionId: question._id,
+      questionId: question?._id,
     })
   } catch (error: unknown) {
     return sendFailureResponse({

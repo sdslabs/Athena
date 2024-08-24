@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import { ModelNames, ILog } from "types";
-import logSchema from "./logSchema";
+import mongoose from 'mongoose'
+import { ModelNames, ILog } from 'types'
+import logSchema from './logSchema'
 
-const LogModel = mongoose.model<ILog>(ModelNames.Log, logSchema);
+const LogModel = mongoose.model<ILog>(ModelNames.Log, logSchema)
 
-export default LogModel;
+export default LogModel

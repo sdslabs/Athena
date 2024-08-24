@@ -17,33 +17,41 @@ interface updateQuizRequest extends Request {
 }
 
 const updateQuiz = async (req: updateQuizRequest, res: Response) => {
-
-  if (!req.body || !req.params.quizId || !req.body.user ) {
+  if (!req.body || !req.params.quizId || !req.body.user) {
     return sendInvalidInputResponse(res)
   }
 
   // get the data from the request body
   const { managers, quizMetadata, registrationMetadata } = req.body
-  
+
   const quizId = req.params.quizId
   try {
     // the fields present in the request body are only updated
     // this helps to prevent overwriting of the data and also use the same API for updating different fields
-    const quiz = await QuizModel.findByIdAndUpdate(quizId, {
-      ...(managers && { managers }),
-      ...(quizMetadata && { quizMetadata }),
-      ...(registrationMetadata && { registrationMetadata }),
-    }, { new: true });
+    const quiz = await QuizModel.findByIdAndUpdate(
+      quizId,
+      {
+        ...(managers && { managers }),
+        ...(quizMetadata && { quizMetadata }),
+        ...(registrationMetadata && { registrationMetadata }),
+      },
+      { new: true },
+    )
     // send the response back
-    if(!quiz) {
+    if (!quiz) {
       return sendFailureResponse({
         res,
         error: 'Error updating quiz',
         messageToSend: 'Error updating quiz',
-        errorCode: 404
+        errorCode: 404,
       })
     } else {
-      return res.status(200).send({ message: 'Quiz updated', updatedParameters: { quizId: quiz._id, managers, quizMetadata, registrationMetadata }})
+      return res
+        .status(200)
+        .send({
+          message: 'Quiz updated',
+          updatedParameters: { quizId: quiz._id, managers, quizMetadata, registrationMetadata },
+        })
     }
   } catch (error: unknown) {
     sendFailureResponse({

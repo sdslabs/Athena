@@ -37,6 +37,7 @@ const getGoogleToken = async (req: Request, res: Response) => {
           emailAdd: googleUser.data.email,
           role: UserRoles.user,
         },
+        profileImage: googleUser.data.picture,
         onboardingComplete: false,
       })
       const savedUser = await newUser.save()
