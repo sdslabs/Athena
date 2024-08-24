@@ -59,6 +59,7 @@ async function timerService(io: any, socket: any) {
     const checkUserQuizStatusResult = await checkUserQuizStatus(socket.quizId, socket.userId)
 
     if (!checkUserQuizStatusResult) {
+      socket.emit('sendTime', 0)
       socket.disconnect()
     } else {
       const quiz = await getQuiz(socket.quizId)
