@@ -10,15 +10,24 @@ interface generateLeaderBoardRequest extends Request {
   params: {
     quizId: string
   }
+  query: {
+    searchQuery?: string
+  }
 }
+
 interface Participant {
   userId: Types.ObjectId
   marks: number
   questionsAttempted: number
   questionsChecked: number
 }
+
 const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Response) => {
   const { quizId } = req.params
+  const searchQuery = req.query.searchQuery as string
+
+  console.log(searchQuery)
+
   try {
     const quiz = await getQuiz(quizId)
     const participants: Participant[] = []
@@ -49,11 +58,16 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
       }) as Promise<void>[],
     )
 
-    const sortedParticipants = participants.sort((a, b) => {
-      if (a.marks > b.marks) {
-        return -1
-      } else return 1
-    })
+    const filteredParticipants = participants.filter(participant => {
+      const userIdStr = participant.userId.toString();
+      return !searchQuery || userIdStr.includes(searchQuery);
+    });
+
+    console.log('filteredParticipants', filteredParticipants);
+
+    const sortedParticipants = filteredParticipants.sort((a, b) => {
+      return b.marks - a.marks;
+    });
 
     await LeaderboardModel.findOneAndUpdate(
       { quizId: quizId },
@@ -63,9 +77,10 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
       },
       { upsert: true },
     )
+
     return res.status(200).json({
       message: 'Leaderboard generated successfully',
-      leaderboard: participants,
+      leaderboard: sortedParticipants,
     })
   } catch (error: unknown) {
     return sendFailureResponse({

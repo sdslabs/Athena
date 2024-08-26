@@ -1,26 +1,33 @@
-import { Request, Response } from 'express'
-import QuizModel from '@models/quiz/quizModel'
-import sendInvalidInputResponse from '@utils/invalidInputResponse'
-import sendFailureResponse from '@utils/failureResponse'
-import LeaderboardModel from '@models/leaderboard/leaderboardModel'
+import { Request, Response } from 'express';
+import QuizModel from '@models/quiz/quizModel';
+import sendInvalidInputResponse from '@utils/invalidInputResponse';
+import sendFailureResponse from '@utils/failureResponse';
+import LeaderboardModel from '@models/leaderboard/leaderboardModel';
 import UserModel from '@models/user/userModel';
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 interface getDashboardRequest extends Request {
   params: {
-    quizId: string
-  }
+    quizId: string;
+  };
+  query: {
+    search?: string; // Adjusted to match the query parameter name 'search'
+  };
 }
 
 interface UserDetails {
   userId: Types.ObjectId;
   name: string | undefined;
-  phoneNumber: string | undefined ;
- }
+  phoneNumber: string | undefined;
+}
 
 const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => {
-  const quizId = req.params.quizId
+  const quizId = req.params.quizId;
+  const searchQuery = req.query.search as string | undefined; // Adjusted to match the query parameter name 'search'
   const users: UserDetails[] = [];
+
+  console.log('getCheckingDashboard', quizId, searchQuery);
+
   try {
     const quiz = await QuizModel.findById(quizId).populate({
       path: 'sections',
@@ -33,34 +40,43 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
           select: 'personalDetails.name personalDetails.emailAdd',
         },
       },
-    })
+    });
     if (!quiz) {
-      return sendInvalidInputResponse(res)
+      return sendInvalidInputResponse(res);
     }
-    let checksCompleted = 0
-    let totalAttempts = 0
+
+    let checksCompleted = 0;
+    let totalAttempts = 0;
     quiz?.sections?.forEach((section) => {
       section?.questions?.forEach((question) => {
-        checksCompleted += question?.checkedAttempts || 0
-        totalAttempts += question?.totalAttempts || 0
-      })
-    })   
-    const leaderboard = await LeaderboardModel.find({ quizId: quizId })
+        checksCompleted += question?.checkedAttempts || 0;
+        totalAttempts += question?.totalAttempts || 0;
+      });
+    });
 
-    for (let i = 0; i < leaderboard.length; i++) {
-      for (let j = 0; j < leaderboard[i].participants.length; j++) {
-        const userId = leaderboard[i].participants[j].userId;
+    const leaderboard = await LeaderboardModel.find({ quizId: quizId });
+
+    for (const entry of leaderboard) {
+      for (const participant of entry.participants) {
+        const userId = participant.userId;
         const user = await UserModel.findById(userId);
-        console.log("userrrr",user);
-        if(user){
-        users.push({
-          userId: user._id,
-          name: user.personalDetails?.name,
-          phoneNumber: user.personalDetails?.phoneNo
-        });
-      }
+
+        if (user) {
+          const name = user.personalDetails?.name?.toLowerCase() || '';
+          const phoneNumber = user.personalDetails?.phoneNo || '';
+
+          if (!searchQuery || name.includes(searchQuery.toLowerCase()) || phoneNumber.includes(searchQuery)) {
+            users.push({
+              userId: user._id,
+              name: user.personalDetails?.name,
+              phoneNumber: user.personalDetails?.phoneNo,
+            });
+          }
+        }
       }
     }
+
+    console.log('Filtered Users:', users);
 
     return res.status(200).json({
       admin: quiz.admin,
@@ -70,16 +86,16 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
       checksCompleted: checksCompleted,
       totalAttempts: totalAttempts,
       leaderboard: leaderboard,
-      users : users,
+      users: users,
       name: quiz?.quizMetadata?.name,
-    })
+    });
   } catch (error: unknown) {
     return sendFailureResponse({
       res,
       error,
       messageToSend: 'Failed to get checking dashboard',
-    })
+    });
   }
-}
+};
 
-export default getCheckingDashboard
+export default getCheckingDashboard;

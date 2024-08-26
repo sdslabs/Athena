@@ -12,16 +12,23 @@ interface generateSectionLeaderboardRequest extends Request {
         quizId: string,
         sectionIndex: string
     }
+    query: {
+        searchQuery?: string
+    }
 }
+
 interface Participant {
     userId: Types.ObjectId
     marks: number
     questionsAttempted: number
     questionsChecked: number
 }
+
 const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest, res: Response) => {
     const { quizId } = req.params
     const sectionIndex = parseInt(req.params.sectionIndex, 10);
+    const searchQuery = req.query.searchQuery as string;
+
     try {
         const quiz = await getQuiz(quizId)
         if (!quiz || !quiz?.sections || sectionIndex >= quiz.sections.length) {
@@ -29,13 +36,14 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
         }
         const questions = quiz?.sections[sectionIndex].questions
         const participants: Participant[] = []
+
         for (const participant of quiz?.participants || []) {
             let score = 0;
             let questionsAttempted = 0;
             let questionsChecked = 0;
+
             for (const question of questions || []) {
                 const response = await ResponseModel.findOne({ quizId: quizId, questionId: question._id, userId: participant.userId });
-                console.log(response);
                 score += response?.marksAwarded || 0;
                 questionsAttempted++;
                 questionsChecked += response?.status === ResponseStatus.checked ? 1 : 0;
@@ -51,12 +59,17 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
                 participants.push(leaderboardEntry);
             }
         }
-        const sortedParticipants = participants.sort((a, b) => {
-            if (a.marks > b.marks) {
-                return -1
-            } else
-                return 1
-        })
+
+        const filteredParticipants = participants.filter(participant => {
+            const userIdStr = participant.userId.toString();
+            return !searchQuery || userIdStr.includes(searchQuery);
+        });
+
+        console.log("filteredParticipants", filteredParticipants);
+
+        const sortedParticipants = filteredParticipants.sort((a, b) => {
+            return b.marks - a.marks; 
+        });
 
         await SectionLeaderboardModel.findOneAndUpdate(
             {
@@ -72,17 +85,18 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
                 upsert: true,
             },
         );
+
         return res.status(200).json({
             message: `Leaderboard for section ${sectionIndex} generated successfully`,
-            leaderboard: participants,
-        })
+            leaderboard: sortedParticipants,
+        });
     } catch (error: unknown) {
         return sendFailureResponse({
             res,
             error,
             messageToSend: 'Failed to generate leaderboard',
-        })
+        });
     }
 }
 
-export default generateSectionLeaderBoard
+export default generateSectionLeaderBoard;
