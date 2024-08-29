@@ -24,21 +24,24 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
 
   try {
     const quiz = await QuizModel.findById(quizId)
-    const isUserRegistered = isParticipant(user.userId, quiz?.participants)
+    const dbUser = isParticipant(user.userId, quiz?.participants)
 
-    if (!quiz || !quiz.isPublished || !isUserRegistered) {
+    if (!quiz || !quiz.isPublished || !dbUser) {
       return res.status(400).json({
         success: false,
         message: 'User not registered for this quiz',
       })
     }
-
+    
     if (quiz.quizMetadata?.accessCode !== accessCode) {
       return res.status(401).json({
         success: false,
         message: 'Invalid access code',
       })
     }
+
+    dbUser.startTime = new Date().getTime()
+
     await quiz.save()
     return res.status(200).json({
       success: true,

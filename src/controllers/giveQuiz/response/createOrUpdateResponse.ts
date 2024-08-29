@@ -1,12 +1,13 @@
 import { Response, Request } from 'express'
 import ResponseModel from '@models/response/responseModel'
-import { JwtPayload, IResponse } from 'types'
+import { JwtPayload, IResponse, QuizUserStatus } from 'types'
 import sendFailureResponse from '@utils/failureResponse'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import QuestionModel from '@models/question/questionModel'
 import getQuiz from '@utils/getQuiz'
 import { Types } from 'mongoose'
 import isParticipant from '@utils/isParticipant'
+import { checkQuizUserStatus, isQuizUserStatusValid } from '@utils/checkQuizUserStatus'
 
 interface createOrUpdateResponseRequest extends Request {
   body: {
@@ -33,14 +34,8 @@ const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: R
     }
 
     const quiz = await getQuiz(req.params.quizId)
-    // check if the quiz is accepting answers
-    if (quiz?.isAcceptingAnswers === false) {
-      return sendFailureResponse({
-        res,
-        errorCode: 400,
-        error: new Error('Quiz is not accepting answers'),
-        messageToSend: 'Quiz is not accepting answers',
-      })
+    if (!quiz) {
+      return sendInvalidInputResponse(res)
     }
 
     const userObjectId = new Types.ObjectId(user.userId)
@@ -54,34 +49,17 @@ const createOrUpdateResponse = async (req: createOrUpdateResponseRequest, res: R
       })
     }
 
-    if (dbUser?.submitted) {
-      return sendFailureResponse({
-        res,
-        error: 'Error fetching quiz, User has already submitted the quiz',
-        messageToSend: 'Error fetching quiz, User has already submitted the quiz',
-        errorCode: 400,
-      })
+    const currentStatus:QuizUserStatus = checkQuizUserStatus (quiz, dbUser);
+    if (!isQuizUserStatusValid (currentStatus, res)) {
+      return;
     }
-    // no need to check the question type etc as the data is being sent by the frontend and we will have cors enabled for the frontend only
-    // TODO: use the following upsert type of query to update the response
-    // const result = await ResponseModel.updateOne(
-    //   {
-    //     userId: user.userId,
-    //     quizId: req.params.quizId,
-    //     questionId: req.params.questionId,
-    //   },
-    //   {
-    //     $set: {
-    //       userId: user.userId,
-    //       quizId: req.params.quizId,
-    //       questionId: req.params.questionId,
-    //       subjectiveAnswer,
-    //       selectedOptionId,
-    //       status,
-    //     },
-    //   },
-    //   { upsert: true }
-    // );
+
+    if (currentStatus === QuizUserStatus.AUTO_SUBMIT_QUIZ) {
+      // auto submit quiz
+      console.log('Auto submit quiz')
+      return res.status(200).json({ message: 'Quiz auto submitted' });
+    }
+    
     const response = await ResponseModel.findOne({
       userId: user.userId,
       quizId: req.params.quizId,

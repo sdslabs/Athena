@@ -3,9 +3,10 @@ import sendFailureResponse from '@utils/failureResponse'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import QuizModel from '@models/quiz/quizModel'
 import ResponseModel from '@models/response/responseModel'
-import { JwtPayload, ResponseStatus } from 'types'
+import { JwtPayload, ResponseStatus, QuizUserStatus } from 'types'
 import isParticipant from '@utils/isParticipant'
 import { Types } from 'mongoose'
+import { checkQuizUserStatus, isQuizUserStatusValid } from '@utils/checkQuizUserStatus'
 
 interface getQuizRequest extends Request {
   params: {
@@ -48,13 +49,15 @@ const getQuiz = async (req: getQuizRequest, res: Response) => {
         })
       }
 
-      if (dbUser?.submitted) {
-        return sendFailureResponse({
-          res,
-          error: 'Error fetching quiz, User has already submitted the quiz',
-          messageToSend: 'Error fetching quiz, User has already submitted the quiz',
-          errorCode: 400,
-        })
+      const currentStatus = checkQuizUserStatus(quiz, dbUser);
+      if (!isQuizUserStatusValid (currentStatus, res)) {
+        return;
+      }
+
+      if (currentStatus === QuizUserStatus.AUTO_SUBMIT_QUIZ) {
+        // auto submit quiz
+        console.log('Auto submit quiz')
+        return res.status(200).json({ message: 'Quiz auto submitted' });
       }
 
       const answeredResponses = await ResponseModel.find({
