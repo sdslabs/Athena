@@ -1,73 +1,82 @@
-import LeaderboardModel from '@models/leaderboard/leaderboardModel'
-import ResponseModel from '@models/response/responseModel'
-import sendFailureResponse from '@utils/failureResponse'
-import getQuiz from '@utils/getQuiz'
-import { Request, Response } from 'express'
-import { Types } from 'mongoose'
-import { ResponseStatus } from 'types'
+import LeaderboardModel from '@models/leaderboard/leaderboardModel';
+import ResponseModel from '@models/response/responseModel';
+import UserModel from '@models/user/userModel';
+import sendFailureResponse from '@utils/failureResponse';
+import getQuiz from '@utils/getQuiz';
+import { Request, Response } from 'express';
+import { Types } from 'mongoose';
+import { ResponseStatus } from 'types';
 
 interface generateLeaderBoardRequest extends Request {
   params: {
-    quizId: string
-  }
+    quizId: string;
+  };
   query: {
-    searchQuery?: string
-  }
+    search?: string;
+  };
 }
 
 interface Participant {
-  userId: Types.ObjectId
-  marks: number
-  questionsAttempted: number
-  questionsChecked: number
+  userId: Types.ObjectId;
+  marks: number;
+  questionsAttempted: number;
+  questionsChecked: number;
 }
 
 const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Response) => {
-  const { quizId } = req.params
-  const searchQuery = req.query.searchQuery as string
+  const { quizId } = req.params;
+  const searchQuery = req.query.search as string;
 
-  console.log(searchQuery)
+  console.log('LeaderboardQuery', searchQuery);
 
   try {
-    const quiz = await getQuiz(quizId)
-    const participants: Participant[] = []
+    const quiz = await getQuiz(quizId);
+    const participants: Participant[] = [];
 
     await Promise.all(
       quiz?.participants?.map(async (participant) => {
-        const responses = await ResponseModel.find({ quizId: quizId, userId: participant.userId })
+        const responses = await ResponseModel.find({ quizId: quizId, userId: participant.userId });
 
-        let score = 0
-        let questionsAttempted = 0
-        let questionsChecked = 0
+        let score = 0;
+        let questionsAttempted = 0;
+        let questionsChecked = 0;
 
         responses.forEach((response) => {
-          score += response.marksAwarded || 0
-          questionsAttempted++
-          questionsChecked += response.status === ResponseStatus.checked ? 1 : 0
-        })
+          score += response.marksAwarded || 0;
+          questionsAttempted++;
+          questionsChecked += response.status === ResponseStatus.checked ? 1 : 0;
+        });
 
-        if (Types.ObjectId.isValid(participant.userId)) {
-          const leaderboardEntry: Participant = {
-            userId: participant.userId,
-            marks: score,
-            questionsAttempted: questionsAttempted,
-            questionsChecked: questionsChecked,
+        const user = await UserModel.findById(participant.userId);
+
+        if (user) {
+          const name = user.personalDetails?.name?.toLowerCase() || '';
+          const phoneNumber = user.personalDetails?.phoneNo || '';
+          console.log('UserDetails', name, phoneNumber, searchQuery); // TODO Remove this line
+
+          // Filter participants based on searchQuery (name or phone number)
+          if (
+            !searchQuery || searchQuery === '' ||
+            name.includes(searchQuery) ||
+            phoneNumber.includes(searchQuery)
+          ) {
+            const leaderboardEntry: Participant = {
+              userId: participant.userId,
+              marks: score,
+              questionsAttempted: questionsAttempted,
+              questionsChecked: questionsChecked,
+            };
+
+            participants.push(leaderboardEntry);
           }
-          participants.push(leaderboardEntry)
         }
       }) as Promise<void>[],
-    )
+    );
 
-    const filteredParticipants = participants.filter(participant => {
-      const userIdStr = participant.userId.toString();
-      return !searchQuery || userIdStr.includes(searchQuery);
-    });
+    console.log('FilteredLParticipants', participants);
 
-    console.log('filteredParticipants', filteredParticipants);
-
-    const sortedParticipants = filteredParticipants.sort((a, b) => {
-      return b.marks - a.marks;
-    });
+    const sortedParticipants = participants.sort((a, b) => b.marks - a.marks);
+    //console.log('SortedParticipants', sortedParticipants); // TODO Remove this line
 
     await LeaderboardModel.findOneAndUpdate(
       { quizId: quizId },
@@ -76,19 +85,19 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
         participants: sortedParticipants,
       },
       { upsert: true },
-    )
+    );
 
     return res.status(200).json({
       message: 'Leaderboard generated successfully',
       leaderboard: sortedParticipants,
-    })
+    });
   } catch (error: unknown) {
     return sendFailureResponse({
       res,
       error,
       messageToSend: 'Failed to generate leaderboard',
-    })
+    });
   }
-}
+};
 
-export default generateLeaderBoard
+export default generateLeaderBoard;
