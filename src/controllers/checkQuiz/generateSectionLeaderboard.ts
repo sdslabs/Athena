@@ -65,8 +65,6 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
             return !searchQuery || userIdStr.includes(searchQuery);
         });
 
-        console.log("filteredParticipants", filteredParticipants);
-
         const sortedParticipants = filteredParticipants.sort((a, b) => {
             return b.marks - a.marks; 
         });

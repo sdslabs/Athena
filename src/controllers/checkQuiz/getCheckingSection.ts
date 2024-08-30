@@ -15,7 +15,6 @@ interface getCheckingSectionRequest extends Request {
 const getCheckingSection = async (req: getCheckingSectionRequest, res: Response) => {
     const { quizId } = req.params;
     const searchQuery = req.query.searchQuery as string;
-    console.log(searchQuery);
     const sectionIndex = parseInt(req.params.sectionIndex, 10);
     
     try {
@@ -26,7 +25,6 @@ const getCheckingSection = async (req: getCheckingSectionRequest, res: Response)
                 const phoneNumber = participant.phoneNumber || '';
                 return !searchQuery || name.includes(searchQuery) || phoneNumber.includes(searchQuery);
             });
-            console.log("filteredParticipants", filteredParticipants);
             return {
                 ...leaderboard.toObject(),
                 participants: filteredParticipants

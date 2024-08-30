@@ -11,7 +11,7 @@ interface getDashboardRequest extends Request {
     quizId: string;
   };
   query: {
-    search?: string; // Adjusted to match the query parameter name 'search'
+    search?: string; 
   };
 }
 
@@ -25,8 +25,6 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
   const quizId = req.params.quizId;
   const searchQuery = req.query.search as string | undefined; // Adjusted to match the query parameter name 'search'
   const users: UserDetails[] = [];
-
-  console.log('getCheckingDashboard', quizId, searchQuery);
 
   try {
     const quiz = await QuizModel.findById(quizId).populate({
@@ -75,8 +73,6 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
         }
       }
     }
-
-    console.log('Filtered Users:', users);
 
     return res.status(200).json({
       admin: quiz.admin,

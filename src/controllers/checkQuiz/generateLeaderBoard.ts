@@ -27,8 +27,6 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
   const { quizId } = req.params;
   const searchQuery = req.query.search as string;
 
-  console.log('LeaderboardQuery', searchQuery);
-
   try {
     const quiz = await getQuiz(quizId);
     const participants: Participant[] = [];
@@ -52,8 +50,6 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
         if (user) {
           const name = user.personalDetails?.name?.toLowerCase() || '';
           const phoneNumber = user.personalDetails?.phoneNo || '';
-          console.log('UserDetails', name, phoneNumber, searchQuery); // TODO Remove this line
-
           // Filter participants based on searchQuery (name or phone number)
           if (
             !searchQuery || searchQuery === '' ||
@@ -73,11 +69,7 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
       }) as Promise<void>[],
     );
 
-    console.log('FilteredLParticipants', participants);
-
     const sortedParticipants = participants.sort((a, b) => b.marks - a.marks);
-    //console.log('SortedParticipants', sortedParticipants); // TODO Remove this line
-
     await LeaderboardModel.findOneAndUpdate(
       { quizId: quizId },
       {
