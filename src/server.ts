@@ -59,7 +59,6 @@ app.use('/checkQuiz', checkQuizRouter)
 app.use('/createQuiz', createQuizRouter)
 app.use('/giveQuiz', giveQuizRouter)
 app.use('/log', logRouter)
-
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
 })
