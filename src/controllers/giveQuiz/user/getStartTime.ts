@@ -18,13 +18,17 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
   const { user } = req.body
   const { quizId } = req.params
 
+  // Set `userLeftTime` to the minimum of the two values
+
   if (!user) {
     return sendInvalidInputResponse(res)
   }
 
   try {
     const quiz = await QuizModel.findById(quizId)
+
     const dbUser = isParticipant(user.userId, quiz?.participants)
+
     if (!quiz || !quiz.isPublished || !dbUser) {
       return res.status(400).json({
         success: false,
@@ -33,19 +37,35 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
     }
     const currentStatus = checkQuizUserStatus(quiz as IQuiz, dbUser as IParticipant)
     if (currentStatus === QuizUserStatus.USER_IS_GIVING_QUIZ) {
-      return res.status(400).json({
+      const quizEndTime = quiz?.quizMetadata?.endDateTimestamp as any
+      const quizDuration = quiz?.quizMetadata?.duration as any
+      const quizDurationInMs = quizDuration * 60 * 1000
+      const currentTime = new Date().getTime()
+      const timeUntilQuizEnd = quizEndTime - currentTime
+      const timeUntilUserEnd = dbUser?.startTime + quizDurationInMs - currentTime
+      const userLeftTime = Math.min(timeUntilQuizEnd, timeUntilUserEnd)
+      return res.status(200).json({
         success: false,
         message: 'User is already giving the quiz',
+        userLeftTime,
       })
     } else if (currentStatus === QuizUserStatus.USER_NOT_STARTED) {
-      const startTime = new Date().getTime()
-      dbUser.startTime = startTime
+      const quizStartTime = new Date().getTime()
+      dbUser.startTime = quizStartTime
+      const quizEndTime = quiz?.quizMetadata?.endDateTimestamp as any
+      const quizDuration = quiz?.quizMetadata?.duration as any
+      const quizDurationInMs = quizDuration * 60 * 1000
+      const currentTime = new Date().getTime()
+      const timeUntilQuizEnd = quizEndTime - currentTime
+      const timeUntilUserEnd = dbUser?.startTime + quizDurationInMs - currentTime
+      const userLeftTime = Math.min(timeUntilQuizEnd, timeUntilUserEnd)
+
       await quiz.save()
 
       return res.status(200).json({
         success: true,
         message: 'Quiz timer set successfully',
-        startTime,
+        userLeftTime,
       })
     } else {
       return res.status(400).json({
@@ -57,7 +77,7 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
-      startTime: null,
+      userLeftTime: null,
     })
   }
 }

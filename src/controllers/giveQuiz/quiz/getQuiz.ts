@@ -49,15 +49,17 @@ const getQuiz = async (req: getQuizRequest, res: Response) => {
         })
       }
 
-      const currentStatus = checkQuizUserStatus(quiz, dbUser);
-      if (!isQuizUserStatusValid (currentStatus, res)) {
-        return;
+      const currentStatus = checkQuizUserStatus(quiz, dbUser)
+      if (!isQuizUserStatusValid(currentStatus, res)) {
+        return
       }
 
       if (currentStatus === QuizUserStatus.AUTO_SUBMIT_QUIZ) {
         // auto submit quiz
+        dbUser.submitted = true
+        await quiz.save()
         console.log('Auto submit quiz')
-        return res.status(200).json({ message: 'Quiz auto submitted' });
+        return res.status(200).json({ message: 'Quiz auto submitted' })
       }
 
       const answeredResponses = await ResponseModel.find({

@@ -3,7 +3,6 @@ import QuizModel from '@models/quiz/quizModel'
 import { IParticipant, IQuiz, JwtPayload, QuizUserStatus } from 'types'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import isParticipant from '@utils/isParticipant'
-// import timerService from 'services/timer'
 import { checkQuizUserStatus } from '@utils/checkQuizUserStatus'
 
 interface startQuizRequest extends Request {
