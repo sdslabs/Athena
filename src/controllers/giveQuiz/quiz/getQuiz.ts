@@ -55,7 +55,6 @@ const getQuiz = async (req: getQuizRequest, res: Response) => {
       }
 
       if (currentStatus === QuizUserStatus.AUTO_SUBMIT_QUIZ) {
-        // auto submit quiz
         dbUser.submitted = true
         await quiz.save()
         console.log('Auto submit quiz')

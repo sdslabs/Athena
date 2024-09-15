@@ -4,6 +4,7 @@ import { IParticipant, IQuiz, JwtPayload, QuizUserStatus } from 'types'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import isParticipant from '@utils/isParticipant'
 import { checkQuizUserStatus } from '@utils/checkQuizUserStatus'
+import sendFailureResponse from '@utils/failureResponse'
 
 interface startQuizRequest extends Request {
   body: {
@@ -28,9 +29,11 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
     const currentStatus = checkQuizUserStatus(quiz as IQuiz, dbUser as IParticipant)
 
     if (!quiz || !quiz.isPublished || !dbUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'User not registered for this quiz',
+      return sendFailureResponse({
+        res,
+        error: new Error('User not registered for this quiz'),
+        messageToSend: 'User not registered for this quiz',
+        errorCode: 400,
       })
     }
 
@@ -73,9 +76,11 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
       case QuizUserStatus.QUIZ_NOT_STARTED:
         return res.status(200).json({ message: 'Quiz not started' })
       default:
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid quiz status',
+        return sendFailureResponse({
+          res,
+          error: new Error('Invalid quiz status'),
+          messageToSend: 'Invalid quiz status',
+          errorCode: 400,
         })
     }
   } catch (error) {
