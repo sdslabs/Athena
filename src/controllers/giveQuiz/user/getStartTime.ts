@@ -4,6 +4,7 @@ import { IParticipant, IQuiz, JwtPayload, QuizUserStatus } from 'types'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import isParticipant from '@utils/isParticipant'
 import { checkQuizUserStatus } from '@utils/checkQuizUserStatus'
+import sendFailureResponse from '@utils/failureResponse'
 
 interface getStartTimeRequest extends Request {
   body: {
@@ -18,8 +19,6 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
   const { user } = req.body
   const { quizId } = req.params
 
-  // Set `userLeftTime` to the minimum of the two values
-
   if (!user) {
     return sendInvalidInputResponse(res)
   }
@@ -30,9 +29,11 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
     const dbUser = isParticipant(user.userId, quiz?.participants)
 
     if (!quiz || !quiz.isPublished || !dbUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'User not registered for this quiz',
+      return sendFailureResponse({
+        res,
+        error: new Error('User not registered for this quiz'),
+        messageToSend: 'User not registered for this quiz',
+        errorCode: 400,
       })
     }
     const currentStatus = checkQuizUserStatus(quiz as IQuiz, dbUser as IParticipant)
@@ -51,7 +52,7 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
       })
     } else if (currentStatus === QuizUserStatus.USER_NOT_STARTED) {
       const quizStartTime = new Date().getTime()
-      dbUser.startTime = quizStartTime
+
       const quizEndTime = quiz?.quizMetadata?.endDateTimestamp as any
       const quizDuration = quiz?.quizMetadata?.duration as any
       const quizDurationInMs = quizDuration * 60 * 1000
@@ -59,7 +60,7 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
       const timeUntilQuizEnd = quizEndTime - currentTime
       const timeUntilUserEnd = dbUser?.startTime + quizDurationInMs - currentTime
       const userLeftTime = Math.min(timeUntilQuizEnd, timeUntilUserEnd)
-
+      dbUser.startTime = quizStartTime
       await quiz.save()
 
       return res.status(200).json({
@@ -68,16 +69,19 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
         userLeftTime,
       })
     } else {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid request on the getStartTime endpoint',
+      return sendFailureResponse({
+        res,
+        error: new Error('Invalid request on the getStartTime endpoint'),
+        messageToSend: 'Invalid request on the getStartTime endpoint',
+        errorCode: 400,
       })
     }
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'Internal server error',
-      userLeftTime: null,
+    return sendFailureResponse({
+      res,
+      error: new Error('Internal server error'),
+      messageToSend: 'Internal server error',
+      errorCode: 500,
     })
   }
 }
