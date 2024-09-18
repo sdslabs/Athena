@@ -41,26 +41,19 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
     const { quizId } = req.params;
     const sectionIndex = parseInt(req.params.sectionIndex, 10);
     const searchQuery = req.query.search as string;
-    console.log('searchQuery', searchQuery);
-    console.log('sectionIndex', sectionIndex);
 
     try {
-        // Fetch quiz details
         const quiz = await getQuiz(quizId);
         if (!quiz || !quiz?.sections || sectionIndex >= quiz.sections.length) {
             return sendInvalidInputResponse(res);
         }
 
-        // Get section questions
         const sectionQuestions = quiz.sections[sectionIndex]?.questions || [];
-        console.log(sectionQuestions);
         const participants: Participant[] = [];
 
-        // Loop through participants
         for (const participant of quiz.participants || []) {
             const { userId } = participant;
 
-            // Calculate participant's score only for this section
             let marks = 0;
             let questionsAttempted = 0;
             let questionsChecked = 0;
@@ -79,7 +72,6 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
                 }
             }
 
-            // Add participant data to leaderboard if valid userId
             if (Types.ObjectId.isValid(userId)) {
                 participants.push({
                     userId: userId,
@@ -89,9 +81,7 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
                 });
             }
         }
-        console.log('participants', participants);
 
-        // Fetch user details and filter participants based on search query
         const filteredParticipantsPromises = participants.map(async (participant) => {
             const user = await UserModel.findById(participant.userId);
             if (user) {
@@ -106,12 +96,8 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
 
         const filteredParticipants = (await Promise.all(filteredParticipantsPromises)).filter((p): p is Participant => p !== null);
 
-        console.log('filteredParticipants', filteredParticipants);
-
-        // Sort participants by section marks in descending order
         const sortedParticipants = filteredParticipants.sort((a, b) => b.marks - a.marks);
 
-        // Save/update the leaderboard in SectionLeaderboardModel
         await SectionLeaderboardModel.findOneAndUpdate(
             {
                 quizId,
@@ -127,13 +113,11 @@ const generateSectionLeaderBoard = async (req: generateSectionLeaderboardRequest
             },
         );
 
-        // Send successful response with the generated leaderboard
         return res.status(200).json({
             message: `Leaderboard for section ${sectionIndex} generated successfully`,
             leaderboard: sortedParticipants,
         });
     } catch (error: unknown) {
-        // Handle error and send failure response
         return sendFailureResponse({
             res,
             error,
