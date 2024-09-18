@@ -37,24 +37,11 @@ const quizSchema = new Schema<IQuiz>({
           },
         ],
       },
-      // isGivingQuiz: {
-      //   type: Boolean,
-      //   default: false,
-      // },
+
       startTime: {
-        // enterQuiz: {
-          type: Number,
-          default: 0,
-        },
-        // left: {
-        //   type: Number,
-        //   default: 0,
-        // },
-        // endQuiz: {
-        //   type: Number,
-        //   default: 0,
-        // },
-      // },
+        type: Number,
+        default: 0,
+      },
     },
   ],
   isPublished: {

@@ -15,7 +15,7 @@ interface getStartTimeRequest extends Request {
   }
 }
 
-const startQuiz = async (req: getStartTimeRequest, res: Response) => {
+const getStartTime = async (req: getStartTimeRequest, res: Response) => {
   const { user } = req.body
   const { quizId } = req.params
 
@@ -57,11 +57,11 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
       const quizDuration = quiz?.quizMetadata?.duration as any
       const quizDurationInMs = quizDuration * 60 * 1000
       const currentTime = new Date().getTime()
+      dbUser.startTime = quizStartTime
+      await quiz.save()
       const timeUntilQuizEnd = quizEndTime - currentTime
       const timeUntilUserEnd = dbUser?.startTime + quizDurationInMs - currentTime
       const userLeftTime = Math.min(timeUntilQuizEnd, timeUntilUserEnd)
-      dbUser.startTime = quizStartTime
-      await quiz.save()
 
       return res.status(200).json({
         success: true,
@@ -86,4 +86,4 @@ const startQuiz = async (req: getStartTimeRequest, res: Response) => {
   }
 }
 
-export default startQuiz
+export default getStartTime

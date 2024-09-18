@@ -11,10 +11,6 @@ export interface IParticipant {
     }[]
   }
   startTime: number
-    // enterQuiz: number
-    // left: number
-    // endQuiz: number
-  // }
 }
 
 export interface IQuiz {

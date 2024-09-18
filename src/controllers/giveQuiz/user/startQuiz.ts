@@ -46,7 +46,6 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
 
     switch (currentStatus) {
       case QuizUserStatus.USER_IS_GIVING_QUIZ:
-        // timerService(dbUser, currentStatus) ??
         return res.status(200).json({
           success: true,
           message: 'Quiz resumed successfully',
@@ -54,14 +53,12 @@ const startQuiz = async (req: startQuizRequest, res: Response) => {
 
       case QuizUserStatus.USER_NOT_STARTED:
         await quiz.save()
-        // timerService(dbUser, currentStatus) ??
         return res.status(200).json({
           success: true,
           message: 'Quiz started successfully',
         })
 
       case QuizUserStatus.AUTO_SUBMIT_QUIZ:
-        // auto submit quiz
         dbUser.submitted = true
         await quiz.save()
         console.log('Auto submit quiz')
