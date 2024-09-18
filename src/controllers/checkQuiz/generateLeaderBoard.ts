@@ -23,6 +23,18 @@ interface Participant {
   questionsChecked: number;
 }
 
+function prefixSearch(searchQuery: string, name: string, phoneNumber: string) { //checks if the search query is a prefix of the name or phone number
+  if (!searchQuery || searchQuery === '') return true;
+  if (/^\d+$/.test(searchQuery)) {
+      return phoneNumber.startsWith(searchQuery); //only prefix of the phone number
+  }
+  if (/^[a-zA-Z]+$/.test(searchQuery)) {
+      return name.toLowerCase().startsWith(searchQuery.toLowerCase()); //only prefix of the name
+  }
+  return false;
+}
+
+
 const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Response) => {
   const { quizId } = req.params;
   const searchQuery = req.query.search as string;
@@ -50,11 +62,8 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
         if (user) {
           const name = user.personalDetails?.name?.toLowerCase() || '';
           const phoneNumber = user.personalDetails?.phoneNo || '';
-          // Filter participants based on searchQuery (name or phone number)
           if (
-            !searchQuery || searchQuery === '' ||
-            name.includes(searchQuery) ||
-            phoneNumber.includes(searchQuery)
+            prefixSearch(searchQuery, name, phoneNumber)
           ) {
             const leaderboardEntry: Participant = {
               userId: participant.userId,
