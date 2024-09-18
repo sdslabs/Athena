@@ -4,18 +4,13 @@ import { IQuestion } from './question'
 export interface IParticipant {
   userId: Types.ObjectId
   submitted: boolean
-  isGivingQuiz: boolean
   registrationData: {
     customFields: {
       name: string
       value: string
     }[]
   }
-  time: {
-    enterQuiz: number
-    left: number
-    endQuiz: number
-  }
+  startTime: number
 }
 
 export interface IQuiz {
@@ -54,4 +49,13 @@ export enum QuizCode {
   JoinQuiz = 'joinQuiz',
   LeftQuiz = 'leftQuiz',
   ServerDisconnect = 'server namespace disconnect',
+}
+
+export enum QuizUserStatus {
+  QUIZ_NOT_ACCEPTING_ANSWERS,
+  QUIZ_NOT_STARTED,
+  USER_NOT_STARTED,
+  USER_IS_GIVING_QUIZ,
+  SUBMITTED,
+  AUTO_SUBMIT_QUIZ,
 }
