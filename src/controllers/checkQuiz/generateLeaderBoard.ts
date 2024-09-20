@@ -110,7 +110,6 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
     );
 
     const sortedParticipants = participants.sort((a, b) => b.marks - a.marks);
-    console.log(sortedParticipants);
     await LeaderboardModel.findOneAndUpdate(
       { quizId: quizId },
       {

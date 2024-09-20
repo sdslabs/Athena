@@ -24,6 +24,10 @@ const sectionLeaderboardSchema = new Schema<ISectionLeaderboard>({
             type: Number,
             required: true,
           },
+          marks: {
+            type: Number,
+            required: true,
+          },
           questionsAttempted: {
             type: Number,
             required: true,
