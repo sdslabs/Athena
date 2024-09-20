@@ -20,8 +20,8 @@ router.patch('/leaderboard/:quizId/:searchQuery', isOnboard, isQuizAdmin, checkQ
 
 router.get('/sectionLeaderboard/:quizId/:sectionIndex', isOnboard, hasEditAccess, checkQuizController.getCheckingSection)
 router.get('/sectionLeaderboard/:quizId/:sectionIndex/:searchQuery', isOnboard, hasEditAccess, checkQuizController.getCheckingSection)
-router.patch('/generateSectionLeaderboard/:quizId/:sectionIndex', isOnboard, isQuizAdmin, checkQuizController.generateSectionLeaderboard);
-router.patch('/generateSectionLeaderboard/:quizId/:sectionIndex/:searchQuery', isOnboard, isQuizAdmin, checkQuizController.generateSectionLeaderboard);
+router.patch('/generateSectionLeaderboard/:quizId/:sectionIndex', isOnboard, isQuizAdmin, checkQuizController.generateLeaderBoard);
+router.patch('/generateSectionLeaderboard/:quizId/:sectionIndex/:searchQuery', isOnboard, isQuizAdmin, checkQuizController.generateLeaderBoard);
 
 
 export default router

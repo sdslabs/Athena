@@ -1,4 +1,4 @@
-import LeaderboardModel from '@models/leaderboard/leaderboardModel';
+import LeaderboardModel from '@models/leaderboard/sectionLeaderboardModel';
 import ResponseModel from '@models/response/responseModel';
 import UserModel from '@models/user/userModel';
 import sendFailureResponse from '@utils/failureResponse';
@@ -10,6 +10,7 @@ import { ResponseStatus } from 'types';
 interface generateLeaderBoardRequest extends Request {
   params: {
     quizId: string;
+    sectionIndex?: string;
   };
   query: {
     search?: string;
@@ -19,6 +20,8 @@ interface generateLeaderBoardRequest extends Request {
 interface Participant {
   userId: Types.ObjectId;
   marks: number;
+  sectionMarks: number[];
+  totalMarks: number;
   questionsAttempted: number;
   questionsChecked: number;
 }
@@ -38,24 +41,50 @@ function prefixSearch(searchQuery: string, name: string, phoneNumber: string) { 
 const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Response) => {
   const { quizId } = req.params;
   const searchQuery = req.query.search as string;
-
+  const sectionIndex = req.params.sectionIndex;
+  
+  let sectionIndexNum: number | null = null;
+  if (sectionIndex && sectionIndex !== 'null') {
+    sectionIndexNum = parseInt(sectionIndex, 10);
+    if (isNaN(sectionIndexNum)) {
+      return sendFailureResponse({
+        res,
+        error: new Error('Invalid section index'),
+        messageToSend: 'Invalid section index',
+      });
+    }
+  }
   try {
     const quiz = await getQuiz(quizId);
     const participants: Participant[] = [];
 
     await Promise.all(
-      quiz?.participants?.map(async (participant) => {
-        const responses = await ResponseModel.find({ quizId: quizId, userId: participant.userId });
-
-        let score = 0;
+      quiz.participants?.map(async (participant) => {
+        let totalMarks = 0;
+        const sectionMarks: number[] = new Array(quiz.sections.length).fill(0);
         let questionsAttempted = 0;
         let questionsChecked = 0;
 
-        responses.forEach((response) => {
-          score += response.marksAwarded || 0;
-          questionsAttempted++;
-          questionsChecked += response.status === ResponseStatus.checked ? 1 : 0;
-        });
+        await Promise.all(
+          quiz.sections.map(async (section, sectionIdx) => {
+            await Promise.all(
+              section.questions.map(async (question) => {
+                const response = await ResponseModel.findOne({
+                  quizId,
+                  questionId: question._id,
+                  userId: participant.userId,
+                });
+
+                if (response) {
+                  sectionMarks[sectionIdx] += response.marksAwarded || 0;
+                  totalMarks += response.marksAwarded || 0;
+                  questionsAttempted++;
+                  questionsChecked += response.status === ResponseStatus.checked ? 1 : 0;
+                }
+              }),
+            );
+          }),
+        );
 
         const user = await UserModel.findById(participant.userId);
 
@@ -67,7 +96,9 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
           ) {
             const leaderboardEntry: Participant = {
               userId: participant.userId,
-              marks: score,
+              sectionMarks: sectionMarks,
+              totalMarks: totalMarks,
+              marks: sectionIndexNum == null ? totalMarks : sectionMarks[sectionIndexNum],
               questionsAttempted: questionsAttempted,
               questionsChecked: questionsChecked,
             };
@@ -79,6 +110,7 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
     );
 
     const sortedParticipants = participants.sort((a, b) => b.marks - a.marks);
+    console.log(sortedParticipants);
     await LeaderboardModel.findOneAndUpdate(
       { quizId: quizId },
       {

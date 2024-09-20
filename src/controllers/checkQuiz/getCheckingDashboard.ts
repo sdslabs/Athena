@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import QuizModel from '@models/quiz/quizModel';
 import sendInvalidInputResponse from '@utils/invalidInputResponse';
 import sendFailureResponse from '@utils/failureResponse';
-import LeaderboardModel from '@models/leaderboard/leaderboardModel';
+import LeaderboardModel from '@models/leaderboard/sectionLeaderboardModel';
 import UserModel from '@models/user/userModel';
 import { Types } from 'mongoose';
 
