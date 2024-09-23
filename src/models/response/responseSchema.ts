@@ -17,9 +17,12 @@ const responseSchema = new Schema<IResponse>({
     ref: ModelNames.User,
     required: true,
   },
-  selectedOptionId: {
-    type: String,
-  },
+  selectedOptionId: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
   subjectiveAnswer: {
     type: String,
   },

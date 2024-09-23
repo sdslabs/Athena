@@ -1,22 +1,27 @@
-import { Schema } from "mongoose"
-import { ModelNames, ISectionLeaderboard } from "types"
+import { Schema } from "mongoose";
+import { ModelNames, ISectionLeaderboard } from "types";
 
-//find a better way to do this
 const sectionLeaderboardSchema = new Schema<ISectionLeaderboard>({
     quizId: {
         type: Schema.Types.ObjectId,
         ref: ModelNames.Quiz,
         required: true,
     },
-    sectionIndex: {
-        type:Number,
-        required:true
-    },
     participants: [
         {
           userId: {
             type: Schema.Types.ObjectId,
             ref: ModelNames.User,
+            required: true,
+          },
+          sectionMarks: [
+            {
+              type: Number,
+              required: true,
+            },
+          ],
+          totalMarks: {
+            type: Number,
             required: true,
           },
           marks: {
@@ -32,7 +37,7 @@ const sectionLeaderboardSchema = new Schema<ISectionLeaderboard>({
             required: true,
           },
         },
-      ],
-})
+    ],
+});
 
-export default sectionLeaderboardSchema
+export default sectionLeaderboardSchema;
