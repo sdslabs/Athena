@@ -1,30 +1,48 @@
-import { Request, Response } from 'express';
-import QuizModel from '@models/quiz/quizModel';
-import sendInvalidInputResponse from '@utils/invalidInputResponse';
-import sendFailureResponse from '@utils/failureResponse';
-import LeaderboardModel from '@models/leaderboard/sectionLeaderboardModel';
-import UserModel from '@models/user/userModel';
-import { Types } from 'mongoose';
+import { Request, Response } from 'express'
+import QuizModel from '@models/quiz/quizModel'
+import sendInvalidInputResponse from '@utils/invalidInputResponse'
+import sendFailureResponse from '@utils/failureResponse'
+import LeaderboardModel from '@models/leaderboard/leaderboardModel'
+import UserModel from '@models/user/userModel'
+import { Types } from 'mongoose'
 
 interface getDashboardRequest extends Request {
   params: {
-    quizId: string;
-  };
+    quizId: string
+    sectionIndex: string
+  }
   query: {
-    search?: string; 
-  };
+    search?: string
+  }
 }
 
 interface UserDetails {
-  userId: Types.ObjectId;
-  name: string | undefined;
-  phoneNumber: string | undefined;
+  userId: Types.ObjectId
+  name: string | undefined
+  phoneNumber: string | undefined
+}
+
+function prefixSearch(searchQuery: string, name: string, phoneNumber: string) {
+  //checks if the search query is a prefix of the name or phone number
+  if (!searchQuery || searchQuery === '') return true
+  if (/^\d+$/.test(searchQuery)) {
+    return phoneNumber.startsWith(searchQuery) //only prefix of the phone number
+  }
+  if (/^[a-zA-Z]+$/.test(searchQuery)) {
+    return name.toLowerCase().startsWith(searchQuery.toLowerCase()) //only prefix of the name
+  }
+  return false
 }
 
 const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => {
-  const quizId = req.params.quizId;
-  const searchQuery = req.query.search as string | undefined; // Adjusted to match the query parameter name 'search'
-  const users: UserDetails[] = [];
+  const quizId = req.params.quizId
+  let sectionIndex = req.params.sectionIndex ? parseInt(req.params.sectionIndex, 10) : null
+  if (sectionIndex != null && isNaN(sectionIndex)) {
+    sectionIndex = null
+  }
+  const searchQuery = req.query.search as string | undefined // Adjusted to match the query parameter name 'search'
+
+  const users: UserDetails[] = []
 
   try {
     const quiz = await QuizModel.findById(quizId).populate({
@@ -38,37 +56,40 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
           select: 'personalDetails.name personalDetails.emailAdd',
         },
       },
-    });
+    })
     if (!quiz) {
-      return sendInvalidInputResponse(res);
+      return sendInvalidInputResponse(res)
     }
 
-    let checksCompleted = 0;
-    let totalAttempts = 0;
+    let checksCompleted = 0
+    let totalAttempts = 0
     quiz?.sections?.forEach((section) => {
       section?.questions?.forEach((question) => {
-        checksCompleted += question?.checkedAttempts || 0;
-        totalAttempts += question?.totalAttempts || 0;
-      });
-    });
+        checksCompleted += question?.checkedAttempts || 0
+        totalAttempts += question?.totalAttempts || 0
+      })
+    })
 
-    const leaderboard = await LeaderboardModel.find({ quizId: quizId });
+    const leaderboard = await LeaderboardModel.find({ quizId: quizId, sectionIndex: sectionIndex })
 
     for (const entry of leaderboard) {
       for (const participant of entry.participants) {
-        const userId = participant.userId;
-        const user = await UserModel.findById(userId);
+        const userId = participant.userId
+        const user = await UserModel.findById(userId)
 
         if (user) {
-          const name = user.personalDetails?.name?.toLowerCase() || '';
-          const phoneNumber = user.personalDetails?.phoneNo || '';
+          const name = user.personalDetails?.name?.toLowerCase() || ''
+          const phoneNumber = user.personalDetails?.phoneNo || ''
 
-          if (!searchQuery || name.includes(searchQuery.toLowerCase()) || phoneNumber.includes(searchQuery)) {
+          if (
+            !searchQuery ||
+            prefixSearch(searchQuery, name, phoneNumber)
+          ) {
             users.push({
               userId: user._id,
               name: user.personalDetails?.name,
               phoneNumber: user.personalDetails?.phoneNo,
-            });
+            })
           }
         }
       }
@@ -84,14 +105,14 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
       leaderboard: leaderboard,
       users: users,
       name: quiz?.quizMetadata?.name,
-    });
+    })
   } catch (error: unknown) {
     return sendFailureResponse({
       res,
       error,
       messageToSend: 'Failed to get checking dashboard',
-    });
+    })
   }
-};
+}
 
-export default getCheckingDashboard;
+export default getCheckingDashboard
