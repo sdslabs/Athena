@@ -1,119 +1,95 @@
-import LeaderboardModel from '@models/leaderboard/sectionLeaderboardModel';
+import LeaderboardModel from '@models/leaderboard/leaderboardModel';
 import ResponseModel from '@models/response/responseModel';
-import UserModel from '@models/user/userModel';
 import sendFailureResponse from '@utils/failureResponse';
 import getQuiz from '@utils/getQuiz';
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import { ResponseStatus } from 'types';
-
+import sendInvalidInputResponse from '@utils/invalidInputResponse';
+//DONE
 interface generateLeaderBoardRequest extends Request {
   params: {
     quizId: string;
     sectionIndex?: string;
-  };
-  query: {
-    search?: string;
   };
 }
 
 interface Participant {
   userId: Types.ObjectId;
   marks: number;
-  sectionMarks: number[];
-  totalMarks: number;
   questionsAttempted: number;
   questionsChecked: number;
 }
 
-function prefixSearch(searchQuery: string, name: string, phoneNumber: string) { //checks if the search query is a prefix of the name or phone number
-  if (!searchQuery || searchQuery === '') return true;
-  if (/^\d+$/.test(searchQuery)) {
-      return phoneNumber.startsWith(searchQuery); //only prefix of the phone number
-  }
-  if (/^[a-zA-Z]+$/.test(searchQuery)) {
-      return name.toLowerCase().startsWith(searchQuery.toLowerCase()); //only prefix of the name
-  }
-  return false;
-}
-
-
 const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Response) => {
   const { quizId } = req.params;
-  const searchQuery = req.query.search as string;
-  const sectionIndex = req.params.sectionIndex;
-  
-  let sectionIndexNum: number | null = null;
-  if (sectionIndex && sectionIndex !== 'null') {
-    sectionIndexNum = parseInt(sectionIndex, 10);
-    if (isNaN(sectionIndexNum)) {
-      return sendFailureResponse({
-        res,
-        error: new Error('Invalid section index'),
-        messageToSend: 'Invalid section index',
-      });
-    }
+  let sectionIndex = req.params.sectionIndex ? parseInt(req.params.sectionIndex, 10) : null;
+  if (sectionIndex != null && isNaN(sectionIndex)) {
+    sectionIndex = null;
   }
+  console.log('Generating leaderboard for quiz:', quizId);
+  console.log('Section index:', sectionIndex);
+
   try {
     const quiz = await getQuiz(quizId);
+    console.log('Quiz found:', quiz);
+    if (!quiz || !quiz?.sections) {
+        return sendInvalidInputResponse(res);
+    }
+    
     const participants: Participant[] = [];
 
+    let Questions = [];
+
+    if (sectionIndex != null) {
+      console.log('Section index: not null');
+      Questions = quiz.sections[sectionIndex]?.questions || [];
+    } else {
+      console.log('Section index: null');
+      Questions = quiz.sections.flatMap((section) => section.questions);
+    }
+
     await Promise.all(
-      quiz.participants?.map(async (participant) => {
-        let totalMarks = 0;
-        const sectionMarks: number[] = new Array(quiz.sections.length).fill(0);
+      quiz?.participants?.map(async (participant) => {
+        const responses = await ResponseModel.find({
+          userId: participant.userId,
+          quizId: quizId,
+          questionId: { $in: Questions.filter((q) => q !== undefined).map((q) => q._id) },
+        });
+        let score = 0;
         let questionsAttempted = 0;
         let questionsChecked = 0;
 
-        await Promise.all(
-          quiz.sections.map(async (section, sectionIdx) => {
-            await Promise.all(
-              section.questions.map(async (question) => {
-                const response = await ResponseModel.findOne({
-                  quizId,
-                  questionId: question._id,
-                  userId: participant.userId,
-                });
+        responses.forEach((response) => {
+          score += response.marksAwarded || 0;
+          questionsAttempted++;
+          questionsChecked += response.status === ResponseStatus.checked ? 1 : 0;
+        });
 
-                if (response) {
-                  sectionMarks[sectionIdx] += response.marksAwarded || 0;
-                  totalMarks += response.marksAwarded || 0;
-                  questionsAttempted++;
-                  questionsChecked += response.status === ResponseStatus.checked ? 1 : 0;
-                }
-              }),
-            );
-          }),
-        );
+        if (
+          Types.ObjectId.isValid(participant.userId)
+        ) {
+          const leaderboardEntry: Participant = {
+            userId: participant.userId,
+            marks: score,
+            questionsAttempted: questionsAttempted,
+            questionsChecked: questionsChecked,
+          };
 
-        const user = await UserModel.findById(participant.userId);
-
-        if (user) {
-          const name = user.personalDetails?.name?.toLowerCase() || '';
-          const phoneNumber = user.personalDetails?.phoneNo || '';
-          if (
-            prefixSearch(searchQuery, name, phoneNumber)
-          ) {
-            const leaderboardEntry: Participant = {
-              userId: participant.userId,
-              sectionMarks: sectionMarks,
-              totalMarks: totalMarks,
-              marks: sectionIndexNum == null ? totalMarks : sectionMarks[sectionIndexNum],
-              questionsAttempted: questionsAttempted,
-              questionsChecked: questionsChecked,
-            };
-
-            participants.push(leaderboardEntry);
-          }
+          participants.push(leaderboardEntry);
         }
       }) as Promise<void>[],
     );
 
     const sortedParticipants = participants.sort((a, b) => b.marks - a.marks);
+
+    console.log('Sorted participants:', sortedParticipants);
+
     await LeaderboardModel.findOneAndUpdate(
-      { quizId: quizId },
+      { quizId: quizId, sectionIndex: sectionIndex },
       {
         quizId: quizId,
+        sectionIndex: sectionIndex,
         participants: sortedParticipants,
       },
       { upsert: true },

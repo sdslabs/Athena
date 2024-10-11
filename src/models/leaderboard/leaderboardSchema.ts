@@ -1,10 +1,14 @@
 import { Schema } from "mongoose";
-import { ModelNames, ISectionLeaderboard } from "types";
-
-const sectionLeaderboardSchema = new Schema<ISectionLeaderboard>({
+import { ModelNames, ILeaderboard } from "types";
+//DONE
+const leaderboardSchema = new Schema<ILeaderboard>({
     quizId: {
         type: Schema.Types.ObjectId,
         ref: ModelNames.Quiz,
+        required: true,
+    },
+    sectionIndex: {
+        type: Number,
         required: true,
     },
     participants: [
@@ -12,16 +16,6 @@ const sectionLeaderboardSchema = new Schema<ISectionLeaderboard>({
           userId: {
             type: Schema.Types.ObjectId,
             ref: ModelNames.User,
-            required: true,
-          },
-          sectionMarks: [
-            {
-              type: Number,
-              required: true,
-            },
-          ],
-          totalMarks: {
-            type: Number,
             required: true,
           },
           marks: {
@@ -40,4 +34,4 @@ const sectionLeaderboardSchema = new Schema<ISectionLeaderboard>({
     ],
 });
 
-export default sectionLeaderboardSchema;
+export default leaderboardSchema;
