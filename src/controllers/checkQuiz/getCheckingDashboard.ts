@@ -43,6 +43,7 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
   const searchQuery = req.query.search as string | undefined // Adjusted to match the query parameter name 'search'
 
   const users: UserDetails[] = []
+  const searchedLeaderboard: any[] = []
 
   try {
     const quiz = await QuizModel.findById(quizId).populate({
@@ -90,11 +91,17 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
               name: user.personalDetails?.name,
               phoneNumber: user.personalDetails?.phoneNo,
             })
+            searchedLeaderboard.push({
+              userId: user._id,
+              questionsAttempted: participant.questionsAttempted,
+              questionsChecked: participant.questionsChecked,
+              marks: participant.marks,
+            })
           }
         }
       }
-    }
-
+    }   
+    leaderboard[0].participants = searchedLeaderboard
     return res.status(200).json({
       admin: quiz.admin,
       scheduled: quiz.quizMetadata?.startDateTimestamp,
