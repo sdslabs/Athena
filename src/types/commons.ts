@@ -1,3 +1,4 @@
+//DONE
 export enum ModelNames {
   Quiz = 'Quiz',
   User = 'User',
@@ -5,5 +6,4 @@ export enum ModelNames {
   Response = 'Response',
   Leaderboard = 'Leaderboard',
   Log = 'Log',
-  SectionLeaderboard = 'Section Leaderboard'
 }
