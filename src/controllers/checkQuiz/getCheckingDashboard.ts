@@ -101,7 +101,9 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
         }
       }
     }   
-    leaderboard[0].participants = searchedLeaderboard
+    if (leaderboard.length > 0) {
+      leaderboard[0].participants = searchedLeaderboard;
+    }
     return res.status(200).json({
       admin: quiz.admin,
       scheduled: quiz.quizMetadata?.startDateTimestamp,

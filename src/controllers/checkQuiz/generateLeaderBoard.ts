@@ -6,7 +6,6 @@ import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import { ResponseStatus } from 'types';
 import sendInvalidInputResponse from '@utils/invalidInputResponse';
-//DONE
 interface generateLeaderBoardRequest extends Request {
   params: {
     quizId: string;
@@ -27,12 +26,9 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
   if (sectionIndex != null && isNaN(sectionIndex)) {
     sectionIndex = null;
   }
-  console.log('Generating leaderboard for quiz:', quizId);
-  console.log('Section index:', sectionIndex);
 
   try {
     const quiz = await getQuiz(quizId);
-    console.log('Quiz found:', quiz);
     if (!quiz || !quiz?.sections) {
         return sendInvalidInputResponse(res);
     }
@@ -42,10 +38,8 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
     let Questions = [];
 
     if (sectionIndex != null) {
-      console.log('Section index: not null');
       Questions = quiz.sections[sectionIndex]?.questions || [];
     } else {
-      console.log('Section index: null');
       Questions = quiz.sections.flatMap((section) => section.questions);
     }
 
@@ -82,8 +76,6 @@ const generateLeaderBoard = async (req: generateLeaderBoardRequest, res: Respons
     );
 
     const sortedParticipants = participants.sort((a, b) => b.marks - a.marks);
-
-    console.log('Sorted participants:', sortedParticipants);
 
     await LeaderboardModel.findOneAndUpdate(
       { quizId: quizId, sectionIndex: sectionIndex },

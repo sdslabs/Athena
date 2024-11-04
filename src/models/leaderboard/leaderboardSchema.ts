@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 import { ModelNames, ILeaderboard } from "types";
-//DONE
+
 const leaderboardSchema = new Schema<ILeaderboard>({
     quizId: {
         type: Schema.Types.ObjectId,
