@@ -23,9 +23,12 @@ const questionSchema = new Schema<IQuestion>({
       },
     },
   ],
-  correctAnswer: {
-    type: String,
-  },
+  correctAnswer: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
   maxMarks: {
     type: Number,
     required: true,

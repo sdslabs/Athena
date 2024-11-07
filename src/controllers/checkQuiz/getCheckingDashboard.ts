@@ -3,24 +3,48 @@ import QuizModel from '@models/quiz/quizModel'
 import sendInvalidInputResponse from '@utils/invalidInputResponse'
 import sendFailureResponse from '@utils/failureResponse'
 import LeaderboardModel from '@models/leaderboard/leaderboardModel'
-import UserModel from '@models/user/userModel';
-import { Types } from "mongoose";
+import UserModel from '@models/user/userModel'
+import { Types } from 'mongoose'
 
 interface getDashboardRequest extends Request {
   params: {
     quizId: string
+    sectionIndex: string
+  }
+  query: {
+    search?: string
   }
 }
 
 interface UserDetails {
-  userId: Types.ObjectId;
-  name: string | undefined;
-  phoneNumber: string | undefined ;
- }
+  userId: Types.ObjectId
+  name: string | undefined
+  phoneNumber: string | undefined
+}
+
+function prefixSearch(searchQuery: string, name: string, phoneNumber: string) {
+  //checks if the search query is a prefix of the name or phone number
+  if (!searchQuery || searchQuery === '') return true
+  if (/^\d+$/.test(searchQuery)) {
+    return phoneNumber.startsWith(searchQuery) //only prefix of the phone number
+  }
+  if (/^[a-zA-Z]+$/.test(searchQuery)) {
+    return name.toLowerCase().startsWith(searchQuery.toLowerCase()) //only prefix of the name
+  }
+  return false
+}
 
 const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => {
   const quizId = req.params.quizId
-  const users: UserDetails[] = [];
+  let sectionIndex = req.params.sectionIndex ? parseInt(req.params.sectionIndex, 10) : null
+  if (sectionIndex != null && isNaN(sectionIndex)) {
+    sectionIndex = null
+  }
+  const searchQuery = req.query.search as string | undefined // Adjusted to match the query parameter name 'search'
+
+  const users: UserDetails[] = []
+  const searchedLeaderboard: any[] = []
+
   try {
     const quiz = await QuizModel.findById(quizId).populate({
       path: 'sections',
@@ -37,6 +61,7 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
     if (!quiz) {
       return sendInvalidInputResponse(res)
     }
+
     let checksCompleted = 0
     let totalAttempts = 0
     quiz?.sections?.forEach((section) => {
@@ -44,24 +69,41 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
         checksCompleted += question?.checkedAttempts || 0
         totalAttempts += question?.totalAttempts || 0
       })
-    })   
-    const leaderboard = await LeaderboardModel.find({ quizId: quizId })
+    })
 
-    for (let i = 0; i < leaderboard.length; i++) {
-      for (let j = 0; j < leaderboard[i].participants.length; j++) {
-        const userId = leaderboard[i].participants[j].userId;
-        const user = await UserModel.findById(userId);
-        console.log("userrrr",user);
-        if(user){
-        users.push({
-          userId: user._id,
-          name: user.personalDetails?.name,
-          phoneNumber: user.personalDetails?.phoneNo
-        });
+    const leaderboard = await LeaderboardModel.find({ quizId: quizId, sectionIndex: sectionIndex })
+
+    for (const entry of leaderboard) {
+      for (const participant of entry.participants) {
+        const userId = participant.userId
+        const user = await UserModel.findById(userId)
+
+        if (user) {
+          const name = user.personalDetails?.name?.toLowerCase() || ''
+          const phoneNumber = user.personalDetails?.phoneNo || ''
+
+          if (
+            !searchQuery ||
+            prefixSearch(searchQuery, name, phoneNumber)
+          ) {
+            users.push({
+              userId: user._id,
+              name: user.personalDetails?.name,
+              phoneNumber: user.personalDetails?.phoneNo,
+            })
+            searchedLeaderboard.push({
+              userId: user._id,
+              questionsAttempted: participant.questionsAttempted,
+              questionsChecked: participant.questionsChecked,
+              marks: participant.marks,
+            })
+          }
+        }
       }
-      }
+    }   
+    if (leaderboard.length > 0) {
+      leaderboard[0].participants = searchedLeaderboard;
     }
-
     return res.status(200).json({
       admin: quiz.admin,
       scheduled: quiz.quizMetadata?.startDateTimestamp,
@@ -70,7 +112,7 @@ const getCheckingDashboard = async (req: getDashboardRequest, res: Response) => 
       checksCompleted: checksCompleted,
       totalAttempts: totalAttempts,
       leaderboard: leaderboard,
-      users : users,
+      users: users,
       name: quiz?.quizMetadata?.name,
     })
   } catch (error: unknown) {
