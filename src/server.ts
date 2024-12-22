@@ -12,6 +12,8 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
 import logger from '@utils/logger'
+import profilePageRouter from '@routers/profilePage'
+
 
 // Initialize server
 dotenv.config()
@@ -59,6 +61,7 @@ app.use('/checkQuiz', checkQuizRouter)
 app.use('/createQuiz', createQuizRouter)
 app.use('/giveQuiz', giveQuizRouter)
 app.use('/log', logRouter)
+app.use('/profile', profilePageRouter)
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
 })
