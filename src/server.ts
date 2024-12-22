@@ -2,7 +2,6 @@ import express, { Express, Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import http from 'http'
 import cors from 'cors'
-import { Server } from 'socket.io'
 import connectDB from '@db/connectDB'
 import authRouter from '@routers/auth'
 import createQuizRouter from '@routers/createQuiz'
@@ -13,7 +12,6 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import mongoSanitize from 'express-mongo-sanitize'
 import logger from '@utils/logger'
-import timerService from './services/timer'
 import profilePageRouter from '@routers/profilePage'
 
 // Initialize server
@@ -31,17 +29,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(mongoSanitize())
 
-//socket.io
 const server = http.createServer(app)
-const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL,
-  },
-})
-io.on('connection', (socket) => {
-  logger.silly(`⚡️[server]: User connected with socketId: ${socket.id}`)
-  timerService(io, socket)
-})
 
 // Middleware to access response body and log accordingly
 app.use((req: Request, res: Response, next: NextFunction) => {
