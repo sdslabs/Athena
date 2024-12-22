@@ -10,33 +10,40 @@ interface autoCheckRequest extends Request {
     quizId: string
   }
 }
+
 const autoCheck = async (req: autoCheckRequest, res: Response) => {
   const quizId = req.params.quizId
+
   try {
     const quiz = await QuizModel.findById(quizId).populate({
       path: 'sections.questions',
       select: 'type correctAnswer maxMarks _id autoCheck',
     })
+
     quiz?.sections?.forEach(async (section) => {
       section?.questions?.forEach(async (question) => {
         if (question.type === QuestionTypes.MCQ && question.autoCheck) {
-          await ResponseModel.updateMany({ quizId: quizId, questionId: question._id }, [
-            {
-              $set: {
-                marksAwarded: {
-                  $cond: {
-                    if: { $eq: ['$selectedOptionId', question.correctAnswer] },
-                    then: question.maxMarks,
-                    else: 0,
+          await ResponseModel.updateMany(
+            { quizId: quizId, questionId: question._id },
+            [
+              {
+                $set: {
+                  marksAwarded: {
+                    $cond: {
+                      if: { $setEquals: ['$selectedOptionId', question.correctAnswer] }, // Check if the arrays have the same elements
+                      then: question.maxMarks,
+                      else: 0,
+                    },
                   },
+                  status: ResponseStatus.checked,
                 },
-                status: ResponseStatus.checked,
               },
-            },
-          ])
+            ],
+          )
         }
       })
     })
+
     return res.status(200).json({
       success: true,
       message: 'Autocheck successful',
@@ -49,4 +56,5 @@ const autoCheck = async (req: autoCheckRequest, res: Response) => {
     })
   }
 }
+
 export default autoCheck
